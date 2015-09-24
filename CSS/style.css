@@ -1,3 +1,12 @@
+h1 {
+    color: blue;
+    background: lightgray;
+    width: 50vw;
+    text-align: center;
+    border-style: solid;
+    border-color: darkslategray;
+}
+
 body{
     margin: 0;
     overflow: 0;
@@ -6,4 +15,10 @@ canvas {
     position: fixed;
     top: 0;
     left: 0;
+}
+
+button {
+    padding: 10px;
+    background: white;
+    border-radius: 15px;
 }
