@@ -28,7 +28,7 @@ function init(){
 
 //  New Geometry Object
     var planeGeometry = new THREE.PlaneGeometry(60,20,1,1);
-    var planeMaterial = new THREE.MeshBasicMaterial({color: 0xcccccc});
+    var planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff});
     var plane = new THREE.Mesh(planeGeometry,planeMaterial);
     plane.rotation.x = -0.5 * Math.PI;
     plane.position.x = 15;
@@ -39,8 +39,7 @@ function init(){
 
 //  New Geometry Object
     var cubeGeometry = new THREE.BoxGeometry(4,4,4);
-    var cubeMaterial = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true});
-    cubeMaterial.wireframe = true;
+    var cubeMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
     var cube = new THREE.Mesh(cubeGeometry,cubeMaterial);
 
     cube.position.x = -4;
@@ -48,6 +47,12 @@ function init(){
     cube.position.z = 0;
 
     scene.add(cube);
+
+//  New Light Object
+    var spotLight = new THREE.SpotLight(0xFFFFFF);
+    spotLight.position.set(-40, 60, -10);
+
+    scene.add(spotLight);
 
 //  Position the camera in relation to the origin
     camera.position.x = -30;
