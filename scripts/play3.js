@@ -3,101 +3,112 @@
  */
 
 //  DEBUG - Detect webgl
-try{
-    webgl_detect();
-} catch(e) {}
+//try{
+//    webgl_detect();
+//} catch(e) {}
 
 function init(){
-//  Resize factor
-    var canvasSizeReduce = 1;
-//  Get window size from browser
-    var canvasWidth = window.innerWidth / canvasSizeReduce;
-    var canvasHeight = window.innerHeight / canvasSizeReduce;
+//  Size constants
+    var SCREEN_SCALE = 1;
+    var SCREEN_WIDTH = window.innerWidth / SCREEN_SCALE;
+    var SCREEN_HEIGHT = window.innerHeight / SCREEN_SCALE;
+    var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
 
+//  SCENE
     var scene = new THREE.Scene();
-    var camera = new THREE.OrthographicCamera(canvasWidth/-2, canvasWidth/2, canvasHeight/2, canvasHeight/-2,0.1,1000);
-//    var camera = new THREE.OrthographicCamera(canvasWidth, canvasWidth, canvasHeight, canvasHeight,0.1,1000);
-//    var camera = new THREE.OrthographicCamera(canvasWidth/-4, canvasWidth/4, canvasHeight/4, canvasHeight/-4,0.1,1000);
-
-    var renderer = new THREE.WebGLRenderer();
-    renderer.setClearColor(0xEEEEEE);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    var axes = new THREE.AxisHelper(20);
-    scene.add(axes);
-
-    var planeGeometry = new THREE.PlaneGeometry(canvasWidth/3, canvasHeight/3, 1, 1);
-    var planeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('assets/artwork/Initial_PreMockup-01-01.png') } );
-    var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-
-//    var bgImage = new THREE.ImageUtils.loadTexture('assets/artwork/Initial_PreMockup-01-01.jpg',)
-    plane.position.x = 15
-    plane.position.y = 0
-    plane.position.z = 0
-    //plane.rotation.x = (-Math.PI / 2);
-    //plane.rotation.z = (-Math.PI / 2);
-
-    scene.add(plane);
-
-    var cubeGeometry = new THREE.BoxGeometry(10, 10, 10)
-    var cubeMaterial = new THREE.MeshBasicMaterial({color: 0xff0000, wireframe: true});
-    var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-
-    cube.position.x = -4;
-    cube.position.y = 3;
-    cube.position.z = 1;
-
-    scene.add(cube);
-
-    var sphereGeometry = new THREE.SphereGeometry(4, 20, 20);
-    var sphereMaterial = new THREE.MeshBasicMaterial({color: 0x7777ff, wireframe: true});
-    var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-
-    sphere.position.x = 20;
-    sphere.position.y = 4;
-    sphere.position.z = 2;
-
-    scene.add(sphere);
-
-    var ambientLight = new THREE.SpotLight();
-    ambientLight.position.x = 0;
-    ambientLight.position.y = 0;
-    ambientLight.position.z = 4;
-
-    scene.add(ambientLight);
-
-    camera.position.x = 0;
-    camera.position.y = 0;
-    camera.position.z = 30;
+//  CAMERA
+    //var camera = new THREE.OrthographicCamera(SCREEN_WIDTH/-2, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, SCREEN_HEIGHT/-2,NEAR,FAR);
+    var camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+    scene.add(camera);
+    camera.position.set(0,150,400);
     camera.lookAt(scene.position);
 
-    document.getElementById("WebGL-output")
-        .appendChild(renderer.domElement);
-    renderer.render(scene, camera);
+//  RENDERER
+    if (Detector.webgl){
+        var renderer = new THREE.WebGLRenderer( {antialias: true} );
+    }
+    else{
+        var renderer = new THREE.CanvasRenderer();
+    }
+    renderer.setSize(SCREEN_WIDTH,SCREEN_HEIGHT);
+    var game = document.getElementById('WebGL-output');
+    game.appendChild(renderer.domElement);
+
+//  EVENTS
+    THREEx.WindowResize(renderer, camera);
+    THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+
+//  CONTROLS        *** TO BE IMPLEMENTED ***
+    var controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+    // STATS
+    var stats = new Stats();
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.bottom = '0px';
+    stats.domElement.style.zIndex = 100;
+    game.appendChild( stats.domElement );
+
+
+//  LIGHTS
+    var light = new THREE.PointLight(0xffffff);
+    light.position.set(0,250,0);
+    scene.add(light);
+
+/*//  BACKGROUND
+    var bgTexture = new THREE.ImageUtils.loadTexture('assets/artwork/Initial_PreMockup-01-01.png');
+    bgTexture.wropS = bgTexture.wropT = THREE.ClampToEdgeWrapping;
+    bgTexture.repeat.set(10,10);
+    var bgMaterial = new THREE.MeshBasicMaterial( { map: bgTexture, side: THREE.DoubleSide } );
+    //var bgMaterial = new THREE.MeshBasicMaterial( { map: bgTexture } );
+    var bgGeometry = new THREE.PlaneGeometry(100, 100, 10, 10);
+    var background = new THREE.Mesh(bgGeometry, bgMaterial);
+    //background.position.y = -5;
+    //background.rotation.x = Math.PI / 2;
+    scene.add(background);*/
+
+    // FLOOR
+    var floorTexture = new THREE.ImageUtils.loadTexture( 'assets/artwork/Initial_PreMockup-01-01.png' );
+    floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+    floorTexture.repeat.set( 10, 10 );
+    var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
+    var floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10);
+    var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    floor.position.y = -0.5;
+    floor.rotation.x = Math.PI / 2;
+    scene.add(floor);
+
+    var axes = new THREE.AxisHelper(2000);
+    scene.add(axes);
+
+
+    //////
+    //requestAnimationFrame( this );
+    renderer.render( scene, camera );
+    controls.update();
+    stats.update();
 }
-//  DEBUGGING CODE
-function webgl_detect()
+
+
+/*
+function animate()
 {
-    if (!!window.WebGLRenderingContext) {
-        var canvas = document.createElement("canvas"),
-            names = ["webgl", "experimental-webgl", "moz-webgl"],
-            gl = false;
+    requestAnimationFrame( animate );
+    render();
+    update();
+}
 
-        for(var i in names) {
-            try {
-                gl = canvas.getContext(names[i]);
-                if (gl && typeof gl.getParameter == "function") {
-                    /* WebGL is enabled */
-                    /* return true; */
-                    return names[i];
-                }
-            } catch(e) {}
-        }
-
-        /* WebGL is supported, but disabled */
-        return false;
+function update()
+{
+    if ( keyboard.pressed("z") )
+    {
+        // do something
     }
 
-    /* WebGL not supported*/
-    return false;
+    controls.update();
+    stats.update();
 }
+
+function render()
+{
+    renderer.render( scene, camera );
+}*/
