@@ -5,17 +5,27 @@
     <title>Zorn!!!</title>
     <!-- Include required libraries for pixi.js    -->
     <script src="scripts/pixi.js"></script>
+
     <!-- Include styling -->
     <link rel="stylesheet" href="CSS/style.css" type="text/css">
 </head>
 <body>
+
+    <div id="renderWindow">
+        <!-- Note that in CSS this is defined to completely encircle a 1280x720 canvas. We might want to set it resizable, but that seems a safe size for most modern PCs. -->
+        <!--<img src="assets/artwork/Initial_PreMockup-01-01.jpg" alt="Mockup Game Artwork"/> -->
+    </div>
     <div>
-        <img src="assets/artwork/Initial_PreMockup-01-01.jpg" alt="Mockup Game Artwork"/>
+        <button onclick="location.href='index.html'">Home</button>
+        <button onclick="location.href='play.html'">Start Over</button>
+        <button onclick="window.open('help.html','fullscreen=no','width=550, height=375','menubar=no')">Help!!</button>
     </div>
 
-<button onclick="location.href='index.html'">Home</button>
-<button onclick="location.href='play.html'">Start Over</button>
-<button onclick="window.open('help.html','fullscreen=no','width=550, height=375','menubar=no')">Help!!</button>
+    
+    
+    <!-- Include our logic scripts. We put them at the bottom here so that we can access things that load in the body of
+this webpage.-->
+    <script src="scripts/play.js"></script>
 </body>
 </html>
 
