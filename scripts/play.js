@@ -60,9 +60,10 @@ var bonus; // Bonus handler
 // A NumberLine object contains an array of integers starting at number "start" and continuing
 // on for "length" distance
 // This may not be the best implementation ie we might want each point to have a PIXIJS number corresponding to its actual number, for instance...but for now it works
+// We might want a Point data structure to contain a pixi text and int value?
 var NumberLine = function NumberLine(start, length) {
     var end;
-    var points = [];
+    var points = {};
     this.length = length;
     this.start = start;
     end = start + length;
@@ -72,28 +73,39 @@ var NumberLine = function NumberLine(start, length) {
     for (i = 0; i < length; i += 1) {
         points[i] = i + start;
     }
+    
+    this.getPoints = function () {
+        return points;
+    };
 };
 
 // Build number line will handle the scaling of the number line based on a levelScalar variable (tutorial, advanced tutorial,
 // full game). For now, it just builds a debug number line
 var buildNumberLine = function (levelScalar) {
     var numberLine = new NumberLine(0, 10); // Build the number line (scalar does nothing at the moment)
-    var offset = 20; // How high to render the number line above the bottom of the window
+    var lineHeight = renderHeight - 100; // How high to render the number line above the bottom of the window
+    var numberHeight = renderHeight - 80; // How high to render the numbers in the number line above the bottom of the window
 
     // ** Draw a line from one side of the view to the other **
     // set the line style to have a width of 3 and set the color to black
     console.log(renderHeight);
     graphics.lineStyle(3, 0x000000);
-    graphics.drawRect(0, renderHeight - offset, renderWidth, 1);
+    graphics.drawRect(0, lineHeight, renderWidth, 1);
     
     // ** Draw "dots" at each number point, and scale it accordingly based on how many points there are
     var distance = (renderWidth) / numberLine.length;
-
+    var numberLabel;
     
     var i;
     for (i = 0; i < numberLine.length; i += 1) {
-        // console.log("drawing dot");
-        graphics.drawRect(distance * i, renderHeight - offset, 10, 10);
+        // Build the sidewalk graphics
+        graphics.drawRect(distance * i, lineHeight, 10, 10);
+        
+        // Build the numbers
+        numberLabel = new PIXI.Text(numberLine.getPoints()[i]); // Create a label showing the value of this point's number
+        numberLabel.position.x = distance * i;
+        numberLabel.position.y = numberHeight;
+        scene.addChild(numberLabel);
     }
 };
 
@@ -146,12 +158,12 @@ var BonusHandler = function BonusHandler() {
     };
     
     this.awardButter = function (amount) {
-        BUTTER_BONUS += 1;
+        BUTTER_BONUS += amount;
         butterT.setText(butterS + BUTTER_BONUS);
     };
     
     this.awardSun = function (amount) {
-        SUN_BONUS += 1;
+        SUN_BONUS += amount;
         sunT.setText(sunS + SUN_BONUS);
     };
 };
@@ -187,7 +199,9 @@ var setup = function () {
     // -------------
     // Do game logic
     // -------------
+    // Build the number line - probably should be level specific
     buildNumberLine(100);
+    
     // Build the Bonus Handler
     bonus = new BonusHandler();
     bonus.init(10, 10);
