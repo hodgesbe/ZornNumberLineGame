@@ -1,16 +1,30 @@
-h1 {
-    color: blue;
-    background: lightgray;
-    width: 50vw;
-    text-align: center;
-    border-style: solid;
-    border-color: darkslategray;
+
+#underConstruction{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height:20em;
+    width: 60em;
 }
 
-body{
-    margin: 0;
-    padding: 25px 25px 25px 25px;
+h1 {
+    color: #FFFF00;
+    background: #2EB82E;
+    text-align: center;
+    border-style: solid;
+    border-color: black;
+    font-size: 6em;
 }
+
+.intro h3{
+    font-size: 8em;
+    text-align: center;
+}
+.intro img{
+    float: left;
+}
+
+
 
 
 button {
