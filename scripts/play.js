@@ -10,23 +10,117 @@
 
 // -------------------------------------------------
 // Full Scope Variables (not function-specific)
+// The scene itself, and positioning of the objects in the scene
 // -------------------------------------------------
 var renderWindow; // This will be the render window
 var scene; // The container for PIXI.JS, also called "stage" by a lot of documentation
 var renderer; // Will create either a Canvas or WebGL renderer depending on the user's computer
-
-// Change these to modify the render width and height. Note that the HTML container in css also will need
-// to be modified. Maybe we can link those two somehow, by pulling information from html
 var renderWidth = 1280;
 var renderHeight = 720;
+var lineOffset = renderHeight - 100;
+var lineWidth = renderWidth - 100;
 
-var graphics;
 
-// All resources should be loaded into a resources object for us to use
-// Call this after creating PIXI but before running any other setup functions
-// It loads all external files into the variables that we declare here, and then we can use them in our project
-// for things like texturing sprites, etc.
-var GameAssets = function GameAssets() {
+// Call PIXI scripts to run
+setup();
+render();
+
+// --------------------------------
+// Logic scripts / classes
+// --------------------------------
+function Game(gc) {
+    this.gameController = gc;
+}
+
+// A Point object knows its index as well as the x and y position on the screen to render
+var Point = function Point(index, length) {
+    this.index = index;
+    this.x = lineWidth / length * index + lineWidth / 2;
+    this.y = renderHeight - lineOffset;
+};
+
+var NumberLine = function NumberLine(level) {
+    // Constructor
+    this.level = level;
+    
+    var points,
+        start,
+        length;
+    
+    this.init = function () {
+        // Set size based on level
+        switch (level) {
+        case 0:
+            this.start = -5;
+            this.length = 10;
+            break;
+        }
+        
+        // Build points
+        var i;
+        for (i = 0; i < length; i += 1) {
+            points[i] = new Point(i, length);
+        }
+    };
+    
+    this.printPoints = function () {
+        var i;
+        for (i = 0; i < length; i += 1) {
+            console.log(points[i].index);
+        }
+    };
+};
+
+// ---------------------------------
+// Controller
+// ---------------------------------
+// GameController will link the logic and the graphics of the game together
+function GameController() {
+    
+    // Private vars
+    var gameAssets = new GameAssets(),
+        graphics = new PIXI.Graphics(),
+        game = new Game(this);
+    
+    this.setup = function () {
+        // Start the logic model
+        
+        // Start the graphics model
+        gameAssets.init();
+        scene.addChild(graphics);
+    };
+    
+    // Some items are drawn when the level begins
+    // So that is when the Game object messages the controller
+    this.startLevel = function () {
+        
+    };
+    // Other items have to be redrawn when an event happens
+    // An event will always start in the view, so it should call functions here which call functions in the Game, and then
+    // query the Game object to figure out how to change how the game looks
+}
+
+
+// --------------------------------
+// View scripts
+// --------------------------------
+
+// Initial setup stuff goes here. This only runs once
+function setup() {
+    buildGameWindow();
+    var gameController = new GameController();
+    gameController.setup();
+    console.log("Setup done");
+}
+
+// Render should continuously render the scene
+function render() {
+    renderer.render(scene);
+    requestAnimationFrame(render);
+    // console.log("Rendering");
+}
+
+function GameAssets() {
     // Asset fields
     // var tnr_f; // The Times New Roman Bitmap font
     
@@ -46,17 +140,27 @@ var GameAssets = function GameAssets() {
             });
     };
 
-};
-var gameAssets; // Use this to hold an instance of GameAssets
+}
 
-// Game logic objects. These should PROBABLY be moved into the main game logic object once that's created
-var bonus; // Bonus handler
+function buildGameWindow() {
+    renderWindow = document.getElementById("renderWindow");
+    scene = new PIXI.Container();
+    renderer = PIXI.autoDetectRenderer(renderWidth, renderHeight);
+    renderer.backgroundColor = 0x33CCFF; // Set the temporary background color here
+    // add the renderer view element to the DOM. We are going to place it inside our
+    // "renderWindow" div
+    renderWindow.appendChild(renderer.view);
+}
+
+function displayNumberLine(numberline) {
+
+}
 
 
 // *****************************************************************
 // --------------------------NUMBER LINE STUFF----------------------
 // *****************************************************************
-
+/**
 // A NumberLine object contains an array of integers starting at number "start" and continuing
 // on for "length" distance
 // This may not be the best implementation ie we might want each point to have a PIXIJS number corresponding to its actual number, for instance...but for now it works
@@ -168,57 +272,4 @@ var BonusHandler = function BonusHandler() {
     };
 };
 
-// *****************************************************************
-// --------------------General Level Stuff--------------------------
-// *****************************************************************
-
-// Initial setup stuff goes here. This only runs once
-var setup = function () {
-    // ------------------
-    // Set up PIXI window
-    renderWindow = document.getElementById("renderWindow");
-    scene = new PIXI.Container();
-    renderer = PIXI.autoDetectRenderer(renderWidth, renderHeight);
-    renderer.backgroundColor = 0x33CCFF; // Set the temporary background color here
-    // add the renderer view element to the DOM. We are going to place it inside our
-    // "renderWindow" div
-    renderWindow.appendChild(renderer.view);
-    
-    // --------------------------
-    // Load in external resources
-    // --------------------------
-    gameAssets = new GameAssets();
-    gameAssets.init();
-    
-    // ------------------------
-    // Add global PIXI handlers
-    // ------------------------
-    graphics = new PIXI.Graphics(); // We need this for things like lines, rectangles, etc.
-    scene.addChild(graphics);
-    
-    // -------------
-    // Do game logic
-    // -------------
-    // Build the number line - probably should be level specific
-    buildNumberLine(100);
-    
-    // Build the Bonus Handler
-    bonus = new BonusHandler();
-    bonus.init(10, 10);
-    
-};
-
-// Continually rendered stuff goes here
-var render = function () {
-
-    renderer.render(scene);
-    requestAnimationFrame(render);
-    
-    // console.log("Forever looping");
-};
-
-setup(); // Call this once
-render(); // Gets called forever
-
-// Useful documentation for PIXI:
-// http://www.goodboydigital.com/pixi-js-v3/
+**/
