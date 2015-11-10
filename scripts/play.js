@@ -211,9 +211,11 @@ function GameAssets() {
     
     this.init = function () {
         PIXI.loader
-            .add([("sunSprite", "I'm a sun!"),
-                 ("butterSprite", "I'm butter!")])
-        .load(})
+            .add([
+                ("sunSprite", "I'm a sun!"),
+                 ("butterSprite", "I'm butter!")
+            ])
+
             };  
     this.SunSprite = function () {
         return sunSprite;
