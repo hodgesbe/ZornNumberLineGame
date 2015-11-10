@@ -71,6 +71,60 @@ var NumberLine = function NumberLine(level) {
     };
 };
 
+//Hero Object
+var Hero = function(){
+
+    var health;
+
+    //Creates a new Hero object with full health
+    this.init = function(){
+        health = 100;
+    };
+
+    //decreases hero health by amount passed to function as int
+    this.takeDamage = function(amountToDecrease){
+        health = health-amountToDecrease;
+    };
+
+    //returns hero health
+    this.returnHealth = function(){
+        return health;
+    };
+};
+
+//Creates Bonus Objects with getter and setter methods
+var Bonus = function(){
+    var sunValues,
+        butterValues;
+
+    //creates bonus object with empty sun and butter values
+    this.init = function(){
+        sunValues = 0;
+        butterValues =0;
+    };
+
+    //adds butter bonus value. Takes an int for added bonus
+    this.addButterBonus = function(butterAdded){
+      butterValues = butterAdded;
+    };
+
+    //adds sun bonus value. Takes an int for added bonus
+    this.addSunBonus = function(sunAdded){
+        sunValues = sunAdded;
+    };
+
+    //returns the amount of butter bonuses
+    this.getButterBonus = function(){
+      return butterValues;
+    };
+
+    //returns the amount of sun bonuses
+    this.getSunBonus = function(){
+        return sunValues;
+    };
+
+};
+
 // ---------------------------------
 // Controller
 // ---------------------------------
