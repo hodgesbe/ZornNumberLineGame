@@ -25,9 +25,33 @@ var lineWidth = renderWidth - 100;
 setup();
 render();
 
-// --------------------------------
-// GIT CAN SUCK A GIANT STICK OF BUTTER
-// --------------------------------
+// *****************************************************************
+// -----------------------ZOMBIE STUFF------------------------------
+// *****************************************************************
+var zombie = function(id, speed, health, indexOfTarget, indexOfStart ){
+    this.id = id;
+    this.speed = speed;
+    this.health = health;
+    this.target = indexOfTarget;
+    this.location = indexOfStart;
+
+}
+
+
+var zombieController = function(level){
+    var gameLevels = {"levels":[
+        {"levelNum":1, "levelName":"Level 1", "levelRange": 20, "zombieCount": 2},
+        {"levelNum":2, "levelName":"Level 2", "levelRange": 15, "zombieCount": 4},
+        {"levelNum":3, "levelName":"Level 3", "levelRange": 10, "zombieCount": 6},
+    ]}
+    this.level = level;
+    this.range = range;
+    this.count = count;
+    this.zombieArray = {};
+    for(var zombies in this.count){
+        this.zombieArray.push(zombie(zombies, ));
+    }
+}
 
 // --------------------------------
 // Logic scripts / classes
@@ -212,7 +236,7 @@ function GameAssets() {
     // Asset fields
     var sunSprite,
         butterSprite;
-    
+
     this.init = function () {
         PIXI.loader
             .add([("sunSprite", "I'm a sun!"),
