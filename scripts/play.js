@@ -81,6 +81,11 @@ var Hero = function(){
         health = 100;
     };
 
+    //default damage (decrements by 5)
+    this.takeDamage = function(){
+        health = health-5;
+    };
+
     //decreases hero health by amount passed to function as int
     this.takeDamage = function(amountToDecrease){
         health = health-amountToDecrease;
