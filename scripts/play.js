@@ -70,7 +70,7 @@ var NumberLine = function NumberLine(level) {
 };
 
 //Hero Object
-var Hero = function(){
+function Hero(){
 
     var health;
 
@@ -96,7 +96,7 @@ var Hero = function(){
 };
 
 //Creates Bonus Objects with getter and setter methods
-var Bonus = function(){
+function Bonus(){
     var sunValues,
         butterValues;
 
@@ -162,12 +162,16 @@ function GameController() {
         graphics = new PIXI.Graphics(),
         game = new Game(this);
     
-    this.setup = function () {
+    this.init = function () {
+        console.log("Attempting to create game controller.");
         // Start the logic model
+        game.init();
         
         // Start the graphics model
-        gameAssets.init();
         scene.addChild(graphics);
+        gameAssets.init();
+        
+        console.log("Butter bonus sprite thing: " + gameAssets.ButterSprite());
     };
     
     // Some items are drawn when the level begins
@@ -189,7 +193,7 @@ function GameController() {
 function setup() {
     buildGameWindow();
     var gameController = new GameController();
-    gameController.setup();
+    gameController.init();
     console.log("Setup done");
 }
 
@@ -202,22 +206,21 @@ function render() {
 
 function GameAssets() {
     // Asset fields
-    // var tnr_f; // The Times New Roman Bitmap font
+    var sunSprite,
+        butterSprite;
     
     this.init = function () {
         PIXI.loader
-            // add resources here (to get stored in GameAssets() field
-            // .add('tnr_f', 'resources/bitmap_fonts/tnr_f.fnt')
-            // can do listen for progress
-            // .on('progress', onProgressCallback)
-            // can do listen for completion
-            // .on('complete', onCompleteCallback)
-            // load resources
-            .load(function (loader, resources) {
-                // resources is an object containing the loaded resources, keyed by the names you used above.
-                // don't forget to type them!
-                // tnr_f = new PIXI.Extras.BitmapText(resources.tnr_f);
-            });
+            .add([("sunSprite", "I'm a sun!"),
+                 ("butterSprite", "I'm butter!")])
+        .load(})
+            };  
+    this.SunSprite = function () {
+        return sunSprite;
+    };
+    
+    this.ButterSprite = function () {
+        return butterSprite;
     };
 
 }
