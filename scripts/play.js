@@ -28,9 +28,7 @@ render();
 // --------------------------------
 // Logic scripts / classes
 // --------------------------------
-function Game(gc) {
-    this.gameController = gc;
-}
+
 
 // A Point object knows its index as well as the x and y position on the screen to render
 var Point = function Point(index, length) {
@@ -106,6 +104,7 @@ var Bonus = function(){
     this.init = function(){
         sunValues = 0;
         butterValues =0;
+        console.log("Bonus init. Sun: " + sunValues + ", " + butterValues + ".");
     };
 
     //adds butter bonus value. Takes an int for added bonus
@@ -129,6 +128,28 @@ var Bonus = function(){
     };
 
 };
+
+function Game(gc) {
+    this.gameController = gc;
+    
+    var game = this,
+        directHits,
+        hero,
+        bonus;
+    
+    this.init = function () {
+        hero = new Hero();
+        hero.init();
+        bonus = new Bonus();
+        bonus.init();
+        
+        this.buildLevel (0);
+    };
+    
+    this.buildLevel = function (level) {
+        
+    };
+}
 
 // ---------------------------------
 // Controller
