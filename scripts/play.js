@@ -102,7 +102,7 @@ function Bonus(){
 
     //creates bonus object with empty sun and butter values
     this.init = function(){
-        sunValues = 0;
+        sunValues = 2;
         butterValues =0;
         console.log("Bonus init. Sun: " + sunValues + ", " + butterValues + ".");
     };
@@ -127,7 +127,7 @@ function Bonus(){
         return sunValues;
     };
 
-};
+}
 
 function Game(gc) {
     this.gameController = gc;
@@ -148,6 +148,12 @@ function Game(gc) {
     
     this.buildLevel = function (level) {
         
+        
+        gc.buildLevel();
+    };
+    
+    this.getBonusController = function () {
+        return bonus;
     };
 }
 
@@ -160,23 +166,35 @@ function GameController() {
     // Private vars
     var gameAssets = new GameAssets(),
         graphics = new PIXI.Graphics(),
-        game = new Game(this);
+        game = new Game(this),
+        sunSprites = new Array();
     
     this.init = function () {
-        console.log("Attempting to create game controller.");
+        // Load in assets
+        gameAssets.init();
+        
+        
         // Start the logic model
         game.init();
         
-        // Start the graphics model
+        // Start the view
         scene.addChild(graphics);
-        gameAssets.init();
-        
-        console.log("Butter bonus sprite thing: " + gameAssets.ButterSprite());
     };
     
-    // Some items are drawn when the level begins
-    // So that is when the Game object messages the controller
-    this.startLevel = function () {
+    this.buildLevel = function () {
+        var suns = game.getBonusController().getSunBonus();
+        
+        var i;
+        for (i = 0; i < suns; i++) {
+            console.log("Adding a sun");
+            console.log(gameAssets.getSunSprite());
+            sunSprites.push(gameAssets.getSunSprite());
+            
+            scene.addChild(sunSprites[i]);
+            console.log(sunSprites[i]);
+        }
+        
+        
         
     };
     // Other items have to be redrawn when an event happens
@@ -206,20 +224,30 @@ function render() {
 
 function GameAssets() {
     // Asset fields
+    // These are not the same as in Pixi.loader
     var sunSprite,
         butterSprite;
     
     this.init = function () {
-        PIXI.loader
-            .add([("sunSprite", "I'm a sun!"),
-                 ("butterSprite", "I'm butter!")])
-        .load(})
-            };  
-    this.SunSprite = function () {
+        PIXI.loader.add(
+            [
+                ("image_sun", "assets/artwork/sun.png"),
+                // ("butterSprite", "I'm butter!")
+            ]
+        ).load(this.populateVars()
+              )
+    };
+    
+    this.populateVars = function () {
+        sunSprite = new PIXI.Sprite (PIXI.loader.resources["image_sun"]);
+        console.log(sunSprite);
+    }
+    
+    this.getSunSprite = function () {
         return sunSprite;
     };
     
-    this.ButterSprite = function () {
+    this.getButterSprite = function () {
         return butterSprite;
     };
 
