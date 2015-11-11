@@ -25,6 +25,34 @@ var lineWidth = renderWidth - 100;
 setup();
 render();
 
+// *****************************************************************
+// -----------------------ZOMBIE STUFF------------------------------
+// *****************************************************************
+var zombie = function(id, speed, health, indexOfTarget, indexOfStart ){
+    this.id = id;
+    this.speed = speed;
+    this.health = health;
+    this.target = indexOfTarget;
+    this.location = indexOfStart;
+
+}
+
+
+var zombieController = function(level){
+    var gameLevels = {"levels":[
+        {"levelNum":1, "levelName":"Level 1", "levelRange": 20, "zombieCount": 2},
+        {"levelNum":2, "levelName":"Level 2", "levelRange": 15, "zombieCount": 4},
+        {"levelNum":3, "levelName":"Level 3", "levelRange": 10, "zombieCount": 6},
+    ]}
+    this.level = level;
+    this.range = range;
+    this.count = count;
+    this.zombieArray = {};
+    for(var zombies in this.count){
+        this.zombieArray.push(zombie(zombies, ));
+    }
+}
+
 // --------------------------------
 // Logic scripts / classes
 // --------------------------------
@@ -192,10 +220,7 @@ function GameController() {
             
             scene.addChild(sunSprites[i]);
             console.log(sunSprites[i]);
-        }
-        
-        
-        
+        }      
     };
     // Other items have to be redrawn when an event happens
     // An event will always start in the view, so it should call functions here which call functions in the Game, and then
@@ -227,7 +252,7 @@ function GameAssets() {
     // These are not the same as in Pixi.loader
     var sunSprite,
         butterSprite;
-    
+
     this.init = function () {
         PIXI.loader.add(
             [
