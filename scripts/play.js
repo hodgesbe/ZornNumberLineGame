@@ -2,7 +2,7 @@
 // Collaborators: Brett, Ben, Jason, Nicholas
 
 // It's okay to have "use strict" outside of a function so tell JSLint that
-/*jslint node: true */
+/*jslint node: true, white: true */
 'use strict';
 
 // We need to let JSLint know about PIXI definitions (to avoid PIXI was used before it was defined, etc)
@@ -28,30 +28,31 @@ render();
 // *****************************************************************
 // -----------------------ZOMBIE STUFF------------------------------
 // *****************************************************************
-var zombie = function(id, speed, health, indexOfTarget, indexOfStart ){
+var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
     this.id = id;
     this.speed = speed;
     this.health = health;
     this.target = indexOfTarget;
     this.location = indexOfStart;
 
-}
+};
 
 
-var zombieController = function(level){
-    var gameLevels = {"levels":[
-        {"levelNum":1, "levelName":"Level 1", "levelRange": 20, "zombieCount": 2},
-        {"levelNum":2, "levelName":"Level 2", "levelRange": 15, "zombieCount": 4},
-        {"levelNum":3, "levelName":"Level 3", "levelRange": 10, "zombieCount": 6},
-    ]}
+var zombieController = function (level) {
+    var gameLevels = {"levels": [
+        {"levelNum": 1, "levelName": "Level 1", "levelRange": 20, "zombieCount": 2},
+        {"levelNum": 2, "levelName": "Level 2", "levelRange": 15, "zombieCount": 4},
+        {"levelNum": 3, "levelName": "Level 3", "levelRange": 10, "zombieCount": 6}
+    ]};
     this.level = level;
     this.range = range;
     this.count = count;
     this.zombieArray = {};
-    for(var zombies in this.count){
-        this.zombieArray.push(zombie(zombies, ));
-    }
-}
+    /**
+    for (var zombies in this.count){
+        // this.zombieArray.push(zombie(zombies, ));
+    } **/
+};
 
 // --------------------------------
 // Logic scripts / classes
@@ -98,22 +99,22 @@ var NumberLine = function NumberLine(level) {
 };
 
 //Hero Object
-function Hero(){
+function Hero() {
 
     var health;
 
     //Creates a new Hero object with full health
-    this.init = function(){
+    this.init = function () {
         health = 100;
     };
 
     //default damage (decrements by 5)
-    this.takeDamage = function(){
-        health = health-5;
+    this.takeDamage = function () {
+        health = health - 5;
     };
 
     //decreases hero health by amount passed to function as int
-    this.takeDamage = function(amountToDecrease){
+    this.takeDamage = function (amountToDecrease) {
         health = health-amountToDecrease;
     };
 
@@ -121,7 +122,7 @@ function Hero(){
     this.returnHealth = function(){
         return health;
     };
-};
+}
 
 //Creates Bonus Objects with getter and setter methods
 function Bonus(){
@@ -210,16 +211,16 @@ function GameController() {
     };
     
     this.buildLevel = function () {
-        var suns = game.getBonusController().getSunBonus();
+        var suns = game.getBonusController().getSunBonus(),
         
-        var i;
+            i;
         for (i = 0; i < suns; i++) {
             console.log("Adding a sun");
-            console.log(gameAssets.getSunSprite());
+            // console.log(gameAssets.getSunSprite());
             sunSprites.push(gameAssets.getSunSprite());
             
             scene.addChild(sunSprites[i]);
-            console.log(sunSprites[i]);
+            // console.log(sunSprites[i]);
         }      
     };
     // Other items have to be redrawn when an event happens
@@ -254,19 +255,16 @@ function GameAssets() {
         butterSprite;
 
     this.init = function () {
-        PIXI.loader.add(
-            [
-                ("image_sun", "assets/artwork/sun.png"),
-                // ("butterSprite", "I'm butter!")
-            ]
-        ).load(this.populateVars()
-              )
+        PIXI.loader
+            .add("image_sun", "assets/artwork/sun.png")
+            .add("butterSprite", "assets/artwork/sun.png")
+            .load(this.populateVars());
     };
     
     this.populateVars = function () {
-        sunSprite = new PIXI.Sprite (PIXI.loader.resources["image_sun"]);
-        console.log(sunSprite);
-    }
+        sunSprite = new PIXI.Sprite (PIXI.loader.resources.image_sun.texture);
+        // console.log(sunSprite);
+    };
     
     this.getSunSprite = function () {
         return sunSprite;
