@@ -37,6 +37,7 @@ div {
     padding:10px;
 }
 
+/**
 #renderWindow {
     height: 720px;
     width: 1280px;
@@ -44,4 +45,4 @@ div {
     border-width: 10px;
     border-color: gold;
     padding: 0px;
-}
+} **/

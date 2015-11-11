@@ -12,18 +12,136 @@
 // Full Scope Variables (not function-specific)
 // The scene itself, and positioning of the objects in the scene
 // -------------------------------------------------
-var renderWindow; // This will be the render window
-var scene; // The container for PIXI.JS, also called "stage" by a lot of documentation
+var htmlWindow; // This will be the render window
+var stage; // The container for PIXI.JS, also called "stage" by a lot of documentation
 var renderer; // Will create either a Canvas or WebGL renderer depending on the user's computer
 var renderWidth = 1280;
 var renderHeight = 720;
 var lineOffset = renderHeight - 100;
 var lineWidth = renderWidth - 100;
 
+// Variables to make our lives easier. Here we create naming convention variables for pixi objects, so that
+// (1), we can type one word instead of 3-5 each time
+// (2), if PIXI updates their workflow we can hopefully just modify the variables here and they will keep meaning the same thing
+// in our program.
+var resources = PIXI.loader.resources;
+var loadTexture = PIXI.utils.TextureCache;
 
-// Call PIXI scripts to run
-setup();
-render();
+
+function loadGameAssets() {
+    PIXI.loader
+    .add("image_sun", "assets/artwork/sun.png")
+    .add("image_zombie", '/assets/artwork/zombie8.png')
+    .load(console.log("Loaded"));
+}
+
+
+// Our game chain starts by constructing a game controller
+var gameController = new GameController();
+gameController.init();
+
+// ---------------------------------
+// Controller
+// ---------------------------------
+// GameController will link the logic and the graphics of the game together
+function GameController() {
+    
+    // Private vars
+    var graphics = new PIXI.Graphics(),
+        game = new Game(this),
+        sunSprites = [];
+    
+    this.init = function () {
+
+        htmlWindow = document.getElementById("renderWindow");
+        renderer = PIXI.autoDetectRenderer(renderWidth, renderHeight);
+        stage = new PIXI.Container();
+        
+        // renderer.backgroundColor = 0x33CCFF; 
+        htmlWindow.appendChild(renderer.view);
+        
+        // Load in assets
+        loadGameAssets();
+        
+        // Start the logic model
+        game.init();
+    };
+    
+    this.buildLevel = function () {
+        var suns = game.getBonusController().getSunBonus(),
+            texture,
+            sprite,
+            i;
+        for (i = 0; i < suns; i++) {
+            console.log("Adding a sun");
+            // console.log(gameAssets.getSunSprite());
+            // sunSprites[i] = new PIXI.Sprite.fromImage(resources.image_sun);
+            /**
+            sunSprites[i].position.x = 200;
+            sunSprites[i].position.y = 200;
+            sunSprites[i].width = 200;
+            sunSprites[i].height = 200; 
+            stage.addChild(sunSprites[i]); **/
+            console.log(resources.image_zombie);
+            console.log(resources.image_zombie.url);
+            
+            // var texture = PIXI.Texture.fromImage(resources.image_zombie.texture);
+            texture = loadTexture["image_zombie"];
+            sprite = new PIXI.Sprite(texture);
+            console.log(texture);
+            stage.addChild(sprite);
+        }
+        
+        /**
+        for (i = 0; i < suns; i++) {
+            console.log(sunSprites[i]);
+        } **/
+        
+        this.startLevel();
+    };
+    
+    this.startLevel = function () {
+        render();
+    };
+    // Other items have to be redrawn when an event happens
+    // An event will always start in the view, so it should call functions here which call functions in the Game, and then
+    // query the Game object to figure out how to change how the game looks
+}
+
+
+// Render should continuously render the scene
+function render() {
+    // requestAnimationFrame(render);
+    renderer.render(stage);
+}
+
+function Game(gc) {
+    this.gameController = gc;
+    
+    var game = this,
+        directHits,
+        hero,
+        bonus;
+    
+    this.init = function () {
+        hero = new Hero();
+        hero.init();
+        bonus = new Bonus();
+        bonus.init();
+        
+        this.buildLevel (0);
+    };
+    
+    this.buildLevel = function (level) {
+        
+        
+        gc.buildLevel();
+    };
+    
+    this.getBonusController = function () {
+        return bonus;
+    };
+}
 
 // *****************************************************************
 // -----------------------ZOMBIE STUFF------------------------------
@@ -158,133 +276,11 @@ function Bonus(){
 
 }
 
-function Game(gc) {
-    this.gameController = gc;
-    
-    var game = this,
-        directHits,
-        hero,
-        bonus;
-    
-    this.init = function () {
-        hero = new Hero();
-        hero.init();
-        bonus = new Bonus();
-        bonus.init();
-        
-        this.buildLevel (0);
-    };
-    
-    this.buildLevel = function (level) {
-        
-        
-        gc.buildLevel();
-    };
-    
-    this.getBonusController = function () {
-        return bonus;
-    };
-}
-
-// ---------------------------------
-// Controller
-// ---------------------------------
-// GameController will link the logic and the graphics of the game together
-function GameController() {
-    
-    // Private vars
-    var gameAssets = new GameAssets(),
-        graphics = new PIXI.Graphics(),
-        game = new Game(this),
-        sunSprites = new Array();
-    
-    this.init = function () {
-        // Load in assets
-        gameAssets.init();
-        
-        
-        // Start the logic model
-        game.init();
-        
-        // Start the view
-        scene.addChild(graphics);
-    };
-    
-    this.buildLevel = function () {
-        var suns = game.getBonusController().getSunBonus(),
-        
-            i;
-        for (i = 0; i < suns; i++) {
-            console.log("Adding a sun");
-            // console.log(gameAssets.getSunSprite());
-            sunSprites.push(gameAssets.getSunSprite());
-            
-            scene.addChild(sunSprites[i]);
-            // console.log(sunSprites[i]);
-        }      
-    };
-    // Other items have to be redrawn when an event happens
-    // An event will always start in the view, so it should call functions here which call functions in the Game, and then
-    // query the Game object to figure out how to change how the game looks
-}
 
 
 // --------------------------------
 // View scripts
 // --------------------------------
-
-// Initial setup stuff goes here. This only runs once
-function setup() {
-    buildGameWindow();
-    var gameController = new GameController();
-    gameController.init();
-    console.log("Setup done");
-}
-
-// Render should continuously render the scene
-function render() {
-    renderer.render(scene);
-    requestAnimationFrame(render);
-    // console.log("Rendering");
-}
-
-function GameAssets() {
-    // Asset fields
-    // These are not the same as in Pixi.loader
-    var sunSprite,
-        butterSprite;
-
-    this.init = function () {
-        PIXI.loader
-            .add("image_sun", "assets/artwork/sun.png")
-            .add("butterSprite", "assets/artwork/sun.png")
-            .load(this.populateVars());
-    };
-    
-    this.populateVars = function () {
-        sunSprite = new PIXI.Sprite (PIXI.loader.resources.image_sun.texture);
-        // console.log(sunSprite);
-    };
-    
-    this.getSunSprite = function () {
-        return sunSprite;
-    };
-    
-    this.getButterSprite = function () {
-        return butterSprite;
-    };
-
-}
-
-function buildGameWindow() {
-    renderWindow = document.getElementById("renderWindow");
-    scene = new PIXI.Container();
-    renderer = PIXI.autoDetectRenderer(renderWidth, renderHeight);
-    renderer.backgroundColor = 0x33CCFF; // Set the temporary background color here
-    // add the renderer view element to the DOM. We are going to place it inside our
-    // "renderWindow" div
-    renderWindow.appendChild(renderer.view);
-}
 
 function displayNumberLine(numberline) {
 
