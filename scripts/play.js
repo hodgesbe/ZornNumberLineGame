@@ -24,6 +24,10 @@ var sunPosition = {x: renderWidth - 150,
                    y: 30};
 var housePosition = {x: renderWidth / 2,
                      y: renderHeight / 2};
+var numLineParams = {startX: 0,
+                     startY: renderHeight - 100,
+                     endX: renderWidth,
+                     endY: renderHeight - 100};
 
 // Variables to make our lives easier. Here we create naming convention variables for pixi objects, so that
 // (1), we can type one word instead of 3-5 each time
@@ -31,6 +35,7 @@ var housePosition = {x: renderWidth / 2,
 // in our program.
 var resources = PIXI.loader.resources;
 var loadTexture = PIXI.utils.TextureCache;
+var graphics = PIXI.graphics;
 
 // Our game chain starts by constructing a game controller
 var gameController = new GameController();
@@ -42,11 +47,15 @@ gameController.init();
 // GameController will link the logic and the graphics of the game together
 function GameController() {
     
+    // These variables do not refer to logic inside game, but rather the graphics objects themselves.
     this.zombies = [];
     this.house = "";
     this.sun = "";
-    
+    this.numberLine = "";
     this.game = new Game(this);
+    
+    var game = this.game;
+    
     this.init = function () {
         
         console.log("Initializing game controller and PIXI window.");
@@ -71,12 +80,12 @@ function GameController() {
     
     this.onAssetsLoaded = function () {
         console.log("Assets have been loaded");
-        gameController.onLevelLoaded();
+        game.init();
     };
     
     this.onLevelLoaded = function () {
         console.log("Level logic has been loaded.");
-        var i; 
+        var i;
         
         // STATIC OBJECTS
         this.sun = new PIXI.Sprite(gameAssets.image_sun.texture);
@@ -89,6 +98,8 @@ function GameController() {
         this.house.position.y = housePosition.y;
         this.house.anchor.set(0.5, 0.5); // We want the house centered
         stage.addChild(this.house);
+        
+        displayNumberLine(game.getNumberLine());
         
         console.log("Starting graphics built. Begin rendering!");
         render();
@@ -104,9 +115,8 @@ function Game(gc) {
     this.gameController = gc;
     this.bonus = new Bonus();
     this.hero = new Hero();
+    this.numberLine = ""; // We want to initialize this again every new level
     this.directHits = 0;
-    
-    var game = this;
     
     this.init = function () {
         console.log("Game Logic object initializing.");
@@ -118,13 +128,20 @@ function Game(gc) {
     
     this.buildLevel = function (level) {
         
+        this.numberLine = new NumberLine(level);
+        this.numberLine.init();
+        this.numberLine.printPoints();
         
-        this.gameController.onLevelLoaded();
+        this.gameController.onLevelLoaded(this.numberLine);
     };
     
     this.getBonusController = function () {
         return this.bonus;
     };
+    
+    this.getNumberLine = function () {
+        return this.numberLine;
+    }
 }
 
 // *****************************************************************
@@ -162,23 +179,26 @@ var zombieController = function (level) {
 
 
 // A Point object knows its index as well as the x and y position on the screen to render
-var Point = function Point(index, length) {
+var Point = function Point(value, index, length) {
+    this.value = value;
     this.index = index;
-    this.x = lineWidth / length * index + lineWidth / 2;
-    this.y = renderHeight - lineOffset;
+    this.x = index * (renderWidth / length);
+    this.y = lineOffset;
 };
 
 var NumberLine = function NumberLine(level) {
     // Constructor
     this.level = level;
+    this.points = [];
+    this.start = 0;
+    this.length = 0;
     
-    var points,
-        start,
-        length;
+
     
     this.init = function () {
+        var i;
         // Set size based on level
-        switch (level) {
+        switch (this.level) {
         case 0:
             this.start = -5;
             this.length = 10;
@@ -186,16 +206,16 @@ var NumberLine = function NumberLine(level) {
         }
         
         // Build points
-        var i;
-        for (i = 0; i < length; i += 1) {
-            points[i] = new Point(i, length);
+        for (i = 0; i < this.length; i += 1) {
+            this.points[i] = new Point(this.start + i, i, this.length);
         }
     };
     
     this.printPoints = function () {
+        console.log("Printing points. Length = " + this.length);
         var i;
-        for (i = 0; i < length; i += 1) {
-            console.log(points[i].index);
+        for (i = 0; i < this.length; i += 1) {
+            console.log(this.points[i].index);
         }
     };
 };
@@ -260,14 +280,46 @@ function Bonus(){
 
 }
 
-
-
 // --------------------------------
 // View scripts
 // --------------------------------
 
-function displayNumberLine(numberline) {
-
+function displayNumberLine() {
+    console.log("Displaying the numberline.");
+    var i,
+        line,
+        dash,
+        label,
+        message;
+    
+    var numberLine = gameController.game.numberLine;
+    
+    
+    // First, the line
+    line = new PIXI.Graphics();
+    line.lineStyle(4, 0x000000, 1);
+    line.moveTo(numLineParams.startX, numLineParams.startY);
+    line.lineTo(numLineParams.endX, numLineParams.endY);
+    stage.addChild(line);
+    
+    // Next, each point and label
+    for (i = 0; i < numberLine.length; i++) {
+        console.log("Creating a point!");
+        // Create a point
+        dash = new PIXI.Graphics();
+        dash.beginFill(0x000000)
+        console.log("x: " + numberLine.points[i].x + ", y: " + numberLine.points[i].y);
+        dash.drawRect(numberLine.points[i].x, numberLine.points[i].y, 25, 25);
+        dash.endFill();
+        stage.addChild(dash);
+        
+        // Create a number
+        console.log(numberLine.points[i].value);
+        message = new PIXI.Text(numberLine.points[i].value,
+                               {font: "32px sans-serif", fill: "white"});
+        message.position.set(numberLine.points[i].x, numberLine.points[i].y);
+        stage.addChild(message);
+    }
 }
 
 
