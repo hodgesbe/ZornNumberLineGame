@@ -19,6 +19,11 @@ var renderWidth = 1280;
 var renderHeight = 720;
 var lineOffset = renderHeight - 100;
 var lineWidth = renderWidth - 100;
+var gameAssets;
+var sunPosition = {x: renderWidth - 150,
+                   y: 30};
+var housePosition = {x: renderWidth / 2,
+                     y: renderHeight / 2};
 
 // Variables to make our lives easier. Here we create naming convention variables for pixi objects, so that
 // (1), we can type one word instead of 3-5 each time
@@ -26,15 +31,6 @@ var lineWidth = renderWidth - 100;
 // in our program.
 var resources = PIXI.loader.resources;
 var loadTexture = PIXI.utils.TextureCache;
-
-
-function loadGameAssets() {
-    PIXI.loader
-    .add("image_sun", "assets/artwork/sun.png")
-    .add("image_zombie", '/assets/artwork/zombie8.png')
-    .load(console.log("Loaded"));
-}
-
 
 // Our game chain starts by constructing a game controller
 var gameController = new GameController();
@@ -46,70 +42,59 @@ gameController.init();
 // GameController will link the logic and the graphics of the game together
 function GameController() {
     
-    // Private vars
-    var graphics = new PIXI.Graphics(),
-        game = new Game(this),
-        sunSprites = [];
+    this.zombies = [];
+    this.house = "";
+    this.sun = "";
     
+    this.game = new Game(this);
     this.init = function () {
+        
+        console.log("Initializing game controller and PIXI window.");
 
         htmlWindow = document.getElementById("renderWindow");
         renderer = PIXI.autoDetectRenderer(renderWidth, renderHeight);
         stage = new PIXI.Container();
         
-        // renderer.backgroundColor = 0x33CCFF; 
+        renderer.backgroundColor = 0x33CCFF; 
         htmlWindow.appendChild(renderer.view);
         
         // Load in assets
-        loadGameAssets();
-        
-        // Start the logic model
-        game.init();
+        PIXI.loader
+        .add("image_sun", "/assets/artwork/sun.png")
+        .add("iZombie", "/assets/artwork/zombie8.png")
+        .add("iHouse", "/assets/artwork/house.png")
+        .load(function (loader, resources) {
+            gameAssets = resources;
+            gameController.onAssetsLoaded();
+        });
     };
     
-    this.buildLevel = function () {
-        var suns = game.getBonusController().getSunBonus(),
-            texture,
-            sprite,
-            i;
-        for (i = 0; i < suns; i++) {
-            console.log("Adding a sun");
-            // console.log(gameAssets.getSunSprite());
-            // sunSprites[i] = new PIXI.Sprite.fromImage(resources.image_sun);
-            /**
-            sunSprites[i].position.x = 200;
-            sunSprites[i].position.y = 200;
-            sunSprites[i].width = 200;
-            sunSprites[i].height = 200; 
-            stage.addChild(sunSprites[i]); **/
-            console.log(resources.image_zombie);
-            console.log(resources.image_zombie.url);
-            
-            // var texture = PIXI.Texture.fromImage(resources.image_zombie.texture);
-            texture = loadTexture["image_zombie"];
-            sprite = new PIXI.Sprite(texture);
-            console.log(texture);
-            stage.addChild(sprite);
-        }
-        
-        /**
-        for (i = 0; i < suns; i++) {
-            console.log(sunSprites[i]);
-        } **/
-        
-        this.startLevel();
+    this.onAssetsLoaded = function () {
+        console.log("Assets have been loaded");
+        gameController.onLevelLoaded();
     };
     
-    this.startLevel = function () {
+    this.onLevelLoaded = function () {
+        console.log("Level logic has been loaded.");
+        var i; 
+        
+        // STATIC OBJECTS
+        this.sun = new PIXI.Sprite(gameAssets.image_sun.texture);
+        this.sun.position.x = sunPosition.x;
+        this.sun.position.y = sunPosition.y;
+        stage.addChild(this.sun);
+        
+        this.house = new PIXI.Sprite(gameAssets.iHouse.texture);
+        this.house.position.x = housePosition.x;
+        this.house.position.y = housePosition.y;
+        this.house.anchor.set(0.5, 0.5); // We want the house centered
+        stage.addChild(this.house);
+        
+        console.log("Starting graphics built. Begin rendering!");
         render();
     };
-    // Other items have to be redrawn when an event happens
-    // An event will always start in the view, so it should call functions here which call functions in the Game, and then
-    // query the Game object to figure out how to change how the game looks
 }
 
-
-// Render should continuously render the scene
 function render() {
     // requestAnimationFrame(render);
     renderer.render(stage);
@@ -117,17 +102,16 @@ function render() {
 
 function Game(gc) {
     this.gameController = gc;
+    this.bonus = new Bonus();
+    this.hero = new Hero();
+    this.directHits = 0;
     
-    var game = this,
-        directHits,
-        hero,
-        bonus;
+    var game = this;
     
     this.init = function () {
-        hero = new Hero();
-        hero.init();
-        bonus = new Bonus();
-        bonus.init();
+        console.log("Game Logic object initializing.");
+        this.hero.init();
+        this.bonus.init();
         
         this.buildLevel (0);
     };
@@ -135,11 +119,11 @@ function Game(gc) {
     this.buildLevel = function (level) {
         
         
-        gc.buildLevel();
+        this.gameController.onLevelLoaded();
     };
     
     this.getBonusController = function () {
-        return bonus;
+        return this.bonus;
     };
 }
 
