@@ -19,6 +19,15 @@ var renderWidth = 1280;
 var renderHeight = 720;
 var lineOffset = renderHeight - 100;
 var lineWidth = renderWidth - 100;
+var gameAssets;
+var sunPosition = {x: renderWidth - 150,
+                   y: 30};
+var housePosition = {x: renderWidth / 2,
+                     y: renderHeight / 2};
+var numLineParams = {startX: 0,
+                     startY: renderHeight - 100,
+                     endX: renderWidth,
+                     endY: renderHeight - 100};
 
 // Variables to make our lives easier. Here we create naming convention variables for pixi objects, so that
 // (1), we can type one word instead of 3-5 each time
@@ -26,15 +35,7 @@ var lineWidth = renderWidth - 100;
 // in our program.
 var resources = PIXI.loader.resources;
 var loadTexture = PIXI.utils.TextureCache;
-
-
-function loadGameAssets() {
-    PIXI.loader
-    .add("image_sun", "assets/artwork/sun.png")
-    .add("image_zombie", '/assets/artwork/zombie8.png')
-    .load(console.log("Loaded"));
-}
-
+var graphics = PIXI.graphics;
 
 // Our game chain starts by constructing a game controller
 var gameController = new GameController();
@@ -46,70 +47,65 @@ gameController.init();
 // GameController will link the logic and the graphics of the game together
 function GameController() {
     
-    // Private vars
-    var graphics = new PIXI.Graphics(),
-        game = new Game(this),
-        sunSprites = [];
+    // These variables do not refer to logic inside game, but rather the graphics objects themselves.
+    this.zombies = [];
+    this.house = "";
+    this.sun = "";
+    this.numberLine = "";
+    this.game = new Game(this);
+    
+    var game = this.game;
     
     this.init = function () {
+        
+        console.log("Initializing game controller and PIXI window.");
 
         htmlWindow = document.getElementById("renderWindow");
         renderer = PIXI.autoDetectRenderer(renderWidth, renderHeight);
         stage = new PIXI.Container();
         
-        // renderer.backgroundColor = 0x33CCFF; 
+        renderer.backgroundColor = 0x33CCFF; 
         htmlWindow.appendChild(renderer.view);
         
         // Load in assets
-        loadGameAssets();
-        
-        // Start the logic model
+        PIXI.loader
+        .add("image_sun", "/assets/artwork/sun.png")
+        .add("iZombie", "/assets/artwork/zombie8.png")
+        .add("iHouse", "/assets/artwork/house.png")
+        .load(function (loader, resources) {
+            gameAssets = resources;
+            gameController.onAssetsLoaded();
+        });
+    };
+    
+    this.onAssetsLoaded = function () {
+        console.log("Assets have been loaded");
         game.init();
     };
     
-    this.buildLevel = function () {
-        var suns = game.getBonusController().getSunBonus(),
-            texture,
-            sprite,
-            i;
-        for (i = 0; i < suns; i++) {
-            console.log("Adding a sun");
-            // console.log(gameAssets.getSunSprite());
-            // sunSprites[i] = new PIXI.Sprite.fromImage(resources.image_sun);
-            /**
-            sunSprites[i].position.x = 200;
-            sunSprites[i].position.y = 200;
-            sunSprites[i].width = 200;
-            sunSprites[i].height = 200; 
-            stage.addChild(sunSprites[i]); **/
-            console.log(resources.image_zombie);
-            console.log(resources.image_zombie.url);
-            
-            // var texture = PIXI.Texture.fromImage(resources.image_zombie.texture);
-            texture = loadTexture["image_zombie"];
-            sprite = new PIXI.Sprite(texture);
-            console.log(texture);
-            stage.addChild(sprite);
-        }
+    this.onLevelLoaded = function () {
+        console.log("Level logic has been loaded.");
+        var i;
         
-        /**
-        for (i = 0; i < suns; i++) {
-            console.log(sunSprites[i]);
-        } **/
+        // STATIC OBJECTS
+        this.sun = new PIXI.Sprite(gameAssets.image_sun.texture);
+        this.sun.position.x = sunPosition.x;
+        this.sun.position.y = sunPosition.y;
+        stage.addChild(this.sun);
         
-        this.startLevel();
-    };
-    
-    this.startLevel = function () {
+        this.house = new PIXI.Sprite(gameAssets.iHouse.texture);
+        this.house.position.x = housePosition.x;
+        this.house.position.y = housePosition.y;
+        this.house.anchor.set(0.5, 0.5); // We want the house centered
+        stage.addChild(this.house);
+        
+        displayNumberLine(game.getNumberLine());
+        
+        console.log("Starting graphics built. Begin rendering!");
         render();
     };
-    // Other items have to be redrawn when an event happens
-    // An event will always start in the view, so it should call functions here which call functions in the Game, and then
-    // query the Game object to figure out how to change how the game looks
 }
 
-
-// Render should continuously render the scene
 function render() {
     // requestAnimationFrame(render);
     renderer.render(stage);
@@ -117,30 +113,35 @@ function render() {
 
 function Game(gc) {
     this.gameController = gc;
-    
-    var game = this,
-        directHits,
-        hero,
-        bonus;
+    this.bonus = new Bonus();
+    this.hero = new Hero();
+    this.numberLine = ""; // We want to initialize this again every new level
+    this.directHits = 0;
     
     this.init = function () {
-        hero = new Hero();
-        hero.init();
-        bonus = new Bonus();
-        bonus.init();
+        console.log("Game Logic object initializing.");
+        this.hero.init();
+        this.bonus.init();
         
         this.buildLevel (0);
     };
     
     this.buildLevel = function (level) {
         
+        this.numberLine = new NumberLine(level);
+        this.numberLine.init();
+        this.numberLine.printPoints();
         
-        gc.buildLevel();
+        this.gameController.onLevelLoaded(this.numberLine);
     };
     
     this.getBonusController = function () {
-        return bonus;
+        return this.bonus;
     };
+    
+    this.getNumberLine = function () {
+        return this.numberLine;
+    }
 }
 
 // *****************************************************************
@@ -178,23 +179,26 @@ var zombieController = function (level) {
 
 
 // A Point object knows its index as well as the x and y position on the screen to render
-var Point = function Point(index, length) {
+var Point = function Point(value, index, length) {
+    this.value = value;
     this.index = index;
-    this.x = lineWidth / length * index + lineWidth / 2;
-    this.y = renderHeight - lineOffset;
+    this.x = index * (renderWidth / length);
+    this.y = lineOffset;
 };
 
 var NumberLine = function NumberLine(level) {
     // Constructor
     this.level = level;
+    this.points = [];
+    this.start = 0;
+    this.length = 0;
     
-    var points,
-        start,
-        length;
+
     
     this.init = function () {
+        var i;
         // Set size based on level
-        switch (level) {
+        switch (this.level) {
         case 0:
             this.start = -5;
             this.length = 10;
@@ -202,16 +206,16 @@ var NumberLine = function NumberLine(level) {
         }
         
         // Build points
-        var i;
-        for (i = 0; i < length; i += 1) {
-            points[i] = new Point(i, length);
+        for (i = 0; i < this.length; i += 1) {
+            this.points[i] = new Point(this.start + i, i, this.length);
         }
     };
     
     this.printPoints = function () {
+        console.log("Printing points. Length = " + this.length);
         var i;
-        for (i = 0; i < length; i += 1) {
-            console.log(points[i].index);
+        for (i = 0; i < this.length; i += 1) {
+            console.log(this.points[i].index);
         }
     };
 };
@@ -276,70 +280,46 @@ function Bonus(){
 
 }
 
-//Creates a fruit object with a getter method
-var Fruit = function Fruit (fruitValue){
-    //Constructor
-    this.fruitValue = fruitValue;
-        
-    //returns the value of this fruit
-    this.getFruitValue = function (){
-        return fruitValue;
-    };
-};
-
-var FruitBucket = function FruitBucket(level){
-    this.level = level;
-    
-    var fruitValues, //array of fruit values for level
-        fruitTarget, //target sum of all fruit values        
-        fruitMin, //minimum number of all fruit needed for level
-        possibleValues, //array of values for fruit
-        fruit; //array of fruit objects
-        
-        
-    this.init = function (){
-        fruitValues = [];
-        switch (level) {
-            case 0:            
-                fruitTarget = 42;
-                fruitMin = 30;
-                possibleValues = [1,1,1,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,5];
-                break;
-        }
-        //continue picking fruit until number is larger than minimum number of fruit for level
-        while (fruitValues.length < fruitMin){
-            //reset fruit sum and list of fruit values
-            var fruitSum = 0,
-                index,
-                fruitValue; 
-            fruitValues = [];             
-            //pick fruit values up to Max value
-            while (fruitSum < fruitTarget){
-                index = Math.floor(Math.random*this.fruitValues.length);
-                fruitValue = possibleValues[index];
-                //add positive and negative fruit values to fruit values
-                fruitValues.push(fruitValue); 
-                fruitValues.push(-fruitValue); 
-                fruitSum += fruitValue;                
-            }            
-        }
-        //add fruit objects using value array
-        var i;
-        for (i=0; i<fruitValues.length; i++){
-            fruit[i] = new Fruit (fruitValues[i]);
-        }
-    };
-};
-
-
-
-
 // --------------------------------
 // View scripts
 // --------------------------------
 
-function displayNumberLine(numberline) {
-
+function displayNumberLine() {
+    console.log("Displaying the numberline.");
+    var i,
+        line,
+        dash,
+        label,
+        message;
+    
+    var numberLine = gameController.game.numberLine;
+    
+    
+    // First, the line
+    line = new PIXI.Graphics();
+    line.lineStyle(4, 0x000000, 1);
+    line.moveTo(numLineParams.startX, numLineParams.startY);
+    line.lineTo(numLineParams.endX, numLineParams.endY);
+    stage.addChild(line);
+    
+    // Next, each point and label
+    for (i = 0; i < numberLine.length; i++) {
+        console.log("Creating a point!");
+        // Create a point
+        dash = new PIXI.Graphics();
+        dash.beginFill(0x000000)
+        console.log("x: " + numberLine.points[i].x + ", y: " + numberLine.points[i].y);
+        dash.drawRect(numberLine.points[i].x, numberLine.points[i].y, 25, 25);
+        dash.endFill();
+        stage.addChild(dash);
+        
+        // Create a number
+        console.log(numberLine.points[i].value);
+        message = new PIXI.Text(numberLine.points[i].value,
+                               {font: "32px sans-serif", fill: "white"});
+        message.position.set(numberLine.points[i].x, numberLine.points[i].y);
+        stage.addChild(message);
+    }
 }
 
 
