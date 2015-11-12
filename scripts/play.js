@@ -276,6 +276,62 @@ function Bonus(){
 
 }
 
+//Creates a fruit object with a getter method
+var Fruit = function Fruit (fruitValue){
+    //Constructor
+    this.fruitValue = fruitValue;
+        
+    //returns the value of this fruit
+    this.getFruitValue = function (){
+        return fruitValue;
+    };
+};
+
+var FruitBucket = function FruitBucket(level){
+    this.level = level;
+    
+    var fruitValues, //array of fruit values for level
+        fruitTarget, //target sum of all fruit values        
+        fruitMin, //minimum number of all fruit needed for level
+        possibleValues, //array of values for fruit
+        fruit; //array of fruit objects
+        
+        
+    this.init = function (){
+        fruitValues = [];
+        switch (level) {
+            case 0:            
+                fruitTarget = 42;
+                fruitMin = 30;
+                possibleValues = [1,1,1,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,5];
+                break;
+        }
+        //continue picking fruit until number is larger than minimum number of fruit for level
+        while (fruitValues.length < fruitMin){
+            //reset fruit sum and list of fruit values
+            var fruitSum = 0,
+                index,
+                fruitValue; 
+            fruitValues = [];             
+            //pick fruit values up to Max value
+            while (fruitSum < fruitTarget){
+                index = Math.floor(Math.random*this.fruitValues.length);
+                fruitValue = possibleValues[index];
+                //add positive and negative fruit values to fruit values
+                fruitValues.push(fruitValue); 
+                fruitValues.push(-fruitValue); 
+                fruitSum += fruitValue;                
+            }            
+        }
+        //add fruit objects using value array
+        var i;
+        for (i=0; i<fruitValues.length; i++){
+            fruit[i] = new Fruit (fruitValues[i]);
+        }
+    };
+};
+
+
 
 
 // --------------------------------
