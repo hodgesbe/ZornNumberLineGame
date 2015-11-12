@@ -69,9 +69,9 @@ function GameController() {
         
         // Load in assets
         PIXI.loader
-        .add("image_sun", "/assets/artwork/sun.png")
-        .add("iZombie", "/assets/artwork/zombie8.png")
-        .add("iHouse", "/assets/artwork/house.png")
+        .add("image_sun", "assets/artwork/sun.png")
+        .add("iZombie", "assets/artwork/zombie8.png")
+        .add("iHouse", "assets/artwork/house.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
