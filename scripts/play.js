@@ -154,6 +154,26 @@ var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
     this.target = indexOfTarget;
     this.location = indexOfStart;
 
+    this.move = function(){
+        //  Check if bonus in effect
+        if(!bonusInEffec???){
+            //  //  update location
+            if(this.target < this.location){
+                this.location--;
+            }
+            else{ this.location++;}
+
+            //  Check for hero hit
+            if(this.location == this.target) {
+                //  Call hero hit routing
+                //  TIE IN ???
+            }
+            //  update sprite drawing
+            // WHO DO I ADDRESS ???
+            //
+        }
+
+    }
 };
 
 
@@ -167,10 +187,20 @@ var zombieController = function (level) {
     this.range = range;
     this.count = count;
     this.zombieArray = {};
+
+    for(var i = 0; i < count; i++){
+        this.zombieArray.push(zombie(i, 1, 1, 5, 10));
+    }
     /**
-    for (var zombies in this.count){
+     for (var zombies in this.count){
         // this.zombieArray.push(zombie(zombies, ));
     } **/
+
+    var updateZombies = function () {
+        for(var zombies in this.zombieArray){
+            zombies.move();
+        }
+    }
 };
 
 // --------------------------------
