@@ -154,9 +154,16 @@ var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
     this.target = indexOfTarget;
     this.location = indexOfStart;
 
+    this.hit = function(){
+        this.health--;
+        if(this.health == 0){
+            //  destroy this zombie
+        }
+    }
     this.move = function(){
         //  Check if bonus in effect
-        if(!bonusInEffec???){
+        var bonusInEffect = false;
+        if(!bonusInEffect){
             //  //  update location
             if(this.target < this.location){
                 this.location--;
