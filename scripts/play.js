@@ -117,6 +117,7 @@ function Game(gc) {
     this.hero = new Hero();
     this.numberLine = ""; // We want to initialize this again every new level
     this.directHits = 0;
+    this.fruitBucket = "";
     
     this.init = function () {
         console.log("Game Logic object initializing.");
@@ -131,6 +132,8 @@ function Game(gc) {
         this.numberLine = new NumberLine(level);
         this.numberLine.init();
         this.numberLine.printPoints();
+        this.fruitBucket = new FruitBucket(level);
+        this.fruitBucket.init();
         
         this.gameController.onLevelLoaded(this.numberLine);
     };
@@ -141,7 +144,7 @@ function Game(gc) {
     
     this.getNumberLine = function () {
         return this.numberLine;
-    }
+    };
 }
 
 // *****************************************************************
@@ -156,10 +159,10 @@ var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
 
     this.hit = function(){
         this.health--;
-        if(this.health == 0){
+        if(this.health === 0){
             //  destroy this zombie
         }
-    }
+    };
     this.move = function(){
         //  Check if bonus in effect
         var bonusInEffect = false;
@@ -171,7 +174,7 @@ var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
             else{ this.location++;}
 
             //  Check for hero hit
-            if(this.location == this.target) {
+            if(this.location === this.target) {
                 //  Call hero hit routing
                 //  TIE IN ???
             }
@@ -180,7 +183,7 @@ var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
             //
         }
 
-    }
+    };
 };
 
 
@@ -189,25 +192,27 @@ var zombieController = function (level) {
         {"levelNum": 1, "levelName": "Level 1", "levelRange": 20, "zombieCount": 2},
         {"levelNum": 2, "levelName": "Level 2", "levelRange": 15, "zombieCount": 4},
         {"levelNum": 3, "levelName": "Level 3", "levelRange": 10, "zombieCount": 6}
-    ]};
+        ]},
+        i,
+        zombies;
     this.level = level;
     this.range = range;
     this.count = count;
     this.zombieArray = {};
 
-    for(var i = 0; i < count; i++){
+    for(i = 0; i < count; i++){
         this.zombieArray.push(zombie(i, 1, 1, 5, 10));
     }
     /**
      for (var zombies in this.count){
         // this.zombieArray.push(zombie(zombies, ));
-    } **/
+    } 
 
     var updateZombies = function () {
-        for(var zombies in this.zombieArray){
+        for(zombies of this.zombieArray){
             zombies.move();
         }
-    }
+    };**/
 };
 
 // --------------------------------
@@ -249,8 +254,8 @@ var NumberLine = function NumberLine(level) {
     };
     
     this.printPoints = function () {
-        console.log("Printing points. Length = " + this.length);
         var i;
+        console.log("Printing points. Length = " + this.length);
         for (i = 0; i < this.length; i += 1) {
             console.log(this.points[i].index);
         }
@@ -317,6 +322,64 @@ function Bonus(){
 
 }
 
+//Creates a fruit object with a getter method
+var Fruit = function Fruit (fruitValue){
+    //Constructor
+    this.fruitValue = fruitValue;
+        
+    //returns the value of this fruit
+    this.getFruitValue = function (){
+        return fruitValue;
+    };
+};
+
+var FruitBucket = function FruitBucket(level){
+    this.level = level;
+    this.fruit = []; //array of fruit objects
+    
+    var fruitValues, //array of fruit values for level
+        fruitTarget, //target sum of all fruit values        
+        fruitMin, //minimum number of all fruit needed for level
+        possibleValues = []; //array of values for fruit
+         
+        
+        
+    this.init = function (){
+        console.log("Creating a fruit bucket");
+        fruitValues = [];
+        switch (level) {
+            case 0:            
+                fruitTarget = 42;
+                fruitMin = 30;
+                possibleValues = [1,1,1,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,5];
+                break;
+        }
+        //continue picking fruit until number is larger than minimum number of fruit for level
+        while (fruitValues.length < fruitMin){
+            console.log(possibleValues.length);
+            //reset fruit sum and list of fruit values
+            var fruitSum = 0,
+                index,
+                fruitValue; 
+            fruitValues = [];             
+            //pick fruit values up to Max value
+            while (fruitSum < fruitTarget){
+                index = Math.floor(Math.random()*possibleValues.length);
+                fruitValue = possibleValues[index];
+                //add positive and negative fruit values to fruit values
+                fruitValues.push(fruitValue); 
+                fruitValues.push(-fruitValue); 
+                fruitSum += fruitValue;  
+            }            
+        }
+        //add fruit objects using value array
+        var i;
+        for (i=0; i<fruitValues.length; i++){
+            this.fruit[i] = new Fruit (fruitValues[i]);
+        }
+    };
+};
+
 // --------------------------------
 // View scripts
 // --------------------------------
@@ -344,7 +407,7 @@ function displayNumberLine() {
         console.log("Creating a point!");
         // Create a point
         dash = new PIXI.Graphics();
-        dash.beginFill(0x000000)
+        dash.beginFill(0x000000);
         console.log("x: " + numberLine.points[i].x + ", y: " + numberLine.points[i].y);
         dash.drawRect(numberLine.points[i].x, numberLine.points[i].y, 25, 25);
         dash.endFill();
