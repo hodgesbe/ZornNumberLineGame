@@ -8,6 +8,9 @@
 // We need to let JSLint know about PIXI definitions (to avoid PIXI was used before it was defined, etc)
 /*global PIXI, requestAnimationFrame */
 
+//This tells jslint to f off on reporting increment warnings
+/*jslint plusplus: true */
+
 // -------------------------------------------------
 // Full Scope Variables (not function-specific)
 // The scene itself, and positioning of the objects in the scene
@@ -131,9 +134,9 @@ function Game(gc) {
         
         this.numberLine = new NumberLine(level);
         this.numberLine.init();
-        this.numberLine.printPoints();
-        this.fruitBucket = new FruitBucket(level);
-        this.fruitBucket.init();
+        //this.numberLine.printPoints(); //prints value of each point in console log
+        this.fruitBin = new FruitBin(level);
+        this.fruitBin.init();
         
         this.gameController.onLevelLoaded(this.numberLine);
     };
@@ -204,7 +207,7 @@ var zombieController = function (level) {
         this.zombieArray.push(zombie(i, 1, 1, 5, 10));
     }
     /**
-     for (var zombies in this.count){
+     for (var zombies of this.count){
         // this.zombieArray.push(zombie(zombies, ));
     } 
 
@@ -234,9 +237,7 @@ var NumberLine = function NumberLine(level) {
     this.points = [];
     this.start = 0;
     this.length = 0;
-    
-
-    
+        
     this.init = function () {
         var i;
         // Set size based on level
@@ -265,59 +266,58 @@ var NumberLine = function NumberLine(level) {
 //Hero Object
 function Hero() {
 
-    var health;
-
     //Creates a new Hero object with full health
     this.init = function () {
-        health = 100;
+        this.health = 100;
+        console.log("Current Hero health: " + this.health);
     };
 
     //default damage (decrements by 5)
     this.takeDamage = function () {
-        health = health - 5;
+        this.health = this.health - 5;
+        console.log("Current Hero health: " + this.health);
     };
 
     //decreases hero health by amount passed to function as int
     this.takeDamage = function (amountToDecrease) {
-        health = health-amountToDecrease;
+        this.health = this.health - amountToDecrease;
+        console.log("Current Hero health: " + this.health);
     };
 
     //returns hero health
     this.returnHealth = function(){
-        return health;
+        return this.health;
     };
 }
 
 //Creates Bonus Objects with getter and setter methods
 function Bonus(){
-    var sunValues,
-        butterValues;
 
     //creates bonus object with empty sun and butter values
     this.init = function(){
-        sunValues = 2;
-        butterValues =0;
-        console.log("Bonus init. Sun: " + sunValues + ", " + butterValues + ".");
+        this.sunValues = 2;
+        this.butterValues =0;
+        console.log("Bonus init. Sun: " + this.sunValues + ", Butter:" + this.butterValues + ".");
     };
 
     //adds butter bonus value. Takes an int for added bonus
     this.addButterBonus = function(butterAdded){
-      butterValues = butterAdded;
+      this.butterValues = butterAdded;
     };
 
     //adds sun bonus value. Takes an int for added bonus
     this.addSunBonus = function(sunAdded){
-        sunValues = sunAdded;
+        this.sunValues = sunAdded;
     };
 
     //returns the amount of butter bonuses
     this.getButterBonus = function(){
-      return butterValues;
+      return this.butterValues;
     };
 
     //returns the amount of sun bonuses
     this.getSunBonus = function(){
-        return sunValues;
+        return this.sunValues;
     };
 
 }
@@ -329,23 +329,24 @@ var Fruit = function Fruit (fruitValue){
         
     //returns the value of this fruit
     this.getFruitValue = function (){
-        return fruitValue;
+        return this.fruitValue;
     };
 };
 
-var FruitBucket = function FruitBucket(level){
+var FruitBin = function FruitBin(level){
     this.level = level;
-    this.fruit = []; //array of fruit objects
+    this.fruitBin = []; //array of fruit objects
     
     var fruitValues, //array of fruit values for level
         fruitTarget, //target sum of all fruit values        
         fruitMin, //minimum number of all fruit needed for level
-        possibleValues = []; //array of values for fruit
+        possibleValues = [], //array of values for fruit
+        i; //index for iteration
          
         
         
     this.init = function (){
-        console.log("Creating a fruit bucket");
+        console.log("Creating a fruit bin");
         fruitValues = [];
         switch (level) {
             case 0:            
@@ -356,7 +357,6 @@ var FruitBucket = function FruitBucket(level){
         }
         //continue picking fruit until number is larger than minimum number of fruit for level
         while (fruitValues.length < fruitMin){
-            console.log(possibleValues.length);
             //reset fruit sum and list of fruit values
             var fruitSum = 0,
                 index,
@@ -373,10 +373,14 @@ var FruitBucket = function FruitBucket(level){
             }            
         }
         //add fruit objects using value array
-        var i;
         for (i=0; i<fruitValues.length; i++){
-            this.fruit[i] = new Fruit (fruitValues[i]);
+            this.fruitBin[i] = new Fruit (fruitValues[i]);
         }
+    };
+  
+    
+    this.getFruit = function (){
+        return this.fruitBin;
     };
 };
 
@@ -390,9 +394,8 @@ function displayNumberLine() {
         line,
         dash,
         label,
-        message;
-    
-    var numberLine = gameController.game.numberLine;
+        message,
+        numberLine = gameController.game.numberLine;
     
     
     // First, the line
@@ -408,13 +411,13 @@ function displayNumberLine() {
         // Create a point
         dash = new PIXI.Graphics();
         dash.beginFill(0x000000);
-        console.log("x: " + numberLine.points[i].x + ", y: " + numberLine.points[i].y);
+        //console.log("x: " + numberLine.points[i].x + ", y: " + numberLine.points[i].y);
         dash.drawRect(numberLine.points[i].x, numberLine.points[i].y, 25, 25);
         dash.endFill();
         stage.addChild(dash);
         
         // Create a number
-        console.log(numberLine.points[i].value);
+        //console.log(numberLine.points[i].value);
         message = new PIXI.Text(numberLine.points[i].value,
                                {font: "32px sans-serif", fill: "white"});
         message.position.set(numberLine.points[i].x, numberLine.points[i].y);
