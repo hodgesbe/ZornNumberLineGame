@@ -18,7 +18,7 @@
 var htmlWindow; // This will be the render window
 var stage; // The container for PIXI.JS, also called "stage" by a lot of documentation
 var renderer; // Will create either a Canvas or WebGL renderer depending on the user's computer
-var renderWidth = 1280;
+var renderWidth = 1024;
 var renderHeight = 720;
 var lineOffset = renderHeight - 100;
 var lineWidth = renderWidth - 100;
@@ -93,7 +93,7 @@ function GameController() {
         .add("staticBG", "assets/artwork/staticBG.png")
         .add("image_sun", "assets/artwork/sun.png")
         .add("iZombie", "assets/artwork/zombie8.png")
-        .add("iHouse", "assets/artwork/house.png")
+        //.add("iHouse", "assets/artwork/house.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -128,11 +128,11 @@ function GameController() {
         this.sun.position.y = sunPosition.y;
         stage.addChild(this.sun);
         
-        this.house = new PIXI.Sprite(gameAssets.iHouse.texture);
-        this.house.position.x = housePosition.x;
-        this.house.position.y = housePosition.y;
-        this.house.anchor.set(0.5, 0.5); // We want the house centered
-        stage.addChild(this.house);
+        //this.house = new PIXI.Sprite(gameAssets.iHouse.texture);
+        //this.house.position.x = housePosition.x;
+        //this.house.position.y = housePosition.y;
+        //this.house.anchor.set(0.5, 0.5); // We want the house centered
+        //stage.addChild(this.house);
         
         displayNumberLine(game.getNumberLine());
         
