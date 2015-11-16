@@ -23,6 +23,22 @@ var renderHeight = 720;
 var lineOffset = renderHeight - 100;
 var lineWidth = renderWidth - 100;
 var gameAssets;
+
+//  Graphic Items coordinates as JSON array object.
+var itemAreas;
+itemAreas = {
+    "areas": [
+        {"item": "background", "_x": 0, "_y": 0, "width": 1024, "height": 768},
+        {"item": "tree1", "_x": 70, "_y": 330, "width": 200, "height": 160},
+        {"item": "tree2", "_x": 770, "_y": 330, "width": 200, "height": 160},
+        {"item": "basket1", "_x": 380, "_y": 360, "width": 80, "height": 80},
+        {"item": "basket2", "_x": 600, "_y": 360, "width": 80, "height": 80},
+        {"item": "sidewalk", "_x": 0, "_y": 642, "width": 1024, "height": 30},
+        //  Maybe we can move the position parameters in here to keep it cleaner
+        {"item": "sun", "_x": renderWidth -150, "_y": 30, "width": 50, "height": 50}
+    ]
+};
+
 var sunPosition = {x: renderWidth - 150,
                    y: 30};
 var housePosition = {x: renderWidth / 2,
@@ -44,18 +60,7 @@ var graphics = PIXI.graphics;
 var gameController = new GameController();
 gameController.init();
 
-//  Graphic Items coordinates as JSON array object.
-var itemsAreasCoordinates;
-itemsAreasCoordinates = {
-    "areas": [
-        {"item": "tree1", "_x": 70, "_y": 330, "width": 200, "height": 160},
-        {"item": "tree2", "_x": 770, "_y": 330, "width": 200, "height": 160},
-        {"item": "basket1", "_x": 380, "_y": 360, "width": 80, "height": 80},
-        {"item": "basket2", "_x": 600, "_y": 360, "width": 80, "height": 80},
-        {"item": "sidewalk", "_x": 0, "_y": 642, "width": 1024, "height": 30}
 
-    ]
-};
 
 // ---------------------------------
 // Controller
@@ -85,6 +90,7 @@ function GameController() {
         
         // Load in assets
         PIXI.loader
+        .add("staticBG", "assets/artwork/staticBG.png")
         .add("image_sun", "assets/artwork/sun.png")
         .add("iZombie", "assets/artwork/zombie8.png")
         .add("iHouse", "assets/artwork/house.png")
@@ -104,6 +110,19 @@ function GameController() {
         var i;
         
         // STATIC OBJECTS
+
+//  THERE'S GOT TO BE A BETTER WAY TO ADDRESS THE json OBJECT, BUT I'M AT A LOSS FOR NOW, WILL REVISIT
+        /*itemAreas = {
+            "areas": [
+                {"item": "background", "_x": 0, "_y": 0, "width": 1024, "height": 768},*/
+        this.staticBG = new PIXI.Sprite(gameAssets.staticBG.texture);
+        //this.staticBG.position.x = itemAreas.areas['item.background']._x;
+        //this.staticBG.position.y = itemAreas.areas['item.background']._y;
+        this.staticBG.position.x = itemAreas.areas[0]._x;
+        this.staticBG.position.y = itemAreas.areas[0]._y;
+
+        stage.addChild(this.staticBG);
+
         this.sun = new PIXI.Sprite(gameAssets.image_sun.texture);
         this.sun.position.x = sunPosition.x;
         this.sun.position.y = sunPosition.y;
