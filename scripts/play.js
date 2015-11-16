@@ -41,8 +41,8 @@ itemAreas = {
 
 var sunPosition = {x: renderWidth - 150,
                    y: 30};
-var housePosition = {x: renderWidth / 2,
-                     y: renderHeight / 2};
+//var housePosition = {x: renderWidth / 2,
+//                     y: renderHeight / 2};
 var numLineParams = {startX: 0,
                      startY: renderHeight - 100,
                      endX: renderWidth,
@@ -70,7 +70,7 @@ function GameController() {
     
     // These variables do not refer to logic inside game, but rather the graphics objects themselves.
     this.zombies = [];
-    this.house = "";
+//  this.house = "";
     this.sun = "";
     this.numberLine = "";
     this.game = new Game(this);
@@ -93,7 +93,7 @@ function GameController() {
         .add("staticBG", "assets/artwork/staticBG.png")
         .add("image_sun", "assets/artwork/sun.png")
         .add("iZombie", "assets/artwork/zombie8.png")
-        //.add("iHouse", "assets/artwork/house.png")
+//.add("iHouse", "assets/artwork/house.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -120,7 +120,6 @@ function GameController() {
         //this.staticBG.position.y = itemAreas.areas['item.background']._y;
         this.staticBG.position.x = itemAreas.areas[0]._x;
         this.staticBG.position.y = itemAreas.areas[0]._y;
-
         stage.addChild(this.staticBG);
 
         this.sun = new PIXI.Sprite(gameAssets.image_sun.texture);
@@ -128,11 +127,11 @@ function GameController() {
         this.sun.position.y = sunPosition.y;
         stage.addChild(this.sun);
         
-        //this.house = new PIXI.Sprite(gameAssets.iHouse.texture);
-        //this.house.position.x = housePosition.x;
-        //this.house.position.y = housePosition.y;
-        //this.house.anchor.set(0.5, 0.5); // We want the house centered
-        //stage.addChild(this.house);
+//this.house = new PIXI.Sprite(gameAssets.iHouse.texture);
+//this.house.position.x = housePosition.x;
+//this.house.position.y = housePosition.y;
+//this.house.anchor.set(0.5, 0.5); // We want the house centered
+//stage.addChild(this.house);
         
         displayNumberLine(game.getNumberLine());
         
