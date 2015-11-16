@@ -44,6 +44,19 @@ var graphics = PIXI.graphics;
 var gameController = new GameController();
 gameController.init();
 
+//  Graphic Items coordinates as JSON array object.
+var itemsAreasCoordinates;
+itemsAreasCoordinates = {
+    "areas": [
+        {"item": "tree1", "_x": 70, "_y": 330, "width": 200, "height": 160},
+        {"item": "tree2", "_x": 770, "_y": 330, "width": 200, "height": 160},
+        {"item": "basket1", "_x": 380, "_y": 360, "width": 80, "height": 80},
+        {"item": "basket2", "_x": 600, "_y": 360, "width": 80, "height": 80},
+        {"item": "sidewalk", "_x": 0, "_y": 642, "width": 1024, "height": 30}
+
+    ]
+};
+
 // ---------------------------------
 // Controller
 // ---------------------------------
