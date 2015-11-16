@@ -23,6 +23,7 @@ var renderHeight = 720;
 var lineOffset = renderHeight - 100;
 var lineWidth = renderWidth - 100;
 var gameAssets;
+var level; //Current level of game
 var sunPosition = {x: renderWidth - 150,
                    y: 30};
 var housePosition = {x: renderWidth / 2,
@@ -53,7 +54,6 @@ itemsAreasCoordinates = {
         {"item": "basket1", "_x": 380, "_y": 360, "width": 80, "height": 80},
         {"item": "basket2", "_x": 600, "_y": 360, "width": 80, "height": 80},
         {"item": "sidewalk", "_x": 0, "_y": 642, "width": 1024, "height": 30}
-
     ]
 };
 
@@ -70,6 +70,7 @@ function GameController() {
     this.numberLine = "";
     this.game = new Game(this);
     
+    //Alias
     var game = this.game;
     
     this.init = function () {
@@ -140,15 +141,15 @@ function Game(gc) {
         this.hero.init();
         this.bonus.init();
         
-        this.buildLevel (0);
+        this.buildLevel ();
     };
     
-    this.buildLevel = function (level) {
+    this.buildLevel = function () {
         
-        this.numberLine = new NumberLine(level);
+        this.numberLine = new NumberLine();
         this.numberLine.init();
         //this.numberLine.printPoints(); //prints value of each point in console log
-        this.fruitBin = new FruitBin(level);
+        this.fruitBin = new FruitBin();
         this.fruitBin.init();
         
         this.gameController.onLevelLoaded(this.numberLine);
@@ -203,7 +204,7 @@ var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
 };
 
 
-var zombieController = function (level) {
+var zombieController = function () {
     var gameLevels = {"levels": [
         {"levelNum": 1, "levelName": "Level 1", "levelRange": 20, "zombieCount": 2},
         {"levelNum": 2, "levelName": "Level 2", "levelRange": 15, "zombieCount": 4},
@@ -211,7 +212,6 @@ var zombieController = function (level) {
         ]},
         i,
         zombies;
-    this.level = level;
     this.range = range;
     this.count = count;
     this.zombieArray = {};
@@ -244,9 +244,8 @@ var Point = function Point(value, index, length) {
     this.y = lineOffset;
 };
 
-var NumberLine = function NumberLine(level) {
+var NumberLine = function NumberLine() {
     // Constructor
-    this.level = level;
     this.points = [];
     this.start = 0;
     this.length = 0;
@@ -254,7 +253,7 @@ var NumberLine = function NumberLine(level) {
     this.init = function () {
         var i;
         // Set size based on level
-        switch (this.level) {
+        switch (level) {
         case 0:
             this.start = -5;
             this.length = 10;
@@ -346,8 +345,7 @@ var Fruit = function Fruit (fruitValue){
     };
 };
 
-var FruitBin = function FruitBin(level){
-    this.level = level;
+var FruitBin = function FruitBin(){
     this.fruitBin = []; //array of fruit objects
     
     var fruitValues, //array of fruit values for level
@@ -355,9 +353,7 @@ var FruitBin = function FruitBin(level){
         fruitMin, //minimum number of all fruit needed for level
         possibleValues = [], //array of values for fruit
         i; //index for iteration
-         
-        
-        
+                         
     this.init = function (){
         console.log("Creating a fruit bin");
         fruitValues = [];
