@@ -15,13 +15,13 @@
 // Full Scope Variables (not function-specific)
 // The scene itself, and positioning of the objects in the scene
 // -------------------------------------------------
-var htmlWindow; // This will be the render window
-var stage; // The container for PIXI.JS, also called "stage" by a lot of documentation
-var renderer; // Will create either a Canvas or WebGL renderer depending on the user's computer
+var htmlWindow;             // This will be the render window
+var stage;                  // The container for PIXI.JS, also called "stage" by a lot of documentation
+var renderer;               // Will create either a Canvas or WebGL renderer depending on the user's computer
 var renderWidth = 1024;
 var renderHeight = 720;
-var gameAssets;
-var level; //Current level of game
+var gameAssets;             // Contains references to our game's loaded assets
+var level;                  // Current level of game
 
 //  Graphic Items coordinates as JSON array object.
 var itemAreas;
@@ -32,7 +32,9 @@ itemAreas = {
     "basket1": {"_x": 380, "_y": 360, "width": 80, "height": 80},
     "basket2": {"_x": 600, "_y": 360, "width": 80, "height": 80},
     "sidewalk": {"_x": 0, "_y": 642, "width": 1024, "height": 30},
-    "sun": {"_x": renderWidth -150, "_y": 30, "width": 50, "height": 50}
+    "sun": {"_x": renderWidth -150, "_y": 30, "width": 50, "height": 50},
+    "zombieCounter": {"x": 0, "y": 0, "width": renderWidth / 4, "height": 100},
+    "bonusCounter": {"x": renderWidth / 2 - 150, "y": 0, "width": 300, "height": 100}
 };
 
 var numLineParams = {
@@ -41,12 +43,6 @@ var numLineParams = {
     endX: renderWidth-15,
     Y: itemAreas.sidewalk._y
 };
-
-var sunPosition = {x: renderWidth - 150,
-                   y: 30};
-//var housePosition = {x: renderWidth / 2,
-//                     y: renderHeight / 2};
-
 
 // Easy names for long PIXI strings
 var resources = PIXI.loader.resources;
@@ -63,10 +59,10 @@ gameController.init();
 // ---------------------------------
 // GameController will link the logic and the graphics of the game together
 function GameController() {
-    
+
+    this.hud = new PIXI.Graphics();
     // These variables do not refer to logic inside game, but rather the graphics objects themselves.
     this.zombies = [];
-//  this.house = "";
     this.sun = "";
     this.numberLine = "";
     this.game = new Game(this);
@@ -90,20 +86,24 @@ function GameController() {
         .add("staticBG", "assets/artwork/staticBG.png")
         .add("image_sun", "assets/artwork/sun.png")
         .add("iZombie", "assets/artwork/zombie8.png")
-//.add("iHouse", "assets/artwork/house.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
         });
     };
     
+    // We have to wait for the assets to finish loading before we can start anything else
+    // They load asynchronously, so this is called in the PIXI.loader itself.
     this.onAssetsLoaded = function () {
         console.log("Assets have been loaded");
         game.init();
+        this.buildGameWindow();
+        this.buildLevelGraphics();
     };
     
-    this.onLevelLoaded = function () {
-        console.log("Level logic has been loaded.");
+    // Graphics that stay the same throughout levels should be put here.
+    this.buildGameWindow = function () {
+        console.log("2 - Level logic has been loaded.");
         var i;
         
         // STATIC OBJECTS
@@ -120,25 +120,27 @@ function GameController() {
         stage.addChild(this.staticBG);
 
         this.sun = new PIXI.Sprite(gameAssets.image_sun.texture);
-        this.sun.position.x = sunPosition.x;
-        this.sun.position.y = sunPosition.y;
+        this.sun.position.x = itemAreas.sun._x;
+        this.sun.position.y = itemAreas.sun._y;
         stage.addChild(this.sun);
         
-//this.house = new PIXI.Sprite(gameAssets.iHouse.texture);
-//this.house.position.x = housePosition.x;
-//this.house.position.y = housePosition.y;
-//this.house.anchor.set(0.5, 0.5); // We want the house centered
-//stage.addChild(this.house);
-        
-        displayNumberLine(game.getNumberLine());
-        
-        console.log("Starting graphics built. Begin rendering!");
+        // Build the HUD
+        buildHud();
+
         render();
+    };
+    
+    // Level-specific graphics should go here
+    this.buildLevelGraphics = function () {
+        displayNumberLine(this.game.getNumberLine());
+        // displayFruit
+        // displayZombies
     };
 }
 
+// This is our animation loop.
 function render() {
-    // requestAnimationFrame(render);
+    requestAnimationFrame(render); // This line ensures that render is called each frame, not just once.
     renderer.render(stage);
 }
 
@@ -150,6 +152,7 @@ function Game(gc) {
     this.directHits = 0;
     this.fruitBucket = "";
     
+    // Stuff that should happen once, at the start of a game
     this.init = function () {
         // Level starts at 0
         level = 0;
@@ -158,6 +161,7 @@ function Game(gc) {
         this.buildLevel ();
     };
     
+    // Stuff that should happen every level
     this.buildLevel = function () {
         
         this.numberLine = new NumberLine();
@@ -166,7 +170,8 @@ function Game(gc) {
         this.fruitBin = new FruitBin();
         this.fruitBin.init();
         
-        this.gameController.onLevelLoaded(this.numberLine);
+        // this.gameController.onLevelLoaded(this.numberLine);
+        console.log("(1) - level created.");
     };
     
     this.getBonusController = function () {
@@ -452,4 +457,25 @@ function displayNumberLine() {
         message.anchor.set(0.5, 0);
         stage.addChild(message);
     }
+}
+
+// Builds the static HUD elements like counters, buttons, etc.
+function buildHud() {
+    var hud = new PIXI.Graphics(),
+        message;
+    hud.lineStyle(3);
+    
+    // Bonus counter
+    hud.drawRect(itemAreas.bonusCounter.x, itemAreas.bonusCounter.y, itemAreas.bonusCounter.width, itemAreas.bonusCounter.height);
+    message = new PIXI.Text("Bonus Counter");
+    message.position.set(itemAreas.bonusCounter.x, itemAreas.bonusCounter.y);
+    hud.addChild(message);
+    // Zombie counter
+    hud.drawRect(itemAreas.zombieCounter.x, itemAreas.zombieCounter.y, itemAreas.zombieCounter.width, itemAreas.zombieCounter.height);
+    message = new PIXI.Text("Zombie Counter");
+    message.position.set(itemAreas.zombieCounter.x, itemAreas.zombieCounter.y);
+    hud.addChild(message);
+    
+    gameController.hud = hud;
+    stage.addChild(gameController.hud); 
 }
