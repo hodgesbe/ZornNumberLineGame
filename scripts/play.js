@@ -20,39 +20,35 @@ var stage; // The container for PIXI.JS, also called "stage" by a lot of documen
 var renderer; // Will create either a Canvas or WebGL renderer depending on the user's computer
 var renderWidth = 1024;
 var renderHeight = 720;
-var lineOffset = renderHeight - 100;
-var lineWidth = renderWidth - 100;
 var gameAssets;
 var level; //Current level of game
 
 //  Graphic Items coordinates as JSON array object.
 var itemAreas;
 itemAreas = {
-    "areas": [
-        {"item": "background", "_x": 0, "_y": 0, "width": 1024, "height": 768},
-        {"item": "tree1", "_x": 70, "_y": 330, "width": 200, "height": 160},
-        {"item": "tree2", "_x": 770, "_y": 330, "width": 200, "height": 160},
-        {"item": "basket1", "_x": 380, "_y": 360, "width": 80, "height": 80},
-        {"item": "basket2", "_x": 600, "_y": 360, "width": 80, "height": 80},
-        {"item": "sidewalk", "_x": 0, "_y": 642, "width": 1024, "height": 30},
-        //  Maybe we can move the position parameters in here to keep it cleaner
-        {"item": "sun", "_x": renderWidth -150, "_y": 30, "width": 50, "height": 50}
-    ]
+    "background": {"_x": 0, "_y": 0, "width": 1024, "height": 768},
+    "tree1": {"_x": 70, "_y": 330, "width": 200, "height": 160},
+    "tree2": {"_x": 770, "_y": 330, "width": 200, "height": 160},
+    "basket1": {"_x": 380, "_y": 360, "width": 80, "height": 80},
+    "basket2": {"_x": 600, "_y": 360, "width": 80, "height": 80},
+    "sidewalk": {"_x": 0, "_y": 642, "width": 1024, "height": 30},
+    "sun": {"_x": renderWidth -150, "_y": 30, "width": 50, "height": 50}
+};
+
+var numLineParams = {
+    offset: 15,
+    startX: 15,
+    endX: renderWidth-15,
+    Y: itemAreas.sidewalk._y
 };
 
 var sunPosition = {x: renderWidth - 150,
                    y: 30};
 //var housePosition = {x: renderWidth / 2,
 //                     y: renderHeight / 2};
-var numLineParams = {startX: 0,
-                     startY: renderHeight - 100,
-                     endX: renderWidth,
-                     endY: renderHeight - 100};
 
-// Variables to make our lives easier. Here we create naming convention variables for pixi objects, so that
-// (1), we can type one word instead of 3-5 each time
-// (2), if PIXI updates their workflow we can hopefully just modify the variables here and they will keep meaning the same thing
-// in our program.
+
+// Easy names for long PIXI strings
 var resources = PIXI.loader.resources;
 var loadTexture = PIXI.utils.TextureCache;
 var graphics = PIXI.graphics;
@@ -119,8 +115,8 @@ function GameController() {
         this.staticBG = new PIXI.Sprite(gameAssets.staticBG.texture);
         //this.staticBG.position.x = itemAreas.areas['item.background']._x;
         //this.staticBG.position.y = itemAreas.areas['item.background']._y;
-        this.staticBG.position.x = itemAreas.areas[0]._x;
-        this.staticBG.position.y = itemAreas.areas[0]._y;
+        this.staticBG.position.x = itemAreas.background._x;
+        this.staticBG.position.y = itemAreas.background._y;
         stage.addChild(this.staticBG);
 
         this.sun = new PIXI.Sprite(gameAssets.image_sun.texture);
@@ -155,10 +151,10 @@ function Game(gc) {
     this.fruitBucket = "";
     
     this.init = function () {
-        console.log("Game Logic object initializing.");
+        // Level starts at 0
+        level = 0;
         this.hero.init();
         this.bonus.init();
-        
         this.buildLevel ();
     };
     
@@ -166,7 +162,7 @@ function Game(gc) {
         
         this.numberLine = new NumberLine();
         this.numberLine.init();
-        //this.numberLine.printPoints(); //prints value of each point in console log
+        this.numberLine.printPoints(); //prints value of each point in console log
         this.fruitBin = new FruitBin();
         this.fruitBin.init();
         
@@ -252,16 +248,6 @@ var zombieController = function () {
 // --------------------------------
 // Logic scripts / classes
 // --------------------------------
-
-
-// A Point object knows its index as well as the x and y position on the screen to render
-var Point = function Point(value, index, length) {
-    this.value = value;
-    this.index = index;
-    this.x = index * (renderWidth / length);
-    this.y = lineOffset;
-};
-
 var NumberLine = function NumberLine() {
     // Constructor
     this.points = [];
@@ -269,14 +255,18 @@ var NumberLine = function NumberLine() {
     this.length = 0;
         
     this.init = function () {
+        console.log(level);
         var i;
         // Set size based on level
         switch (level) {
         case 0:
-            this.start = -5;
-            this.length = 10;
+                console.log("Numberline case 0");
+            this.start = -10;
             break;
         }
+        
+        // Length is always a function of start
+        this.length = Math.abs(this.start * 2) + 1;
         
         // Build points
         for (i = 0; i < this.length; i += 1) {
@@ -291,6 +281,14 @@ var NumberLine = function NumberLine() {
             console.log(this.points[i].index);
         }
     };
+};
+
+// A Point object knows its index as well as the x and y position on the screen to render
+var Point = function Point(value, index, length) {
+    this.value = value;
+    this.index = index;
+    this.x = numLineParams.startX + (numLineParams.endX / length * index) + ((numLineParams.endX / length * (index+1) - (numLineParams.endX / length * index)) / 2);
+    this.y = numLineParams.Y;
 };
 
 //Hero Object
@@ -420,17 +418,20 @@ function displayNumberLine() {
     var i,
         line,
         dash,
+        dashWidth = 3,
         label,
         message,
         numberLine = gameController.game.numberLine;
     
     
     // First, the line
+    // No longer needed since we have a lovely sidewalk now!
+    /**
     line = new PIXI.Graphics();
     line.lineStyle(4, 0x000000, 1);
-    line.moveTo(numLineParams.startX, numLineParams.startY);
-    line.lineTo(numLineParams.endX, numLineParams.endY);
-    stage.addChild(line);
+    line.moveTo(numLineParams.startX, numLineParams.Y);
+    line.lineTo(numLineParams.endX, numLineParams.Y);
+    stage.addChild(line); **/
     
     // Next, each point and label
     for (i = 0; i < numberLine.length; i++) {
@@ -439,133 +440,16 @@ function displayNumberLine() {
         dash = new PIXI.Graphics();
         dash.beginFill(0x000000);
         //console.log("x: " + numberLine.points[i].x + ", y: " + numberLine.points[i].y);
-        dash.drawRect(numberLine.points[i].x, numberLine.points[i].y, 25, 25);
+        dash.drawRect(numberLine.points[i].x, numberLine.points[i].y, dashWidth, itemAreas.sidewalk.height);
         dash.endFill();
         stage.addChild(dash);
         
         // Create a number
-        //console.log(numberLine.points[i].value);
+        // It should be placed beneath the bottom of the dash that has just been drawn
         message = new PIXI.Text(numberLine.points[i].value,
-                               {font: "32px sans-serif", fill: "white"});
-        message.position.set(numberLine.points[i].x, numberLine.points[i].y);
+                               {font: "24px sans-serif", fill: "white"});
+        message.position.set(numberLine.points[i].x, numberLine.points[i].y + itemAreas.sidewalk.height);
+        message.anchor.set(0.5, 0);
         stage.addChild(message);
     }
 }
-
-
-// *****************************************************************
-// --------------------------NUMBER LINE STUFF----------------------
-// *****************************************************************
-/**
-// A NumberLine object contains an array of integers starting at number "start" and continuing
-// on for "length" distance
-// This may not be the best implementation ie we might want each point to have a PIXIJS number corresponding to its actual number, for instance...but for now it works
-// We might want a Point data structure to contain a pixi text and int value?
-var NumberLine = function NumberLine(start, length) {
-    var end;
-    var points = {};
-    this.length = length;
-    this.start = start;
-    end = start + length;
-    
-    // Create an array of points to size length, with the value from start to end
-    var i;
-    for (i = 0; i < length; i += 1) {
-        points[i] = i + start;
-    }
-    
-    this.getPoints = function () {
-        return points;
-    };
-};
-
-// Build number line will handle the scaling of the number line based on a levelScalar variable (tutorial, advanced tutorial,
-// full game). For now, it just builds a debug number line
-var buildNumberLine = function (levelScalar) {
-    var numberLine = new NumberLine(0, 10); // Build the number line (scalar does nothing at the moment)
-    var lineHeight = renderHeight - 100; // How high to render the number line above the bottom of the window
-    var numberHeight = renderHeight - 80; // How high to render the numbers in the number line above the bottom of the window
-
-    // ** Draw a line from one side of the view to the other **
-    // set the line style to have a width of 3 and set the color to black
-    console.log(renderHeight);
-    graphics.lineStyle(3, 0x000000);
-    graphics.drawRect(0, lineHeight, renderWidth, 1);
-    
-    // ** Draw "dots" at each number point, and scale it accordingly based on how many points there are
-    var distance = (renderWidth) / numberLine.length;
-    var numberLabel;
-    
-    var i;
-    for (i = 0; i < numberLine.length; i += 1) {
-        // Build the sidewalk graphics
-        graphics.drawRect(distance * i, lineHeight, 10, 10);
-        
-        // Build the numbers
-        numberLabel = new PIXI.Text(numberLine.getPoints()[i]); // Create a label showing the value of this point's number
-        numberLabel.position.x = distance * i;
-        numberLabel.position.y = numberHeight;
-        scene.addChild(numberLabel);
-    }
-};
-
-// *****************************************************************
-// -----------------------BONUS ITEM STUFF--------------------------
-// *****************************************************************
-// BonusHandler handles the display and use of bonus objects. It should be declared
-// and then have its init() function run to generate the fields and on-screen labels
-var BonusHandler = function BonusHandler() {
-    var BUTTER_BONUS; // How much butter I got, yo
-    var butterT; // Onscreen butter label
-    var butterPosX = renderWidth - 300;
-    var butterPosY = 0;
-    var SUN_BONUS; // The sun, it burns
-    var sunT; // Onscreen sun label
-    var sunPosX = renderWidth - 300;
-    var sunPosY = 40;
-    
-    // Strings to build text for labels
-    var butterS = "Butter Bonus: ";
-    var sunS = "Sun Bonus: ";
-    
-    // "Constructor" for this object, builds the graphics based on how much starting bonus we got
-    this.init = function (startingButter, startingSun) {
-        BUTTER_BONUS = startingButter;
-        SUN_BONUS = startingSun;
-    
-        butterT = new PIXI.Text(butterS + BUTTER_BONUS);
-        butterT.position.x = butterPosX;
-        butterT.position.y = butterPosY;
-        scene.addChild(butterT);
-        sunT = new PIXI.Text(sunS + SUN_BONUS);
-        sunT.position.x = sunPosX;
-        sunT.position.y = sunPosY;
-        scene.addChild(sunT);
-    };
-    
-    // Use some butter
-    this.useButterBonus = function () {
-        // Visual stuff - decrement value shown
-        BUTTER_BONUS -= 1;
-        butterT.setText(butterS + BUTTER_BONUS);
-    };
-
-    // I don't want to set the world on fire
-    this.useSunBonus = function () {
-        // Visual stuff - decrement value shown
-        SUN_BONUS -= 1;
-        sunT.setText(sunS + SUN_BONUS);
-    };
-    
-    this.awardButter = function (amount) {
-        BUTTER_BONUS += amount;
-        butterT.setText(butterS + BUTTER_BONUS);
-    };
-    
-    this.awardSun = function (amount) {
-        SUN_BONUS += amount;
-        sunT.setText(sunS + SUN_BONUS);
-    };
-};
-
-**/
