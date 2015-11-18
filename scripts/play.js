@@ -45,9 +45,10 @@ var numLineParams = {
 };
 
 // Easy names for long PIXI strings
-var resources = PIXI.loader.resources;
-var loadTexture = PIXI.utils.TextureCache;
-var graphics = PIXI.graphics;
+var resources = PIXI.loader.resources,
+    loadTexture = PIXI.utils.TextureCache,
+    Graphics = PIXI.Graphics,
+    Sprite = PIXI.Sprite;
 
 // Our game chain starts by constructing a game controller
 var gameController = new GameController();
@@ -60,7 +61,7 @@ gameController.init();
 // GameController will link the logic and the graphics of the game together
 function GameController() {
 
-    this.hud = new PIXI.Graphics();
+    this.hud = new Graphics();
     // These variables do not refer to logic inside game, but rather the graphics objects themselves.
     this.zombies = [];
     this.sun = "";
@@ -86,10 +87,12 @@ function GameController() {
         .add("staticBG", "assets/artwork/staticBG.png")
         .add("image_sun", "assets/artwork/sun.png")
         .add("iZombie", "assets/artwork/zombie8.png")
+        .add("apple", "assets/artwork/apple.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
         });
+        console.log(resources);
     };
     
     // We have to wait for the assets to finish loading before we can start anything else
@@ -112,14 +115,14 @@ function GameController() {
         /*itemAreas = {
             "areas": [
                 {"item": "background", "_x": 0, "_y": 0, "width": 1024, "height": 768},*/
-        this.staticBG = new PIXI.Sprite(gameAssets.staticBG.texture);
+        this.staticBG = new Sprite(gameAssets.staticBG.texture);
         //this.staticBG.position.x = itemAreas.areas['item.background']._x;
         //this.staticBG.position.y = itemAreas.areas['item.background']._y;
         this.staticBG.position.x = itemAreas.background._x;
         this.staticBG.position.y = itemAreas.background._y;
         stage.addChild(this.staticBG);
 
-        this.sun = new PIXI.Sprite(gameAssets.image_sun.texture);
+        this.sun = new Sprite(gameAssets.image_sun.texture);
         this.sun.position.x = itemAreas.sun._x;
         this.sun.position.y = itemAreas.sun._y;
         stage.addChild(this.sun);
@@ -359,11 +362,8 @@ function Bonus(){
 var Fruit = function Fruit (fruitValue){
     //Constructor
     this.fruitValue = fruitValue;
-        
-    //returns the value of this fruit
-    this.getFruitValue = function (){
-        return this.fruitValue;
-    };
+    var fruitSprite = new Sprite(resources["apple"].texture);
+    
 };
 
 var FruitBin = function FruitBin(){
@@ -408,10 +408,6 @@ var FruitBin = function FruitBin(){
         }
     };
   
-    
-    this.getFruit = function (){
-        return this.fruitBin;
-    };
 };
 
 // --------------------------------
@@ -432,7 +428,7 @@ function displayNumberLine() {
     // First, the line
     // No longer needed since we have a lovely sidewalk now!
     /**
-    line = new PIXI.Graphics();
+    line = new Graphics();
     line.lineStyle(4, 0x000000, 1);
     line.moveTo(numLineParams.startX, numLineParams.Y);
     line.lineTo(numLineParams.endX, numLineParams.Y);
@@ -442,7 +438,7 @@ function displayNumberLine() {
     for (i = 0; i < numberLine.length; i++) {
         console.log("Creating a point!");
         // Create a point
-        dash = new PIXI.Graphics();
+        dash = new Graphics();
         dash.beginFill(0x000000);
         //console.log("x: " + numberLine.points[i].x + ", y: " + numberLine.points[i].y);
         dash.drawRect(numberLine.points[i].x, numberLine.points[i].y, dashWidth, itemAreas.sidewalk.height);
@@ -461,19 +457,24 @@ function displayNumberLine() {
 
 // Builds the static HUD elements like counters, buttons, etc.
 function buildHud() {
-    var hud = new PIXI.Graphics(),
+    var hud = new Graphics(),
         message;
     hud.lineStyle(3);
+    //Alias
+    var counter = itemAreas.bonusCounter,
+        zombie = itemAreas.zombieCounter;
     
     // Bonus counter
-    hud.drawRect(itemAreas.bonusCounter.x, itemAreas.bonusCounter.y, itemAreas.bonusCounter.width, itemAreas.bonusCounter.height);
+    hud.drawRect(counter.x, counter.y, counter.width, counter.height);
     message = new PIXI.Text("Bonus Counter");
-    message.position.set(itemAreas.bonusCounter.x, itemAreas.bonusCounter.y);
+    message.position.set(counter.x + counter.width/2, counter.y);
+    message.anchor.x = 0.5;
     hud.addChild(message);
     // Zombie counter
-    hud.drawRect(itemAreas.zombieCounter.x, itemAreas.zombieCounter.y, itemAreas.zombieCounter.width, itemAreas.zombieCounter.height);
+    hud.drawRect(zombie.x, zombie.y, zombie.width, zombie.height);
     message = new PIXI.Text("Zombie Counter");
-    message.position.set(itemAreas.zombieCounter.x, itemAreas.zombieCounter.y);
+    message.position.set(zombie.x + zombie.width/2, zombie.y);
+    message.anchor.x = 0.5;
     hud.addChild(message);
     
     gameController.hud = hud;
