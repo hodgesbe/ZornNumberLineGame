@@ -3,7 +3,7 @@
 
 // It's okay to have "use strict" outside of a function so tell JSLint that
 /*jslint node: true, white: true */
-'use strict';
+"use strict";
 
 // We need to let JSLint know about PIXI definitions (to avoid PIXI was used before it was defined, etc)
 /*global PIXI, requestAnimationFrame */
@@ -17,11 +17,14 @@
 // -------------------------------------------------
 var htmlWindow;             // This will be the render window
 var stage;                  // The container for PIXI.JS, also called "stage" by a lot of documentation
+var gameStage;              // The container for all game sprites, a child of stage
+var infoStage;              // Container for our information screen
 var renderer;               // Will create either a Canvas or WebGL renderer depending on the user's computer
 var renderWidth = 1024;
 var renderHeight = 720;
 var gameAssets;             // Contains references to our game's loaded assets
 var level;                  // Current level of game
+var tink;                   // Handler to access the Tink library of functions. See: https://github.com/kittykatattack/tink
 
 //  Graphic Items coordinates as JSON array object.
 var itemAreas;
@@ -59,6 +62,7 @@ gameController.init();
 // ---------------------------------
 // GameController will link the logic and the graphics of the game together
 function GameController() {
+    console.log("Here we go!");
 
     this.hud = new PIXI.Graphics();
     // These variables do not refer to logic inside game, but rather the graphics objects themselves.
@@ -77,6 +81,12 @@ function GameController() {
         htmlWindow = document.getElementById("renderWindow");
         renderer = PIXI.autoDetectRenderer(renderWidth, renderHeight);
         stage = new PIXI.Container();
+        gameStage = new PIXI.Container();
+        infoStage = new PIXI.Container();
+        
+        // Child all screens to the main stage
+        stage.addChild(gameStage);
+        stage.addChild(infoStage);
         
         renderer.backgroundColor = 0x33CCFF; 
         htmlWindow.appendChild(renderer.view);
@@ -86,6 +96,7 @@ function GameController() {
         .add("staticBG", "assets/artwork/staticBG.png")
         .add("image_sun", "assets/artwork/sun.png")
         .add("iZombie", "assets/artwork/zombie8.png")
+        .add("infoButton", "assets/ui/Info.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -96,6 +107,9 @@ function GameController() {
     // They load asynchronously, so this is called in the PIXI.loader itself.
     this.onAssetsLoaded = function () {
         console.log("Assets have been loaded");
+    
+        tink = new Tink(PIXI, renderer.view);
+
         game.init();
         this.buildGameWindow();
         this.buildLevelGraphics();
@@ -117,12 +131,12 @@ function GameController() {
         //this.staticBG.position.y = itemAreas.areas['item.background']._y;
         this.staticBG.position.x = itemAreas.background._x;
         this.staticBG.position.y = itemAreas.background._y;
-        stage.addChild(this.staticBG);
+        gameStage.addChild(this.staticBG);
 
         this.sun = new PIXI.Sprite(gameAssets.image_sun.texture);
         this.sun.position.x = itemAreas.sun._x;
         this.sun.position.y = itemAreas.sun._y;
-        stage.addChild(this.sun);
+        gameStage.addChild(this.sun);
         
         // Build the HUD
         buildHud();
@@ -138,9 +152,10 @@ function GameController() {
     };
 }
 
-// This is our animation loop.
+// This is our animation/game loop.
 function render() {
     requestAnimationFrame(render); // This line ensures that render is called each frame, not just once.
+    tink.update();
     renderer.render(stage);
 }
 
@@ -181,6 +196,7 @@ function Game(gc) {
     this.getNumberLine = function () {
         return this.numberLine;
     };
+    
 }
 
 // *****************************************************************
@@ -447,7 +463,7 @@ function displayNumberLine() {
         //console.log("x: " + numberLine.points[i].x + ", y: " + numberLine.points[i].y);
         dash.drawRect(numberLine.points[i].x, numberLine.points[i].y, dashWidth, itemAreas.sidewalk.height);
         dash.endFill();
-        stage.addChild(dash);
+        gameStage.addChild(dash);
         
         // Create a number
         // It should be placed beneath the bottom of the dash that has just been drawn
@@ -455,14 +471,15 @@ function displayNumberLine() {
                                {font: "24px sans-serif", fill: "white"});
         message.position.set(numberLine.points[i].x, numberLine.points[i].y + itemAreas.sidewalk.height);
         message.anchor.set(0.5, 0);
-        stage.addChild(message);
+        gameStage.addChild(message);
     }
 }
 
 // Builds the static HUD elements like counters, buttons, etc.
 function buildHud() {
     var hud = new PIXI.Graphics(),
-        message;
+        message,
+        infoButton;
     hud.lineStyle(3);
     
     // Bonus counter
@@ -476,6 +493,12 @@ function buildHud() {
     message.position.set(itemAreas.zombieCounter.x, itemAreas.zombieCounter.y);
     hud.addChild(message);
     
+    infoButton = new PIXI.Sprite(resources.infoButton.texture);
+    infoButton.position.y = itemAreas.zombieCounter.height;
+    infoButton.width = 32;
+    infoButton.height = 32;
+    hud.addChild(infoButton);
+    
     gameController.hud = hud;
-    stage.addChild(gameController.hud); 
+    gameStage.addChild(gameController.hud); 
 }
