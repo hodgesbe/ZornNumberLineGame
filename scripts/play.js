@@ -25,6 +25,7 @@ var renderHeight = 720;
 var gameAssets;             // Contains references to our game's loaded assets
 var level;                  // Current level of game
 var tink;                   // Handler to access the Tink library of functions. See: https://github.com/kittykatattack/tink
+var pointer;                // Our mouse pointer object
 
 //  Graphic Items coordinates as JSON array object.
 var itemAreas;
@@ -32,8 +33,8 @@ itemAreas = {
     "background": {"x": 0, "y": 0, "width": 1024, "height": 768},
     "tree1": {"x": 70, "y": 350, "width": 200, "height": 160},
     "tree2": {"x": 770, "y": 350, "width": 200, "height": 160},
-    "basket1": {"x": 380, "y": 360, "width": 80, "height": 80},
-    "basket2": {"x": 600, "y": 360, "width": 80, "height": 80},
+    "basket1": {"x": 380, "y": 350, "width": 80, "height": 80},
+    "basket2": {"x": 600, "y": 350, "width": 80, "height": 80},
     "sidewalk": {"x": 0, "y": 642, "width": 1024, "height": 30},
     "sun": {"x": renderWidth -150, "y": 30, "width": 50, "height": 50},
     "zombieCounter": {"x": 0, "y": 0, "width": renderWidth / 4, "height": 100},
@@ -43,6 +44,21 @@ itemAreas = {
 //arrays of fruit objects for positive values and negative values
 var posFruitBin = [], 
     negFruitBin = [];
+
+// Draggable fruit handler variables and functions
+var dragParams = {
+    previousPos: {x: 0, y: 0},
+    currentFruit: null,
+    overBasket: function (fruitSprite) {
+        if ((fruitSprite.position.x < itemAreas.basket1.x + itemAreas.basket1.width && fruitSprite.position.x > itemAreas.basket1.x
+            && fruitSprite.position.y < itemAreas.basket1.y + itemAreas.basket1.height && fruitSprite.position.y > itemAreas.basket1.y) ||
+            fruitSprite.position.x < itemAreas.basket2.x + itemAreas.basket2.width && fruitSprite.position.x > itemAreas.basket2.x
+            && fruitSprite.position.y < itemAreas.basket2.y + itemAreas.basket2.height && fruitSprite.position.y > itemAreas.basket2.y) {
+            return true;
+        }
+        return false;
+    }
+};
 
 var numLineParams = {
     offset: 15,
@@ -75,6 +91,8 @@ function GameController() {
     this.sun = "";
     this.numberLine = "";
     this.game = new Game(this);
+    fruitAmount: 0;
+    this.currentFruitValue = 0;
     
     //Alias
     var game = this.game;
@@ -102,7 +120,7 @@ function GameController() {
         .add("image_sun", "assets/artwork/sun.png")
         .add("iZombie", "assets/artwork/zombie8.png")
         .add("infoButton", "assets/ui/Info.png")
-        .add("apple", "assets/artwork/apple.png")
+        .add("apple", "assets/artwork/apple_small.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -115,7 +133,9 @@ function GameController() {
     this.onAssetsLoaded = function () {
         console.log("Assets have been loaded");
     
+        // Tink stuff for event handlers and what not
         tink = new Tink(PIXI, renderer.view);
+        pointer = tink.makePointer();
 
         game.init();
         this.buildGameWindow();
@@ -289,7 +309,7 @@ var NumberLine = function NumberLine() {
         switch (level) {
         case 0:
                 console.log("Numberline case 0");
-            this.start = -10;
+            this.start = randomInt(-10, -2);
             break;
         }
         
@@ -352,18 +372,20 @@ function Bonus(){
     //creates bonus object with empty sun and butter values
     this.init = function(){
         this.sunValues = 2;
-        this.butterValues =0;
-        console.log("Bonus init. Sun: " + this.sunValues + ", Butter:" + this.butterValues + ".");
+        this.butterValues = 0;
+        console.log("Bonus init. Sun: " + this.sunValues + ", Butter: " + this.butterValues + ".");
     };
 
     //adds butter bonus value. Takes an int for added bonus
     this.addButterBonus = function(butterAdded){
-      this.butterValues = butterAdded;
+        this.butterValues += butterAdded;
+        console.log(this.butterValues);
     };
 
     //adds sun bonus value. Takes an int for added bonus
     this.addSunBonus = function(sunAdded){
-        this.sunValues = sunAdded;
+        this.sunValues += sunAdded;
+        console.log(this.sunValues);
     };
 
     //returns the amount of butter bonuses
@@ -384,20 +406,64 @@ var Fruit = function Fruit (fruitValue){
     this.fruitValue = fruitValue; //value to be displayed on fruit
     this.fruitGraphic = new Graphics(); //Graphic that contains both fruit sprite and value message
     this.fruitSprite = new Sprite(resources.apple.texture); //actual sprite
-    var message = new PIXI.Text("" + this.fruitValue); //message which displays value
+    var message = new PIXI.Text("" + this.fruitValue,
+                               {font: "16px sans-serif", fill: "white"}); //message which displays value
     
     //---Function to update sprites location and adjust message location as well
     this.addLoc = function (X, Y){
         //adjust sprite to be correct size and location
         this.fruitSprite.position.set(X,Y);
-        this.fruitSprite.scale.set(0.07, 0.07);
-        this.fruitSprite.anchor.set(0.5, 0.5);
+        // this.fruitSprite.scale.set(0.07, 0.07);
+        // this.fruitSprite.anchor.set(0.5, 0.5);
         //overlay message on sprite
-        message.anchor.set(0.5, 0.5);
-        message.position.set(X,Y+4);
+        if (fruitValue < 0) {
+            message.anchor.set(-0.5, -0.5);
+        } else {
+            message.anchor.set(-1, -0.7);
+        }
+        
+        message.position.set(0,0);
+        
+        // Sprite event handlers
+        // this.fruitSprite.circular = true;
+        tink.makeDraggable(this.fruitSprite);
+        tink.makeInteractive(this.fruitSprite);
+        
+        // If the mouse is pressed while over this sprite and not currently dragging something else,
+        // pick this sprite up and remember its previous position.
+        this.fruitSprite.press = () => { // Using = () => over function () binds this object's referencing environment
+            console.log("Fruit clicked: " + this.fruitValue);
+            if (dragParams.currentFruit === null) {
+                dragParams.previousPos.x = this.fruitSprite.position.x;
+                dragParams.previousPos.y = this.fruitSprite.position.y;
+                dragParams.currentFruit = this.fruitSprite;
+            }
+        };
+        
+        // If the mouse is released while dragging this sprite, return it to previous position
+        this.fruitSprite.release = () => {
+            if (dragParams.currentFruit === this.fruitSprite) {
+                if (dragParams.overBasket(this.fruitSprite) === true) {
+                    console.log(gameController.currentFruitValue);
+                    gameController.currentFruitValue += this.fruitValue;
+                    console.log(gameController.currentFruitValue);
+                    gameController.fruitAmount.text = "Fruit in basket = " + gameController.currentFruitValue;
+                    this.fruitSprite.draggable = false;
+                } else {
+                    this.fruitSprite.position.x = dragParams.previousPos.x;
+                    this.fruitSprite.position.y = dragParams.previousPos.y;
+                    
+                }
+                dragParams.currentFruit = null;
+
+            }
+        };
+        
+        
         //add sprite and message to graphic
         this.fruitGraphic.addChild(this.fruitSprite);
-        this.fruitGraphic.addChild(message);
+        this.fruitSprite.addChild(message);
+        // gameStage.addChild(this.fruitSprite);
     }
 };
 
@@ -547,7 +613,8 @@ function buildHud() {
         i,
     //Alias
         counter = itemAreas.bonusCounter,
-        zombie = itemAreas.zombieCounter;
+        zombie = itemAreas.zombieCounter,
+        fruitAmount;
         //pos = itemAreas.tree2,
         //neg = itemAreas.tree1;
     
@@ -570,7 +637,14 @@ function buildHud() {
     infoButton.width = 32;
     infoButton.height = 32;
     hud.addChild(infoButton);
+    
+    // Fruit amount
+    fruitAmount = new PIXI.Text("Fruit in basket = 0");
+    fruitAmount.position.set((itemAreas.basket1.x + itemAreas.basket2.x) / 2, itemAreas.basket1.y - 50);
+    fruitAmount.anchor.set(0.5, 0.5);
+    hud.addChild(fruitAmount);
  
+    
     for (i = 0; i < posFruitBin.length; i++){            
         //add graphics to gameStage container      
         hud.addChild(posFruitBin[i].fruitGraphic);
@@ -578,6 +652,7 @@ function buildHud() {
     }
     
     gameController.hud = hud;
+    gameController.fruitAmount = fruitAmount;
     gameStage.addChild(gameController.hud); 
 
 }
