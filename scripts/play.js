@@ -40,6 +40,10 @@ itemAreas = {
     "bonusCounter": {"x": renderWidth / 2 - 150, "y": 0, "width": 300, "height": 100}
 };
 
+//arrays of fruit objects for positive values and negative values
+var posFruitBin = [], 
+    negFruitBin = [];
+
 var numLineParams = {
     offset: 15,
     startX: 15,
@@ -374,42 +378,39 @@ function Bonus(){
 
 }
 
-//Creates a fruit object with a getter method
+//Creates a fruit object which contains the graphic
 var Fruit = function Fruit (fruitValue){
     //Constructor
-    this.fruitValue = fruitValue;    
-    var message = new PIXI.Text("" + fruitValue);
+    this.fruitValue = fruitValue; //value to be displayed on fruit
+    this.fruitGraphic = new Graphics(); //Graphic that contains both fruit sprite and value message
+    this.fruitSprite = new Sprite(resources.apple.texture); //actual sprite
+    var message = new PIXI.Text("" + this.fruitValue); //message which displays value
     
-    this.addFruit = function (X, Y){
-        var fruitSprite = new Sprite(resources.apple.texture),
-        hud = new Graphics();
-        fruitSprite.position.set(X,Y);
-        fruitSprite.scale.set(0.07, 0.07);
-        fruitSprite.anchor.set(0.5, 0.5);
+    //---Function to update sprites location and adjust message location as well
+    this.addLoc = function (X, Y){
+        //adjust sprite to be correct size and location
+        this.fruitSprite.position.set(X,Y);
+        this.fruitSprite.scale.set(0.07, 0.07);
+        this.fruitSprite.anchor.set(0.5, 0.5);
+        //overlay message on sprite
         message.anchor.set(0.5, 0.5);
-        message.position.set(X,Y);
-        fruitSprite.addChild(message);
-        console.log("Adding Fruit: "+this.fruitValue);
-        //console.log(gameStage);
-        console.log(fruitSprite);
-        hud.addChild(fruitSprite); 
-        //console.log(gameStage);
-        gameController.hud = hud;
-        gameStage.addChild(gameController.hud); 
-        render();
+        message.position.set(X,Y+4);
+        //add sprite and message to graphic
+        this.fruitGraphic.addChild(this.fruitSprite);
+        this.fruitGraphic.addChild(message);
     }
 };
 
 var FruitBin = function FruitBin(){
-    this.fruitBin = []; //array of fruit objects
     
-    var fruitValues, //array of fruit values for level
-        fruitTarget, //target sum of all fruit values        
+    var fruitTarget, //target sum of all fruit values        
         fruitMin, //minimum number of all fruit needed for level
         possibleValues = [], //array of values for fruit
         i; //index for iteration
-    this.location = [];        
+    this.posLocation = [];
+    this.negLocation = [];
         
+    //---Function to create 2d array of coordinates to display fruit based off tree1 and tree2item areas
     this.setLocation = function (){
         //Alias
         var pos = itemAreas.tree2,
@@ -419,48 +420,73 @@ var FruitBin = function FruitBin(){
         console.log("Setting location:");
         for (row = 19; row < pos.width; row += 38){
             for (col = 21; col < pos.height; col += 41){
-                this.location.push([row,col]);
+                this.posLocation.push([pos.x+row,pos.y+col]);
+                this.negLocation.push([neg.x+row,neg.y+col]);
             }
         }
     }
     
+    //---Function to set sprite locations for each fruit
     this.addFruit = function (){
-        console.log(this);
-        this.setLocation();
-        //console.log(this.location);
-        this.fruitBin[0].addFruit(this.location[0][0],this.location[0][1]);
+        
+        var i,
+            index,
+            coords = [];
+        
+        this.setLocation(); //fill pos and neg arrays with possible values
+        //randomly select a location for each fruit from posible location
+        for (i = 0; i < posFruitBin.length; i++){
+            //randomly select positve location
+            index = randomInt(0,this.posLocation.length-1);
+            coords = this.posLocation.splice(index, 1);
+            posFruitBin[i].addLoc(coords[0][0],coords[0][1]);
+            
+            //randomly select negative location
+            index = randomInt(0,this.negLocation.length-1);
+            coords = this.negLocation.splice(index, 1);
+            negFruitBin[i].addLoc(coords[0][0],coords[0][1]);
+            
+            //add graphics to gameStage container      -----------------------------------NOT WORKING HERE-----------------------
+            gameStage.addChild(posFruitBin[i].fruitGraphic);
+            gameStage.addChild(negFruitBin[i].fruitGraphic);
+        }
     }
-                         
+    
+    //---Randomly select fruit values, create fruit with those values
     this.init = function (){
         console.log("Creating a fruit bin");
-        fruitValues = [];
+        var posFruitValues = [],
+            negFruitValues = [];
+        
         switch (level) {
             case 0:            
                 fruitTarget = 42;
-                fruitMin = 30;
+                fruitMin = 15;
                 possibleValues = [1,1,1,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,5];
                 break;
         }
         //continue picking fruit until number is larger than minimum number of fruit for level
-        while (fruitValues.length < fruitMin){
+        while (posFruitValues.length < fruitMin){
             //reset fruit sum and list of fruit values
             var fruitSum = 0,
                 index,
                 fruitValue; 
-            fruitValues = [];             
+            posFruitValues = [];     
+            negFruitValues = [];
             //pick fruit values up to Max value
             while (fruitSum < fruitTarget){
                 index = Math.floor(Math.random()*possibleValues.length);
                 fruitValue = possibleValues[index];
                 //add positive and negative fruit values to fruit values
-                fruitValues.push(fruitValue); 
-                fruitValues.push(-fruitValue); 
+                posFruitValues.push(fruitValue); 
+                negFruitValues.push(-fruitValue); 
                 fruitSum += fruitValue;  
             }            
         }
         //add fruit objects using value array
-        for (i=0; i<fruitValues.length; i++){
-            this.fruitBin[i] = new Fruit (fruitValues[i]);
+        for (i=0; i<posFruitValues.length; i++){
+            posFruitBin[i] = new Fruit (posFruitValues[i]);
+            negFruitBin[i] = new Fruit (negFruitValues[i]);
         }
         this.addFruit();
     };
@@ -518,11 +544,12 @@ function buildHud() {
     var hud = new Graphics(),
         message,
         infoButton,
+        i,
     //Alias
         counter = itemAreas.bonusCounter,
-        zombie = itemAreas.zombieCounter,
-        pos = itemAreas.tree2,
-        neg = itemAreas.tree1;
+        zombie = itemAreas.zombieCounter;
+        //pos = itemAreas.tree2,
+        //neg = itemAreas.tree1;
     
     // Bonus counter
     hud.lineStyle(3);
@@ -543,14 +570,19 @@ function buildHud() {
     infoButton.width = 32;
     infoButton.height = 32;
     hud.addChild(infoButton);
-    
-    //apple.position.set(pos.x, pos.y);
-    //apple.scale.set(0.07, 0.07);
-    hud.drawRect(pos.x, pos.y, pos.width, pos.height);
-    hud.drawRect(neg.x, neg.y, neg.width, neg.height);
-    //hud.addChild(apple);
+ 
+    for (i = 0; i < posFruitBin.length; i++){            
+        //add graphics to gameStage container      
+        hud.addChild(posFruitBin[i].fruitGraphic);
+        hud.addChild(negFruitBin[i].fruitGraphic);
+    }
     
     gameController.hud = hud;
     gameStage.addChild(gameController.hud); 
 
+}
+
+//Random number helper function with inclusive bounds
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
