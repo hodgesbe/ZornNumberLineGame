@@ -167,6 +167,12 @@ function GameController() {
         
         // Build the HUD
         buildHud();
+        
+        // Build other screens
+        buildInfoScreen();
+        
+        // Hide other screens
+        infoStage.visible = false;
 
         render();
     };
@@ -636,6 +642,12 @@ function buildHud() {
     infoButton.position.y = zombie.height;
     infoButton.width = 32;
     infoButton.height = 32;
+    tink.makeInteractive(infoButton);
+    
+    infoButton.press = () => {
+        infoStage.visible = true;
+        gameStage.visible = false;
+    };
     hud.addChild(infoButton);
     
     // Fruit amount
@@ -660,4 +672,20 @@ function buildHud() {
 //Random number helper function with inclusive bounds
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function buildInfoScreen() {
+    var message = new PIXI.Text("This is our info screen! We can talk about cool info stuff here \nlike how awesome our game is!");
+    infoStage.addChild(message);
+    
+    var sprite = new PIXI.Sprite(resources.infoButton.texture);
+    sprite.position.x = 200;
+    sprite.position.y = 200;
+    tink.makeInteractive(sprite);
+    
+    sprite.press = () => {
+        infoStage.visible = false;
+        gameStage.visible = true;
+    }
+    infoStage.addChild(sprite);
 }
