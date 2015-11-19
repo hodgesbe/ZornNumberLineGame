@@ -30,8 +30,8 @@ var tink;                   // Handler to access the Tink library of functions. 
 var itemAreas;
 itemAreas = {
     "background": {"x": 0, "y": 0, "width": 1024, "height": 768},
-    "tree1": {"x": 70, "y": 330, "width": 200, "height": 160},
-    "tree2": {"x": 770, "y": 330, "width": 200, "height": 160},
+    "tree1": {"x": 70, "y": 350, "width": 200, "height": 160},
+    "tree2": {"x": 770, "y": 350, "width": 200, "height": 160},
     "basket1": {"x": 380, "y": 360, "width": 80, "height": 80},
     "basket2": {"x": 600, "y": 360, "width": 80, "height": 80},
     "sidewalk": {"x": 0, "y": 642, "width": 1024, "height": 30},
@@ -300,9 +300,9 @@ var NumberLine = function NumberLine() {
     
     this.printPoints = function () {
         var i;
-        console.log("Printing points. Length = " + this.length);
+        //console.log("Printing points. Length = " + this.length);
         for (i = 0; i < this.length; i += 1) {
-            console.log(this.points[i].index);
+            //console.log(this.points[i].index);
         }
     };
 };
@@ -377,9 +377,27 @@ function Bonus(){
 //Creates a fruit object with a getter method
 var Fruit = function Fruit (fruitValue){
     //Constructor
-    this.fruitValue = fruitValue;
-    var fruitSprite = new Sprite(resources.apple.texture);
+    this.fruitValue = fruitValue;    
+    var message = new PIXI.Text("" + fruitValue);
     
+    this.addFruit = function (X, Y){
+        var fruitSprite = new Sprite(resources.apple.texture),
+        hud = new Graphics();
+        fruitSprite.position.set(X,Y);
+        fruitSprite.scale.set(0.07, 0.07);
+        fruitSprite.anchor.set(0.5, 0.5);
+        message.anchor.set(0.5, 0.5);
+        message.position.set(X,Y);
+        fruitSprite.addChild(message);
+        console.log("Adding Fruit: "+this.fruitValue);
+        //console.log(gameStage);
+        console.log(fruitSprite);
+        hud.addChild(fruitSprite); 
+        //console.log(gameStage);
+        gameController.hud = hud;
+        gameStage.addChild(gameController.hud); 
+        render();
+    }
 };
 
 var FruitBin = function FruitBin(){
@@ -390,6 +408,28 @@ var FruitBin = function FruitBin(){
         fruitMin, //minimum number of all fruit needed for level
         possibleValues = [], //array of values for fruit
         i; //index for iteration
+    this.location = [];        
+        
+    this.setLocation = function (){
+        //Alias
+        var pos = itemAreas.tree2,
+            neg = itemAreas.tree1,
+            row,
+            col;
+        console.log("Setting location:");
+        for (row = 19; row < pos.width; row += 38){
+            for (col = 21; col < pos.height; col += 41){
+                this.location.push([row,col]);
+            }
+        }
+    }
+    
+    this.addFruit = function (){
+        console.log(this);
+        this.setLocation();
+        //console.log(this.location);
+        this.fruitBin[0].addFruit(this.location[0][0],this.location[0][1]);
+    }
                          
     this.init = function (){
         console.log("Creating a fruit bin");
@@ -422,6 +462,7 @@ var FruitBin = function FruitBin(){
         for (i=0; i<fruitValues.length; i++){
             this.fruitBin[i] = new Fruit (fruitValues[i]);
         }
+        this.addFruit();
     };
   
 };
@@ -474,12 +515,14 @@ function displayNumberLine() {
 // Builds the static HUD elements like counters, buttons, etc.
 function buildHud() {
 
-    var hud = new PIXI.Graphics(),
+    var hud = new Graphics(),
         message,
         infoButton,
     //Alias
         counter = itemAreas.bonusCounter,
-        zombie = itemAreas.zombieCounter;
+        zombie = itemAreas.zombieCounter,
+        pos = itemAreas.tree2,
+        neg = itemAreas.tree1;
     
     // Bonus counter
     hud.lineStyle(3);
@@ -495,12 +538,19 @@ function buildHud() {
     message.anchor.x = 0.5;
     hud.addChild(message);
     
-    infoButton = new PIXI.Sprite(resources.infoButton.texture);
-    infoButton.position.y = itemAreas.zombieCounter.height;
+    infoButton = new Sprite(resources.infoButton.texture);
+    infoButton.position.y = zombie.height;
     infoButton.width = 32;
     infoButton.height = 32;
     hud.addChild(infoButton);
     
+    //apple.position.set(pos.x, pos.y);
+    //apple.scale.set(0.07, 0.07);
+    hud.drawRect(pos.x, pos.y, pos.width, pos.height);
+    hud.drawRect(neg.x, neg.y, neg.width, neg.height);
+    //hud.addChild(apple);
+    
     gameController.hud = hud;
     gameStage.addChild(gameController.hud); 
+
 }
