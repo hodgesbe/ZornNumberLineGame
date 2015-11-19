@@ -121,6 +121,10 @@ function GameController() {
         .add("iZombie", "assets/artwork/zombie8.png")
         .add("infoButton", "assets/ui/Info.png")
         .add("apple", "assets/artwork/apple_small.png")
+        .add("resetButton", "assets/artwork/reset1.png")
+        .add("launch_up", "assets/artwork/launchButtonMobile.png")
+        .add("launch_over", "assets/artwork/launchButtonMobile.png")
+        .add("launch_down", "assets/artwork/launchButtonMobile.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -617,6 +621,8 @@ function buildHud() {
         message,
         infoButton,
         i,
+        launchButton,
+        resetButton,
     //Alias
         counter = itemAreas.bonusCounter,
         zombie = itemAreas.zombieCounter,
@@ -649,6 +655,20 @@ function buildHud() {
         gameStage.visible = false;
     };
     hud.addChild(infoButton);
+
+    //Buttons
+    var launchFrame = [
+        resources["launch_up"].texture,
+        resources["launch_over"].texture,
+        resources["launch_down"].texture
+    ];
+
+    launchButton = tink.button(launchFrame, 498, 370);
+    hud.addChild(launchButton);
+
+
+
+
     
     // Fruit amount
     fruitAmount = new PIXI.Text("Fruit in basket = 0");
