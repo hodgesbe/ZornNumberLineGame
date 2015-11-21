@@ -20,7 +20,7 @@ var stage;                  // The container for PIXI.JS, also called "stage" by
 var gameStage;              // The container for all game sprites, a child of stage
 var infoStage;              // Container for our information screen
 var renderer;               // Will create either a Canvas or WebGL renderer depending on the user's computer
-var renderWidth = 1024;
+var renderWidth = 1280;
 var renderHeight = 720;
 var gameAssets;             // Contains references to our game's loaded assets
 var level;                  // Current level of game
@@ -116,7 +116,7 @@ function GameController() {
         
         // Load in assets
         PIXI.loader
-        .add("staticBG", "assets/artwork/staticBG.png")
+        .add("staticBG", "assets/artwork/ZornBG_1280x720-ALT.png")
         .add("image_sun", "assets/artwork/sun.png")
         .add("iZombie", "assets/artwork/zombie8.png")
         .add("infoButton", "assets/ui/Info.png")
@@ -647,6 +647,8 @@ function buildHud() {
     message.anchor.x = 0.5;
     hud.addChild(message);
     
+    /**
+    
     infoButton = new Sprite(resources.infoButton.texture);
     infoButton.position.y = zombie.height;
     infoButton.width = 32;
@@ -654,11 +656,10 @@ function buildHud() {
     tink.makeInteractive(infoButton);
     
     infoButton.press = () => {
-        infoStage.visible = true;
-        gameStage.visible = false;
+
     };
     hud.addChild(infoButton);
-
+    **/
     //Buttons
 
     //launch button
@@ -678,14 +679,14 @@ function buildHud() {
         resources["help_down"].texture
     ];
 
-    helpButton = tink.button(helpFrame, 960, 5);
+    helpButton = tink.button(helpFrame, 0, zombie.height);
+    helpButton.press = () => {
+        infoStage.visible = true;
+        gameStage.visible = false;
+    };
     hud.addChild(helpButton);
 
-
-
-
-    
-    // Fruit amount
+    // Fruit amount text (probably placeholder)
     fruitAmount = new PIXI.Text("Fruit in basket = 0");
     fruitAmount.position.set((itemAreas.basket1.x + itemAreas.basket2.x) / 2, itemAreas.basket1.y - 50);
     fruitAmount.anchor.set(0.5, 0.5);
@@ -723,4 +724,8 @@ function buildInfoScreen() {
         gameStage.visible = true;
     }
     infoStage.addChild(sprite);
+}
+
+function buildMainMenu() {
+    
 }
