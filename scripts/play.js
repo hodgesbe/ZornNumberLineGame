@@ -31,8 +31,8 @@ var pointer;                // Our mouse pointer object
 var itemAreas;
 itemAreas = {
     "background": {"x": 0, "y": 0, "width": 1024, "height": 768},
-    "tree1": {"x": 65, "y": 190, "width": 325, "height": 250},
-    "tree2": {"x": 880, "y": 190, "width": 325, "height": 250},
+    "tree1": {"x": 35, "y": 180, "width": 330, "height": 250},
+    "tree2": {"x": 855, "y": 180, "width": 330, "height": 250},
     "basket1": {"x": 450, "y": 315, "width": 151, "height": 126},
     "basket2": {"x": 695, "y": 315, "width": 151, "height": 126},
     "sidewalk": {"x": 0, "y": 625, "width": 1024, "height": 25},
