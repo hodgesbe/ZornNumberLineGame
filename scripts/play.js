@@ -52,8 +52,8 @@ var dragParams = {
     overBasket: function (fruitSprite) {
         if ((fruitSprite.position.x < itemAreas.basket1.x + itemAreas.basket1.width && fruitSprite.position.x > itemAreas.basket1.x
             && fruitSprite.position.y < itemAreas.basket1.y + itemAreas.basket1.height && fruitSprite.position.y > itemAreas.basket1.y) ||
-            fruitSprite.position.x < itemAreas.basket2.x + itemAreas.basket2.width && fruitSprite.position.x > itemAreas.basket2.x
-            && fruitSprite.position.y < itemAreas.basket2.y + itemAreas.basket2.height && fruitSprite.position.y > itemAreas.basket2.y) {
+            (fruitSprite.position.x < itemAreas.basket2.x + itemAreas.basket2.width && fruitSprite.position.x > itemAreas.basket2.x
+            && fruitSprite.position.y < itemAreas.basket2.y + itemAreas.basket2.height && fruitSprite.position.y > itemAreas.basket2.y)) {
             return true;
         }
         return false;
@@ -121,7 +121,10 @@ function GameController() {
         .add("iZombie", "assets/artwork/zombie8.png")
         .add("infoButton", "assets/ui/Info.png")
         .add("apple", "assets/artwork/apple_small.png")
-        .add("resetButton", "assets/artwork/reset1.png")
+        .add("buttonUp", "assets/ui/button_up.png")
+        .add("buttonOver", "assets/ui/button_over.png")
+        .add("buttonDown", "assets/ui/button_down.png")
+        // .add("resetButton", "assets/artwork/reset1.png")
         .add("launch_up", "assets/artwork/launch_up.png")
         .add("launch_over", "assets/artwork/launch_over.png")
         .add("launch_down", "assets/artwork/launch_down.png")
@@ -274,7 +277,6 @@ var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
             // WHO DO I ADDRESS ???
             //
         }
-
     };
 };
 
@@ -622,7 +624,6 @@ function buildHud() {
 
     var hud = new Graphics(),
         message,
-        infoButton,
         i,
         launchButton,
         helpButton,
@@ -684,9 +685,20 @@ function buildHud() {
         infoStage.visible = true;
         gameStage.visible = false;
     };
+    // Generic button stuff
+    var genericButtonFrames = [
+        resources.buttonUp.texture,
+        resources.buttonOver.texture,
+        resources.buttonDown.texture
+    ];
+    
+    var newButton = tink.button(genericButtonFrames, 100, 100);
+    infoStage.addChild(newButton);
+    
+    
     hud.addChild(helpButton);
-
-    // Fruit amount text (probably placeholder)
+    
+    // Fruit amount
     fruitAmount = new PIXI.Text("Fruit in basket = 0");
     fruitAmount.position.set((itemAreas.basket1.x + itemAreas.basket2.x) / 2, itemAreas.basket1.y - 50);
     fruitAmount.anchor.set(0.5, 0.5);
