@@ -133,6 +133,7 @@ function GameController() {
         .add("help_up", "assets/artwork/help_up.png")
         .add("help_over", "assets/artwork/help_over.png")
         .add("help_down", "assets/artwork/help_down.png")
+        .add("butter_bonus", "assets/artwork/butter.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -377,6 +378,12 @@ function Hero() {
 
 //Creates Bonus Objects with getter and setter methods
 function Bonus() {
+    var bonusPositions = {"butter_positions": [
+        {"x": 725, "y": 50}, 
+        {"x": 662, "y": 50}, 
+        {"x": 599, "y":50}
+    ]
+    };
 
     //creates bonus object with empty sun and butter values
     this.init = function(){
@@ -389,6 +396,22 @@ function Bonus() {
     this.addButterBonus = function(butterAdded){
         this.butterValues += butterAdded;
         console.log(this.butterValues);
+
+        //Tests for adding butter
+        this.butter_sprite = new Sprite(resources.butter_bonus.texture);
+        this.butter_sprite.position.x = bonusPositions.butter_positions[0].x;
+        this.butter_sprite.position.y = bonusPositions.butter_positions[0].y;
+        gameStage.addChild(this.butter_sprite);
+
+        this.butter_sprite2 = new Sprite(resources.butter_bonus.texture);
+        this.butter_sprite2.position.x = bonusPositions.butter_positions[1].x;
+        this.butter_sprite2.position.y = bonusPositions.butter_positions[1].y;
+        gameStage.addChild(this.butter_sprite2);
+
+        this.butter_sprite3 = new Sprite(resources.butter_bonus.texture);
+        this.butter_sprite3.position.x = bonusPositions.butter_positions[2].x;
+        this.butter_sprite3.position.y = bonusPositions.butter_positions[2].y;
+        gameStage.addChild(this.butter_sprite3);
     };
 
     //adds sun bonus value. Takes an int for added bonus
