@@ -134,6 +134,7 @@ function GameController() {
         .add("help_over", "assets/artwork/help_over.png")
         .add("help_down", "assets/artwork/help_down.png")
         .add("butter_bonus", "assets/artwork/butter.png")
+        .add("sun_bonus", "assets/artwork/Bonus_Sun.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -289,12 +290,16 @@ function ZombieController() {
         ]};
 
     this.zombieArray = {};
+
     this.generateZombies = function(){
-        for(i = 0; i < gameLevels.levels[level].zombieCount; i++){
+        /*
+        for(var i = 0; i < gameLevels.levels[level].zombieCount; i++){
             this.zombieArray.push(zombie(i, 1, 1, 5, 10));
             console.log("Pushing zombie onto zombieArray!")
         }
+        */
     }
+
 
     /**
      for (var zombies of this.count){
@@ -382,11 +387,18 @@ function Hero() {
 
 //Creates Bonus Objects with getter and setter methods
 function Bonus() {
-    var bonusPositions = {"butter_positions": [
-        {"x": 725, "y": 50}, 
-        {"x": 662, "y": 50}, 
-        {"x": 599, "y":50}
-    ]
+    var bonusPositions = {
+        "butter_positions": [
+            {"x": 795, "y": 50}, 
+            {"x": 732, "y": 50}, 
+            {"x": 669, "y":50}
+    ],
+        "sun_positions":[
+            {"x": 500, "y": 50},
+            {"x": 425, "y": 50},
+            {"x": 365, "y": 50}
+        ]
+
     };
 
     //creates bonus object with empty sun and butter values
@@ -400,7 +412,7 @@ function Bonus() {
     this.addButterBonus = function(butterAdded){
         this.butterValues += butterAdded;
         console.log(this.butterValues);
-
+        var count
         //Tests for adding butter
         this.butter_sprite = new Sprite(resources.butter_bonus.texture);
         this.butter_sprite.position.x = bonusPositions.butter_positions[0].x;
@@ -422,6 +434,11 @@ function Bonus() {
     this.addSunBonus = function(sunAdded){
         this.sunValues += sunAdded;
         console.log(this.sunValues);
+
+        this.sunBonus_sprite = new Sprite(resources.sun_bonus.texture);
+        this.sunBonus_sprite.position.x = bonusPositions.sun_positions[0].x;
+        this.sunBonus_sprite.position.y = bonusPositions.sun_positions[0].y;
+        gameStage.addChild(this.sunBonus_sprite);
     };
 
     //returns the amount of butter bonuses
