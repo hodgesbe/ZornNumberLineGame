@@ -19,6 +19,7 @@ var htmlWindow;             // This will be the render window
 var stage;                  // The container for PIXI.JS, also called "stage" by a lot of documentation
 var gameStage;              // The container for all game sprites, a child of stage
 var infoStage;              // Container for our information screen
+var mainMenu;               // Container for main menu screen
 var renderer;               // Will create either a Canvas or WebGL renderer depending on the user's computer
 var renderWidth = 1280;
 var renderHeight = 720;
@@ -35,7 +36,7 @@ itemAreas = {
     "tree2": {"x": 880, "y": 190, "width": 325, "height": 250},
     "basket1": {"x": 450, "y": 315, "width": 151, "height": 126},
     "basket2": {"x": 695, "y": 315, "width": 151, "height": 126},
-    "sidewalk": {"x": 0, "y": 625, "width": 1024, "height": 25},
+    "sidewalk": {"x": 0, "y": 625, "width": 1024, "height": 32},
     "sun": {"x": renderWidth -150, "y": 30, "width": 50, "height": 50},
     "zombieCounter": {"x": 0, "y": 0, "width": renderWidth / 4, "height": 100},
     "bonusCounter": {"x": renderWidth / 2 - 150, "y": 0, "width": 300, "height": 100}
@@ -86,11 +87,12 @@ function GameController() {
     console.log("Here we go!");
 
     this.hud = new Graphics();
-    // These variables do not refer to logic inside game, but rather the graphics objects themselves.
     this.zombies = [];
     this.sun = "";
     this.numberLine = "";
     this.game = new Game(this);
+    
+    
     fruitAmount: 0;
     this.currentFruitValue = 0;
     
@@ -106,6 +108,7 @@ function GameController() {
         stage = new PIXI.Container();
         gameStage = new PIXI.Container();
         infoStage = new PIXI.Container();
+        mainMenu = new PIXI.Container();
         
         // Child all screens to the main stage
         stage.addChild(gameStage);
@@ -124,7 +127,6 @@ function GameController() {
         .add("buttonUp", "assets/ui/button_up.png")
         .add("buttonOver", "assets/ui/button_over.png")
         .add("buttonDown", "assets/ui/button_down.png")
-        // .add("resetButton", "assets/artwork/reset1.png")
         .add("launch_up", "assets/artwork/launch_up.png")
         .add("launch_over", "assets/artwork/launch_over.png")
         .add("launch_down", "assets/artwork/launch_down.png")
@@ -135,7 +137,7 @@ function GameController() {
             gameAssets = resources;
             gameController.onAssetsLoaded();
         });
-        console.log(resources);
+        // console.log(resources);
     };
     
     // We have to wait for the assets to finish loading before we can start anything else
@@ -154,18 +156,11 @@ function GameController() {
     
     // Graphics that stay the same throughout levels should be put here.
     this.buildGameWindow = function () {
-        console.log("2 - Level logic has been loaded.");
+        console.log("Building the game window.");
         var i;
         
         // STATIC OBJECTS
-
-//  THERE'S GOT TO BE A BETTER WAY TO ADDRESS THE json OBJECT, BUT I'M AT A LOSS FOR NOW, WILL REVISIT
-        /*itemAreas = {
-            "areas": [
-                {"item": "background", "_x": 0, "_y": 0, "width": 1024, "height": 768},*/
         this.staticBG = new Sprite(gameAssets.staticBG.texture);
-        //this.staticBG.position.x = itemAreas.areas['item.background']._x;
-        //this.staticBG.position.y = itemAreas.areas['item.background']._y;
         this.staticBG.position.x = itemAreas.background.x;
         this.staticBG.position.y = itemAreas.background.y;
         gameStage.addChild(this.staticBG);
@@ -229,7 +224,7 @@ function Game(gc) {
         this.fruitBin.init();
         
         // this.gameController.onLevelLoaded(this.numberLine);
-        console.log("(1) - level created.");
+        console.log("Level " + " created.");
     };
     
     this.getBonusController = function () {
@@ -318,7 +313,6 @@ var NumberLine = function NumberLine() {
     this.length = 0;
         
     this.init = function () {
-        console.log(level);
         var i;
         // Set size based on level
         switch (level) {
@@ -447,8 +441,8 @@ var Fruit = function Fruit (fruitValue){
         // If the mouse is pressed while over this sprite and not currently dragging something else,
         // pick this sprite up and remember its previous position.
         this.fruitSprite.press = () => { // Using = () => over function () binds this object's referencing environment
-            console.log("Fruit clicked: " + this.fruitValue);
             if (dragParams.currentFruit === null) {
+                console.log("Fruit clicked: " + this.fruitValue);
                 dragParams.previousPos.x = this.fruitSprite.position.x;
                 dragParams.previousPos.y = this.fruitSprite.position.y;
                 dragParams.currentFruit = this.fruitSprite;
@@ -459,10 +453,8 @@ var Fruit = function Fruit (fruitValue){
         this.fruitSprite.release = () => {
             if (dragParams.currentFruit === this.fruitSprite) {
                 if (dragParams.overBasket(this.fruitSprite) === true) {
-                    console.log(gameController.currentFruitValue);
                     gameController.currentFruitValue += this.fruitValue;
-                    console.log(gameController.currentFruitValue);
-                    gameController.fruitAmount.text = "Fruit in basket = " + gameController.currentFruitValue;
+                    console.log("Fruit in basket = " + gameController.currentFruitValue);
                     this.fruitSprite.draggable = false;
                 } else {
                     this.fruitSprite.position.x = dragParams.previousPos.x;
@@ -579,7 +571,7 @@ var FruitBin = function FruitBin(){
 // --------------------------------
 
 function displayNumberLine() {
-    console.log("Displaying the numberline.");
+    // console.log("Displaying the numberline.");
     var i,
         line,
         dash,
@@ -589,16 +581,7 @@ function displayNumberLine() {
         numberLine = gameController.game.numberLine;
     
     
-    // First, the line
-    // No longer needed since we have a lovely sidewalk now!
-    /**
-    line = new Graphics();
-    line.lineStyle(4, 0x000000, 1);
-    line.moveTo(numLineParams.startX, numLineParams.Y);
-    line.lineTo(numLineParams.endX, numLineParams.Y);
-    stage.addChild(line); **/
-    
-    // Next, each point and label
+    // Create a dash and a number at each "point" on the number line.
     for (i = 0; i < numberLine.length; i++) {
         console.log("Creating a point!");
         // Create a point
@@ -658,7 +641,7 @@ function buildHud() {
         resources["launch_down"].texture
     ];
 
-    launchButton = tink.button(launchFrame, 498, 370);
+    launchButton = tink.button(launchFrame, renderWidth / 2, 300);
     hud.addChild(launchButton);
 
     //help button
@@ -678,10 +661,11 @@ function buildHud() {
     hud.addChild(helpButton);
     
     // Fruit amount
+    /**
     fruitAmount = new PIXI.Text("Fruit in basket = 0");
     fruitAmount.position.set((itemAreas.basket1.x + itemAreas.basket2.x) / 2, itemAreas.basket1.y - 50);
     fruitAmount.anchor.set(0.5, 0.5);
-    hud.addChild(fruitAmount);
+    hud.addChild(fruitAmount); **/
  
     
     for (i = 0; i < posFruitBin.length; i++){            
