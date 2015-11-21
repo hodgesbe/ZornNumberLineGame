@@ -223,6 +223,10 @@ function Game(gc) {
         this.numberLine.printPoints(); //prints value of each point in console log
         this.fruitBin = new FruitBin();
         this.fruitBin.init();
+
+        //  Zombie Stuff
+        this.zombieController = new ZombieController();
+        this.zombieController.generateZombies();
         
         // this.gameController.onLevelLoaded(this.numberLine);
         console.log("Level " + " created.");
@@ -241,60 +245,64 @@ function Game(gc) {
 // *****************************************************************
 // -----------------------ZOMBIE STUFF------------------------------
 // *****************************************************************
-var ZControl = new ZombieController();
-ZControl.generateZombies();
 
-var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
-    this.id = id;
-    this.speed = speed;
-    this.health = health;
-    this.target = indexOfTarget;
-    this.location = indexOfStart;
-
-    this.hit = function(){
-        this.health--;
-        if(this.health === 0){
-            //  destroy this zombie
-        }
-    };
-    this.move = function(){
-        //  Check if bonus in effect
-        var bonusInEffect = false;
-        if(!bonusInEffect){
-            //  //  update location
-            if(this.target < this.location){
-                this.location--;
-            }
-            else{ this.location++;}
-
-            //  Check for hero hit
-            if(this.location === this.target) {
-                //  Call hero hit routing
-                //  TIE IN ???
-            }
-            //  update sprite drawing
-            // WHO DO I ADDRESS ???
-            //
-        }
-    };
-};
 
 
 function ZombieController() {
-    var gameLevels = {"levels": [
-        {"levelNum": 0, "levelName": "Level 0", "zombieCount": 1},
-        {"levelNum": 1, "levelName": "Level 1", "zombieCount": 2},
-        {"levelNum": 2, "levelName": "Level 2", "zombieCount": 4},
-        {"levelNum": 3, "levelName": "Level 3", "zombieCount": 6}
-        ]};
 
-    this.zombieArray = {};
+    var zombie = function (zombieIndex, zSpeed, zHealth, indexOfTarget, indexOfStart) {
+        this.id = zombieIndex;
+        this.speed = zSpeed;
+        this.health = zHealth;
+        this.target = indexOfTarget;
+        this.start = indexOfStart;
+
+        this.hit = function(){
+            this.health--;
+            if(this.health === 0){
+                //  destroy this zombie
+            }
+        };
+        this.move = function(){
+            //  Check if bonus in effect
+            var bonusInEffect = false;
+            if(!bonusInEffect){
+                //  //  update location
+                if(this.target < this.location){
+                    this.location--;
+                }
+                else{ this.location++;}
+
+                //  Check for hero hit
+                if(this.location === this.target) {
+                    //  Call hero hit routing
+                    //  TIE IN ???
+                }
+                //  update sprite drawing
+                // WHO DO I ADDRESS ???
+                //
+            }
+        };
+    };
+
+
+    var gameLevels = [
+        {"levelNum": "0", "levelName": "Level 0", "zombieCount": "1"}
+        //{"levelNum": 1, "levelName": "Level 1", "zombieCount": 2},
+        //{"levelNum": 2, "levelName": "Level 2", "zombieCount": 4},
+        //{"levelNum": 3, "levelName": "Level 3", "zombieCount": 6}
+        ];
+
+    console.log(gameLevels[0].zombieCount);
+    this.zombieArray = [];
     this.generateZombies = function(){
-        for(i = 0; i < gameLevels.levels[level].zombieCount; i++){
-            this.zombieArray.push(zombie(i, 1, 1, 5, 10));
+        var i;
+        for(i = 0; i < gameLevels[0].zombieCount; i++){
+            console.log("Attempting to create zombie");
+            this.zombieArray[i] = new zombie(i, 1, 1, 5, 10);
             console.log("Pushing zombie onto zombieArray!")
         }
-    }
+    };
 
     /**
      for (var zombies of this.count){
