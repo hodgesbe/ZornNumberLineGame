@@ -111,7 +111,7 @@ function GameController() {
         stage.addChild(gameStage);
         stage.addChild(infoStage);
         
-        renderer.backgroundColor = 0x33CCFF; 
+        renderer.backgroundColor = 0xAAAAAA; 
         htmlWindow.appendChild(renderer.view);
         
         // Load in assets
@@ -382,7 +382,7 @@ function Hero() {
 }
 
 //Creates Bonus Objects with getter and setter methods
-function Bonus(){
+function Bonus() {
 
     //creates bonus object with empty sun and butter values
     this.init = function(){
@@ -501,8 +501,8 @@ var FruitBin = function FruitBin(){
         console.log("Setting location:");
         for (row = 19; row < pos.width; row += 38){
             for (col = 21; col < pos.height; col += 41){
-                this.posLocation.push([pos.x+row,pos.y+col]);
-                this.negLocation.push([neg.x+row,neg.y+col]);
+                this.posLocation.push([pos.x-20+row,pos.y+col]);
+                this.negLocation.push([neg.x-20+row,neg.y+col]);
             }
         }
     }
@@ -648,20 +648,8 @@ function buildHud() {
     message.anchor.x = 0.5;
     hud.addChild(message);
     
-    /**
-    
-    infoButton = new Sprite(resources.infoButton.texture);
-    infoButton.position.y = zombie.height;
-    infoButton.width = 32;
-    infoButton.height = 32;
-    tink.makeInteractive(infoButton);
-    
-    infoButton.press = () => {
 
-    };
-    hud.addChild(infoButton);
-    **/
-    //Buttons
+    // ---Buttons---
 
     //launch button
     var launchFrame = [
@@ -685,15 +673,6 @@ function buildHud() {
         infoStage.visible = true;
         gameStage.visible = false;
     };
-    // Generic button stuff
-    var genericButtonFrames = [
-        resources.buttonUp.texture,
-        resources.buttonOver.texture,
-        resources.buttonDown.texture
-    ];
-    
-    var newButton = tink.button(genericButtonFrames, 100, 100);
-    infoStage.addChild(newButton);
     
     
     hud.addChild(helpButton);
@@ -723,19 +702,43 @@ function randomInt(min, max) {
 }
 
 function buildInfoScreen() {
-    var message = new PIXI.Text("This is our info screen! We can talk about cool info stuff here \nlike how awesome our game is!");
-    infoStage.addChild(message);
+    var title = new PIXI.Text("Project Zorn",
+                              {font: "48px sans-serif", fill: "black"});
+    infoStage.addChild(title);
+    title.position.x = 25;
+    var information = new PIXI.Text("Thanks for trying out our cool game!\n\n"
+                                    + "The zombie apocalypse has happened! You are the lone survivor of your town, trying to hold out for rescue.\n"
+                                    +"Using your fruit, target and destroy incoming zombies - get a direct hit and earn "
+                                    +"some butter - or maybe even the \nlegendary power of the sun!",
+                                    {font: "24px sans-serif", fill: "black"});
+    infoStage.addChild(information);
+    information.position.y = 100;
+    information.position.x = 25;
     
-    var sprite = new PIXI.Sprite(resources.infoButton.texture);
-    sprite.position.x = 200;
-    sprite.position.y = 200;
-    tink.makeInteractive(sprite);
+    // Back button
+    // Generic button stuff
+    var genericButtonFrames = [
+        resources.buttonUp.texture,
+        resources.buttonOver.texture,
+        resources.buttonDown.texture
+    ];
+    var backPosition = {
+        x: 25,
+        y: renderHeight - 100
+    };
     
-    sprite.press = () => {
+    var backButton = tink.button(genericButtonFrames, backPosition.x, backPosition.y);
+    var backMessage = new PIXI.Text("Back");
+    backMessage.position.x = backPosition.x;
+    backMessage.position.y = backPosition.y;
+    backMessage.anchor.x = -0.6;
+    backMessage.anchor.y = -0.6;
+    infoStage.addChild(backButton);
+    infoStage.addChild(backMessage);
+    backButton.press = () => {
         infoStage.visible = false;
         gameStage.visible = true;
     }
-    infoStage.addChild(sprite);
 }
 
 function buildMainMenu() {
