@@ -32,8 +32,8 @@ var pointer;                // Our mouse pointer object
 var itemAreas;
 itemAreas = {
     "background": {"x": 0, "y": 0, "width": 1024, "height": 768},
-    "tree1": {"x": 35, "y": 180, "width": 330, "height": 250},
-    "tree2": {"x": 855, "y": 180, "width": 330, "height": 250},
+    "leftTree": {"x": 65, "y": 180, "width": 330, "height": 250},
+    "rightTree": {"x": 880, "y": 180, "width": 330, "height": 250},
     "basket1": {"x": 450, "y": 315, "width": 151, "height": 126},
     "basket2": {"x": 695, "y": 315, "width": 151, "height": 126},
     "sidewalk": {"x": 0, "y": 625, "width": 1024, "height": 32},
@@ -483,11 +483,11 @@ var FruitBin = function FruitBin(){
     this.posLocation = [];
     this.negLocation = [];
         
-    //---Function to create 2d array of coordinates to display fruit based off tree1 and tree2item areas
+    //---Function to create 2d array of coordinates to display fruit based off leftTree and tree2item areas
     this.setLocation = function (){
         //Alias
-        var pos = itemAreas.tree2,
-            neg = itemAreas.tree1,
+        var pos = itemAreas.rightTree,
+            neg = itemAreas.leftTree,
             row,
             col,
             fruitSprite = new Sprite(resources.apple.texture),
@@ -618,8 +618,8 @@ function buildHud() {
         counter = itemAreas.bonusCounter,
         zombie = itemAreas.zombieCounter,
         fruitAmount;
-        //pos = itemAreas.tree2,
-        //neg = itemAreas.tree1;
+        //pos = itemAreas.rightTree,
+        //neg = itemAreas.leftTree;
     
     // Bonus counter
     hud.lineStyle(3);
