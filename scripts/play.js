@@ -122,9 +122,12 @@ function GameController() {
         .add("infoButton", "assets/ui/Info.png")
         .add("apple", "assets/artwork/apple_small.png")
         .add("resetButton", "assets/artwork/reset1.png")
-        .add("launch_up", "assets/artwork/launchButtonMobile.png")
-        .add("launch_over", "assets/artwork/launchButtonMobile.png")
-        .add("launch_down", "assets/artwork/launchButtonMobile.png")
+        .add("launch_up", "assets/artwork/launch_up.png")
+        .add("launch_over", "assets/artwork/launch_over.png")
+        .add("launch_down", "assets/artwork/launch_down.png")
+        .add("help_up", "assets/artwork/help_up.png")
+        .add("help_over", "assets/artwork/help_over.png")
+        .add("help_down", "assets/artwork/help_down.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -622,7 +625,7 @@ function buildHud() {
         infoButton,
         i,
         launchButton,
-        resetButton,
+        helpButton,
     //Alias
         counter = itemAreas.bonusCounter,
         zombie = itemAreas.zombieCounter,
@@ -657,6 +660,8 @@ function buildHud() {
     hud.addChild(infoButton);
 
     //Buttons
+
+    //launch button
     var launchFrame = [
         resources["launch_up"].texture,
         resources["launch_over"].texture,
@@ -665,6 +670,16 @@ function buildHud() {
 
     launchButton = tink.button(launchFrame, 498, 370);
     hud.addChild(launchButton);
+
+    //help button
+    var helpFrame = [
+        resources["help_up"].texture,
+        resources["help_over"].texture,
+        resources["help_down"].texture
+    ];
+
+    helpButton = tink.button(helpFrame, 960, 5);
+    hud.addChild(helpButton);
 
 
 
