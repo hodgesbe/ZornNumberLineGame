@@ -52,8 +52,8 @@ var dragParams = {
     overBasket: function (fruitSprite) {
         if ((fruitSprite.position.x < itemAreas.basket1.x + itemAreas.basket1.width && fruitSprite.position.x > itemAreas.basket1.x
             && fruitSprite.position.y < itemAreas.basket1.y + itemAreas.basket1.height && fruitSprite.position.y > itemAreas.basket1.y) ||
-            fruitSprite.position.x < itemAreas.basket2.x + itemAreas.basket2.width && fruitSprite.position.x > itemAreas.basket2.x
-            && fruitSprite.position.y < itemAreas.basket2.y + itemAreas.basket2.height && fruitSprite.position.y > itemAreas.basket2.y) {
+            (fruitSprite.position.x < itemAreas.basket2.x + itemAreas.basket2.width && fruitSprite.position.x > itemAreas.basket2.x
+            && fruitSprite.position.y < itemAreas.basket2.y + itemAreas.basket2.height && fruitSprite.position.y > itemAreas.basket2.y)) {
             return true;
         }
         return false;
@@ -121,6 +121,9 @@ function GameController() {
         .add("iZombie", "assets/artwork/zombie8.png")
         .add("infoButton", "assets/ui/Info.png")
         .add("apple", "assets/artwork/apple_small.png")
+        .add("buttonUp", "assets/ui/button_up.png")
+        .add("buttonOver", "assets/ui/button_over.png")
+        .add("buttonDown", "assets/ui/button_down.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -267,7 +270,6 @@ var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
             // WHO DO I ADDRESS ???
             //
         }
-
     };
 };
 
@@ -649,6 +651,17 @@ function buildHud() {
         gameStage.visible = false;
     };
     hud.addChild(infoButton);
+    
+    // Generic button stuff
+    var genericButtonFrames = [
+        resources.buttonUp.texture,
+        resources.buttonOver.texture,
+        resources.buttonDown.texture
+    ];
+    
+    var newButton = tink.button(genericButtonFrames, 100, 100);
+    infoStage.addChild(newButton);
+    
     
     // Fruit amount
     fruitAmount = new PIXI.Text("Fruit in basket = 0");
