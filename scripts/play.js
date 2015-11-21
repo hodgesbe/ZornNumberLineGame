@@ -497,12 +497,16 @@ var FruitBin = function FruitBin(){
         var pos = itemAreas.tree2,
             neg = itemAreas.tree1,
             row,
-            col;
+            col,
+            fruitSprite = new Sprite(resources.apple.texture),
+            fx = fruitSprite.width,
+            fy = fruitSprite.height;
         console.log("Setting location:");
-        for (row = 19; row < pos.width; row += 38){
-            for (col = 21; col < pos.height; col += 41){
-                this.posLocation.push([pos.x-20+row,pos.y+col]);
-                this.negLocation.push([neg.x-20+row,neg.y+col]);
+        console.log(fx);
+        for (row = fx/2; row < pos.width; row += fx){
+            for (col = fy/2; col < pos.height; col += fy){
+                this.posLocation.push([pos.x-(fx/2)+row,pos.y+col]);
+                this.negLocation.push([neg.x-(fx/2)+row,neg.y+col]);
             }
         }
     }
