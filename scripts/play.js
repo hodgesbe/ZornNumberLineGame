@@ -121,19 +121,16 @@ function GameController() {
         .add("iZombie", "assets/artwork/zombie8.png")
         .add("infoButton", "assets/ui/Info.png")
         .add("apple", "assets/artwork/apple_small.png")
-<<<<<<< HEAD
         .add("buttonUp", "assets/ui/button_up.png")
         .add("buttonOver", "assets/ui/button_over.png")
         .add("buttonDown", "assets/ui/button_down.png")
-=======
-        .add("resetButton", "assets/artwork/reset1.png")
+        // .add("resetButton", "assets/artwork/reset1.png")
         .add("launch_up", "assets/artwork/launch_up.png")
         .add("launch_over", "assets/artwork/launch_over.png")
         .add("launch_down", "assets/artwork/launch_down.png")
         .add("help_up", "assets/artwork/help_up.png")
         .add("help_over", "assets/artwork/help_over.png")
         .add("help_down", "assets/artwork/help_down.png")
->>>>>>> e217b272e25ef1717469cc69f64cd059e660e91b
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -627,7 +624,6 @@ function buildHud() {
 
     var hud = new Graphics(),
         message,
-        infoButton,
         i,
         launchButton,
         helpButton,
@@ -689,8 +685,6 @@ function buildHud() {
         infoStage.visible = true;
         gameStage.visible = false;
     };
-    hud.addChild(infoButton);
-    
     // Generic button stuff
     var genericButtonFrames = [
         resources.buttonUp.texture,
