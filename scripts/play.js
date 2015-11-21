@@ -501,8 +501,8 @@ var FruitBin = function FruitBin(){
         console.log("Setting location:");
         for (row = 19; row < pos.width; row += 38){
             for (col = 21; col < pos.height; col += 41){
-                this.posLocation.push([pos.x+row,pos.y+col]);
-                this.negLocation.push([neg.x+row,neg.y+col]);
+                this.posLocation.push([pos.x-20+row,pos.y+col]);
+                this.negLocation.push([neg.x-20+row,neg.y+col]);
             }
         }
     }
