@@ -31,11 +31,11 @@ var pointer;                // Our mouse pointer object
 var itemAreas;
 itemAreas = {
     "background": {"x": 0, "y": 0, "width": 1024, "height": 768},
-    "tree1": {"x": 75, "y": 285, "width": 310, "height": 225},
-    "tree2": {"x": 885, "y": 285, "width": 310, "height": 225},
-    "basket1": {"x": 380, "y": 350, "width": 80, "height": 80},
-    "basket2": {"x": 600, "y": 350, "width": 80, "height": 80},
-    "sidewalk": {"x": 0, "y": 642, "width": 1024, "height": 30},
+    "tree1": {"x": 65, "y": 190, "width": 325, "height": 250},
+    "tree2": {"x": 880, "y": 190, "width": 325, "height": 250},
+    "basket1": {"x": 450, "y": 315, "width": 151, "height": 126},
+    "basket2": {"x": 695, "y": 315, "width": 151, "height": 126},
+    "sidewalk": {"x": 0, "y": 625, "width": 1024, "height": 25},
     "sun": {"x": renderWidth -150, "y": 30, "width": 50, "height": 50},
     "zombieCounter": {"x": 0, "y": 0, "width": renderWidth / 4, "height": 100},
     "bonusCounter": {"x": renderWidth / 2 - 150, "y": 0, "width": 300, "height": 100}
