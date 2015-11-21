@@ -20,7 +20,7 @@ var stage;                  // The container for PIXI.JS, also called "stage" by
 var gameStage;              // The container for all game sprites, a child of stage
 var infoStage;              // Container for our information screen
 var renderer;               // Will create either a Canvas or WebGL renderer depending on the user's computer
-var renderWidth = 1024;
+var renderWidth = 1280;
 var renderHeight = 720;
 var gameAssets;             // Contains references to our game's loaded assets
 var level;                  // Current level of game
@@ -31,8 +31,8 @@ var pointer;                // Our mouse pointer object
 var itemAreas;
 itemAreas = {
     "background": {"x": 0, "y": 0, "width": 1024, "height": 768},
-    "tree1": {"x": 70, "y": 350, "width": 200, "height": 160},
-    "tree2": {"x": 770, "y": 350, "width": 200, "height": 160},
+    "tree1": {"x": 75, "y": 285, "width": 310, "height": 225},
+    "tree2": {"x": 885, "y": 285, "width": 310, "height": 225},
     "basket1": {"x": 380, "y": 350, "width": 80, "height": 80},
     "basket2": {"x": 600, "y": 350, "width": 80, "height": 80},
     "sidewalk": {"x": 0, "y": 642, "width": 1024, "height": 30},
@@ -116,14 +116,24 @@ function GameController() {
         
         // Load in assets
         PIXI.loader
-        .add("staticBG", "assets/artwork/staticBG.png")
+        .add("staticBG", "assets/artwork/ZornBG_1280x720-ALT.png")
         .add("image_sun", "assets/artwork/sun.png")
         .add("iZombie", "assets/artwork/zombie8.png")
         .add("infoButton", "assets/ui/Info.png")
         .add("apple", "assets/artwork/apple_small.png")
+<<<<<<< HEAD
         .add("buttonUp", "assets/ui/button_up.png")
         .add("buttonOver", "assets/ui/button_over.png")
         .add("buttonDown", "assets/ui/button_down.png")
+=======
+        .add("resetButton", "assets/artwork/reset1.png")
+        .add("launch_up", "assets/artwork/launch_up.png")
+        .add("launch_over", "assets/artwork/launch_over.png")
+        .add("launch_down", "assets/artwork/launch_down.png")
+        .add("help_up", "assets/artwork/help_up.png")
+        .add("help_over", "assets/artwork/help_over.png")
+        .add("help_down", "assets/artwork/help_down.png")
+>>>>>>> e217b272e25ef1717469cc69f64cd059e660e91b
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -619,6 +629,8 @@ function buildHud() {
         message,
         infoButton,
         i,
+        launchButton,
+        helpButton,
     //Alias
         counter = itemAreas.bonusCounter,
         zombie = itemAreas.zombieCounter,
@@ -640,6 +652,8 @@ function buildHud() {
     message.anchor.x = 0.5;
     hud.addChild(message);
     
+    /**
+    
     infoButton = new Sprite(resources.infoButton.texture);
     infoButton.position.y = zombie.height;
     infoButton.width = 32;
@@ -647,6 +661,31 @@ function buildHud() {
     tink.makeInteractive(infoButton);
     
     infoButton.press = () => {
+
+    };
+    hud.addChild(infoButton);
+    **/
+    //Buttons
+
+    //launch button
+    var launchFrame = [
+        resources["launch_up"].texture,
+        resources["launch_over"].texture,
+        resources["launch_down"].texture
+    ];
+
+    launchButton = tink.button(launchFrame, 498, 370);
+    hud.addChild(launchButton);
+
+    //help button
+    var helpFrame = [
+        resources["help_up"].texture,
+        resources["help_over"].texture,
+        resources["help_down"].texture
+    ];
+
+    helpButton = tink.button(helpFrame, 0, zombie.height);
+    helpButton.press = () => {
         infoStage.visible = true;
         gameStage.visible = false;
     };
@@ -662,6 +701,8 @@ function buildHud() {
     var newButton = tink.button(genericButtonFrames, 100, 100);
     infoStage.addChild(newButton);
     
+    
+    hud.addChild(helpButton);
     
     // Fruit amount
     fruitAmount = new PIXI.Text("Fruit in basket = 0");
@@ -701,4 +742,8 @@ function buildInfoScreen() {
         gameStage.visible = true;
     }
     infoStage.addChild(sprite);
+}
+
+function buildMainMenu() {
+    
 }
