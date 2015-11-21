@@ -245,6 +245,9 @@ function Game(gc) {
 // *****************************************************************
 // -----------------------ZOMBIE STUFF------------------------------
 // *****************************************************************
+var ZControl = new ZombieController();
+ZControl.generateZombies();
+
 var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
     this.id = id;
     this.speed = speed;
@@ -281,25 +284,26 @@ var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
 };
 
 
-var zombieController = function () {
+function ZombieController() {
     var gameLevels = {"levels": [
-        {"levelNum": 1, "levelName": "Level 1", "levelRange": 20, "zombieCount": 2},
-        {"levelNum": 2, "levelName": "Level 2", "levelRange": 15, "zombieCount": 4},
-        {"levelNum": 3, "levelName": "Level 3", "levelRange": 10, "zombieCount": 6}
-        ]},
-        i,
-        zombies;
-    this.range = range;
-    this.count = count;
-    this.zombieArray = {};
+        {"levelNum": 0, "levelName": "Level 0", "zombieCount": 1},
+        {"levelNum": 1, "levelName": "Level 1", "zombieCount": 2},
+        {"levelNum": 2, "levelName": "Level 2", "zombieCount": 4},
+        {"levelNum": 3, "levelName": "Level 3", "zombieCount": 6}
+        ]};
 
-    for(i = 0; i < count; i++){
-        this.zombieArray.push(zombie(i, 1, 1, 5, 10));
+    this.zombieArray = {};
+    this.generateZombies = function(){
+        for(i = 0; i < gameLevels.levels[level].zombieCount; i++){
+            this.zombieArray.push(zombie(i, 1, 1, 5, 10));
+            console.log("Pushing zombie onto zombieArray!")
+        }
     }
+
     /**
      for (var zombies of this.count){
         // this.zombieArray.push(zombie(zombies, ));
-    } 
+    }
 
     var updateZombies = function () {
         for(zombies of this.zombieArray){
