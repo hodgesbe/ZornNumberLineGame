@@ -17,7 +17,8 @@
 // -------------------------------------------------
 var htmlWindow;             // This will be the render window
 var stage;                  // The container for PIXI.JS, also called "stage" by a lot of documentation
-var gameStage;              // The container for all game sprites, a child of stage
+var gameStage;              // The container for all other game stages
+var dynamicStage;           // The container for all game sprites, a child of stage
 var infoStage;              // Container for our information screen
 var mainMenu;               // Container for main menu screen
 var renderer;               // Will create either a Canvas or WebGL renderer depending on the user's computer
@@ -90,6 +91,7 @@ function GameController() {
     this.zombies = [];
     this.sun = "";
     this.numberLine = "";
+    this.clouds = "";
     this.game = new Game(this);
     
     
@@ -106,13 +108,10 @@ function GameController() {
         htmlWindow = document.getElementById("renderWindow");
         renderer = PIXI.autoDetectRenderer(renderWidth, renderHeight);
         stage = new PIXI.Container();
+        dynamicStage = new PIXI.Container();
         gameStage = new PIXI.Container();
         infoStage = new PIXI.Container();
         mainMenu = new PIXI.Container();
-        
-        // Child all screens to the main stage
-        stage.addChild(gameStage);
-        stage.addChild(infoStage);
         
         renderer.backgroundColor = 0xAAAAAA; 
         htmlWindow.appendChild(renderer.view);
@@ -133,6 +132,7 @@ function GameController() {
         .add("help_up", "assets/artwork/help_up.png")
         .add("help_over", "assets/artwork/help_over.png")
         .add("help_down", "assets/artwork/help_down.png")
+        .add("cloud1", "assets/artwork/cloud1.png")
         .add("butter_bonus", "assets/artwork/butter.png")
         .load(function (loader, resources) {
             gameAssets = resources;
@@ -170,9 +170,19 @@ function GameController() {
         this.sun.position.x = itemAreas.sun.x;
         this.sun.position.y = itemAreas.sun.y;
         gameStage.addChild(this.sun);
+    
+        // Build the clouds
+        this.clouds = new Clouds();
+        
+        // add dynamic stage
+        // Child all screens to the main stage
+        stage.addChild(gameStage);
+        stage.addChild(infoStage);
+        stage.addChild(dynamicStage);
         
         // Build the HUD
         buildHud();
+
         
         // Build other screens
         buildInfoScreen();
@@ -195,6 +205,7 @@ function GameController() {
 function render() {
     requestAnimationFrame(render); // This line ensures that render is called each frame, not just once.
     tink.update();
+    gameController.clouds.Move();
     renderer.render(stage);
 }
 
@@ -205,6 +216,7 @@ function Game(gc) {
     this.numberLine = ""; // We want to initialize this again every new level
     this.directHits = 0;
     this.fruitBucket = "";
+    this.fruitBin = new FruitBin();
     
     // Stuff that should happen once, at the start of a game
     this.init = function () {
@@ -221,14 +233,12 @@ function Game(gc) {
         this.numberLine = new NumberLine();
         this.numberLine.init();
         this.numberLine.printPoints(); //prints value of each point in console log
-        this.fruitBin = new FruitBin();
         this.fruitBin.init();
 
         //  Zombie Stuff
         this.zombieController = new ZombieController();
         this.zombieController.generateZombies();
         
-        // this.gameController.onLevelLoaded(this.numberLine);
         console.log("Level " + " created.");
     };
     
@@ -505,11 +515,11 @@ var Fruit = function Fruit (fruitValue){
         //add sprite and message to graphic
         this.fruitGraphic.addChild(this.fruitSprite);
         this.fruitSprite.addChild(message);
-        // gameStage.addChild(this.fruitSprite);
+        // dynamicStage.addChild(this.fruitSprite);
     }
 };
 
-var FruitBin = function FruitBin(){
+function FruitBin() { 
     
     var fruitTarget, //target sum of all fruit values        
         fruitMin, //minimum number of all fruit needed for level
@@ -540,6 +550,7 @@ var FruitBin = function FruitBin(){
     
     //---Function to set sprite locations for each fruit
     this.addFruit = function (){
+        console.log("Adding fruit");
         
         var i,
             index,
@@ -548,6 +559,7 @@ var FruitBin = function FruitBin(){
         this.setLocation(); //fill pos and neg arrays with possible values
         //randomly select a location for each fruit from posible location
         for (i = 0; i < posFruitBin.length; i++){
+            console.log("Adding fruit: " + i);
             //randomly select positve location
             index = randomInt(0,this.posLocation.length-1);
             coords = this.posLocation.splice(index, 1);
@@ -558,9 +570,10 @@ var FruitBin = function FruitBin(){
             coords = this.negLocation.splice(index, 1);
             negFruitBin[i].addLoc(coords[0][0],coords[0][1]);
             
-            //add graphics to gameStage container      -----------------------------------NOT WORKING HERE-----------------------
-            gameStage.addChild(posFruitBin[i].fruitGraphic);
-            gameStage.addChild(negFruitBin[i].fruitGraphic);
+            //add graphics to dynamicStage container      -----------------------------------NOT WORKING HERE-----------------------
+            console.log(posFruitBin[i].fruitGraphic);
+            dynamicStage.addChild(posFruitBin[i].fruitGraphic);
+            dynamicStage.addChild(negFruitBin[i].fruitGraphic);
         }
     }
     
@@ -571,7 +584,8 @@ var FruitBin = function FruitBin(){
             negFruitValues = [];
         
         switch (level) {
-            case 0:            
+            case 0:
+                console.log("Switching on level creating bin - level: " + level);
                 fruitTarget = 42;
                 fruitMin = 15;
                 possibleValues = [1,1,1,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,5];
@@ -629,7 +643,7 @@ function displayNumberLine() {
         //console.log("x: " + numberLine.points[i].x + ", y: " + numberLine.points[i].y);
         dash.drawRect(numberLine.points[i].x, numberLine.points[i].y, dashWidth, itemAreas.sidewalk.height);
         dash.endFill();
-        gameStage.addChild(dash);
+        dynamicStage.addChild(dash);
         
         // Create a number
         // It should be placed beneath the bottom of the dash that has just been drawn
@@ -637,7 +651,7 @@ function displayNumberLine() {
                                {font: "24px sans-serif", fill: "white"});
         message.position.set(numberLine.points[i].x, numberLine.points[i].y + itemAreas.sidewalk.height);
         message.anchor.set(0.5, 0);
-        gameStage.addChild(message);
+        dynamicStage.addChild(message);
     }
 }
 
@@ -692,26 +706,16 @@ function buildHud() {
 
     helpButton = tink.button(helpFrame, 0, zombie.height);
     helpButton.press = () => {
-        infoStage.visible = true;
-        gameStage.visible = false;
+        // Only do buttons if we aren't dragging fruit
+        if (dragParams.currentFruit === null) {
+            infoStage.visible = true;
+            dynamicStage.visible = false;
+        }
+
     };
     
     
     hud.addChild(helpButton);
-    
-    // Fruit amount
-    /**
-    fruitAmount = new PIXI.Text("Fruit in basket = 0");
-    fruitAmount.position.set((itemAreas.basket1.x + itemAreas.basket2.x) / 2, itemAreas.basket1.y - 50);
-    fruitAmount.anchor.set(0.5, 0.5);
-    hud.addChild(fruitAmount); **/
- 
-    
-    for (i = 0; i < posFruitBin.length; i++){            
-        //add graphics to gameStage container      
-        hud.addChild(posFruitBin[i].fruitGraphic);
-        hud.addChild(negFruitBin[i].fruitGraphic);
-    }
     
     gameController.hud = hud;
     gameController.fruitAmount = fruitAmount;
@@ -760,10 +764,71 @@ function buildInfoScreen() {
     infoStage.addChild(backMessage);
     backButton.press = () => {
         infoStage.visible = false;
-        gameStage.visible = true;
+        dynamicStage.visible = true;
     }
+}
+
+function buildStaticGraphics() {
+    
 }
 
 function buildMainMenu() {
     
+}
+
+var Clouds = function Clouds() {
+    var currentTicks = 0,
+        createNewAtTick = 120,
+        clouds = [];
+    
+    this.Move = function() {
+        currentTicks++;
+        if (currentTicks > createNewAtTick) {
+            currentTicks = 0;
+            console.log(clouds.length);
+            var cloud = new Cloud();
+            cloud.init(clouds.length);
+            clouds[clouds.length] = cloud;
+            // console.log(clouds.length);
+        }
+        var i;
+        for (i = 0; i < clouds.length; i++) {
+            clouds[i].Move();
+        }
+        // console.log(currentTicks);
+    };
+    
+    /**
+    this.removeCloudAt = function (index) {
+        clouds.splice(index, 1);
+    }; **/
+}
+
+var Cloud = function Cloud() {
+    var speed,
+        sprite,
+        index;
+    
+    this.init = function (index) {
+        this.index = index;
+        sprite = new Sprite(resources.cloud1.texture);
+        sprite.position.x -= sprite.width;
+        sprite.position.y = Math.random() * 100;
+        speed = Math.random()*4 + 2; // 2-6 
+        gameStage.addChild(sprite);
+        
+    };
+    
+    this.Move = function() {
+        sprite.position.x += speed;
+        if(sprite.position.x > renderWidth) {
+            this.Remove();
+        }
+    };
+    
+    this.Remove = function() {
+        gameStage.removeChild(sprite);
+        // TODO: Fix this so that we don't have a massive array memory leak
+        // gameController.clouds.removeCloudAt(index);
+    };
 }
