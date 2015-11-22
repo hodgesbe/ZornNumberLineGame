@@ -293,7 +293,7 @@ function ZombieController() {
         //{"levelNum": 3, "levelName": "Level 3", "zombieCount": 6}
         ];
 
-    console.log(gameLevels[0].zombieCount);
+    console.log(gameLevels[level].zombieCount);
     this.zombieArray = [];
     this.generateZombies = function(){
         var i;
