@@ -33,8 +33,8 @@ var pointer;                // Our mouse pointer object
 var itemAreas;
 itemAreas = {
     "background": {"x": 0, "y": 0, "width": 1024, "height": 768},
-    "tree1": {"x": 35, "y": 180, "width": 330, "height": 250},
-    "tree2": {"x": 855, "y": 180, "width": 330, "height": 250},
+    "leftTree": {"x": 65, "y": 180, "width": 330, "height": 250},
+    "rightTree": {"x": 880, "y": 180, "width": 330, "height": 250},
     "basket1": {"x": 450, "y": 315, "width": 151, "height": 126},
     "basket2": {"x": 695, "y": 315, "width": 151, "height": 126},
     "sidewalk": {"x": 0, "y": 625, "width": 1024, "height": 32},
@@ -133,6 +133,7 @@ function GameController() {
         .add("help_over", "assets/artwork/help_over.png")
         .add("help_down", "assets/artwork/help_down.png")
         .add("cloud1", "assets/artwork/cloud1.png")
+        .add("butter_bonus", "assets/artwork/butter.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -233,6 +234,10 @@ function Game(gc) {
         this.numberLine.init();
         this.numberLine.printPoints(); //prints value of each point in console log
         this.fruitBin.init();
+
+        //  Zombie Stuff
+        this.zombieController = new ZombieController();
+        this.zombieController.generateZombies();
         
         console.log("Level " + " created.");
     };
@@ -250,61 +255,69 @@ function Game(gc) {
 // *****************************************************************
 // -----------------------ZOMBIE STUFF------------------------------
 // *****************************************************************
-var zombie = function (id, speed, health, indexOfTarget, indexOfStart) {
-    this.id = id;
-    this.speed = speed;
-    this.health = health;
-    this.target = indexOfTarget;
-    this.location = indexOfStart;
 
-    this.hit = function(){
-        this.health--;
-        if(this.health === 0){
-            //  destroy this zombie
+
+
+function ZombieController() {
+
+    var zombie = function (zombieIndex, zSpeed, zHealth, indexOfTarget, indexOfStart) {
+        this.id = zombieIndex;
+        this.speed = zSpeed;
+        this.health = zHealth;
+        this.target = indexOfTarget;
+        this.start = indexOfStart;
+
+        this.hit = function(){
+            this.health--;
+            if(this.health === 0){
+                //  destroy this zombie
+            }
+        };
+        this.move = function(){
+            //  Check if bonus in effect
+            var bonusInEffect = false;
+            if(!bonusInEffect){
+                //  //  update location
+                if(this.target < this.location){
+                    this.location--;
+                }
+                else{ this.location++;}
+
+                //  Check for hero hit
+                if(this.location === this.target) {
+                    //  Call hero hit routing
+                    //  TIE IN ???
+                }
+                //  update sprite drawing
+                // WHO DO I ADDRESS ???
+                //
+            }
+        };
+    };
+
+
+    var gameLevels = [
+        {"levelNum": "0", "levelName": "Level 0", "zombieCount": "1"}
+        //{"levelNum": 1, "levelName": "Level 1", "zombieCount": 2},
+        //{"levelNum": 2, "levelName": "Level 2", "zombieCount": 4},
+        //{"levelNum": 3, "levelName": "Level 3", "zombieCount": 6}
+        ];
+
+    console.log(gameLevels[0].zombieCount);
+    this.zombieArray = [];
+    this.generateZombies = function(){
+        var i;
+        for(i = 0; i < gameLevels[0].zombieCount; i++){
+            console.log("Attempting to create zombie");
+            this.zombieArray[i] = new zombie(i, 1, 1, 5, 10);
+            console.log("Pushing zombie onto zombieArray!")
         }
     };
-    this.move = function(){
-        //  Check if bonus in effect
-        var bonusInEffect = false;
-        if(!bonusInEffect){
-            //  //  update location
-            if(this.target < this.location){
-                this.location--;
-            }
-            else{ this.location++;}
 
-            //  Check for hero hit
-            if(this.location === this.target) {
-                //  Call hero hit routing
-                //  TIE IN ???
-            }
-            //  update sprite drawing
-            // WHO DO I ADDRESS ???
-            //
-        }
-    };
-};
-
-
-var zombieController = function () {
-    var gameLevels = {"levels": [
-        {"levelNum": 1, "levelName": "Level 1", "levelRange": 20, "zombieCount": 2},
-        {"levelNum": 2, "levelName": "Level 2", "levelRange": 15, "zombieCount": 4},
-        {"levelNum": 3, "levelName": "Level 3", "levelRange": 10, "zombieCount": 6}
-        ]},
-        i,
-        zombies;
-    this.range = range;
-    this.count = count;
-    this.zombieArray = {};
-
-    for(i = 0; i < count; i++){
-        this.zombieArray.push(zombie(i, 1, 1, 5, 10));
-    }
     /**
      for (var zombies of this.count){
         // this.zombieArray.push(zombie(zombies, ));
-    } 
+    }
 
     var updateZombies = function () {
         for(zombies of this.zombieArray){
@@ -387,6 +400,12 @@ function Hero() {
 
 //Creates Bonus Objects with getter and setter methods
 function Bonus() {
+    var bonusPositions = {"butter_positions": [
+        {"x": 725, "y": 50}, 
+        {"x": 662, "y": 50}, 
+        {"x": 599, "y":50}
+    ]
+    };
 
     //creates bonus object with empty sun and butter values
     this.init = function(){
@@ -399,6 +418,22 @@ function Bonus() {
     this.addButterBonus = function(butterAdded){
         this.butterValues += butterAdded;
         console.log(this.butterValues);
+
+        //Tests for adding butter
+        this.butter_sprite = new Sprite(resources.butter_bonus.texture);
+        this.butter_sprite.position.x = bonusPositions.butter_positions[0].x;
+        this.butter_sprite.position.y = bonusPositions.butter_positions[0].y;
+        gameStage.addChild(this.butter_sprite);
+
+        this.butter_sprite2 = new Sprite(resources.butter_bonus.texture);
+        this.butter_sprite2.position.x = bonusPositions.butter_positions[1].x;
+        this.butter_sprite2.position.y = bonusPositions.butter_positions[1].y;
+        gameStage.addChild(this.butter_sprite2);
+
+        this.butter_sprite3 = new Sprite(resources.butter_bonus.texture);
+        this.butter_sprite3.position.x = bonusPositions.butter_positions[2].x;
+        this.butter_sprite3.position.y = bonusPositions.butter_positions[2].y;
+        gameStage.addChild(this.butter_sprite3);
     };
 
     //adds sun bonus value. Takes an int for added bonus
@@ -493,18 +528,22 @@ function FruitBin() {
     this.posLocation = [];
     this.negLocation = [];
         
-    //---Function to create 2d array of coordinates to display fruit based off tree1 and tree2item areas
+    //---Function to create 2d array of coordinates to display fruit based off leftTree and tree2item areas
     this.setLocation = function (){
         //Alias
-        var pos = itemAreas.tree2,
-            neg = itemAreas.tree1,
+        var pos = itemAreas.rightTree,
+            neg = itemAreas.leftTree,
             row,
-            col;
+            col,
+            fruitSprite = new Sprite(resources.apple.texture),
+            fx = fruitSprite.width,
+            fy = fruitSprite.height;
         console.log("Setting location:");
-        for (row = 19; row < pos.width; row += 38){
-            for (col = 21; col < pos.height; col += 41){
-                this.posLocation.push([pos.x-20+row,pos.y+col]);
-                this.negLocation.push([neg.x-20+row,neg.y+col]);
+        console.log(fx);
+        for (row = fx/2; row < pos.width; row += fx){
+            for (col = fy/2; col < pos.height; col += fy){
+                this.posLocation.push([pos.x-(fx/2)+row,pos.y+col]);
+                this.negLocation.push([neg.x-(fx/2)+row,neg.y+col]);
             }
         }
     }
@@ -628,8 +667,8 @@ function buildHud() {
         counter = itemAreas.bonusCounter,
         zombie = itemAreas.zombieCounter,
         fruitAmount;
-        //pos = itemAreas.tree2,
-        //neg = itemAreas.tree1;
+        //pos = itemAreas.rightTree,
+        //neg = itemAreas.leftTree;
     
     // Bonus counter
     hud.lineStyle(3);
