@@ -462,31 +462,37 @@ function Bonus() {
     //adds butter bonus value. Takes an int for added bonus
     this.addButterBonus = function(){
         console.log(this.butterValues);
-        this.butter_bonus_count++;
-
-        gameStage.addChild(this.butter_sprites_Arr[this.butter_bonus_count-1]);
+        if (this.butter_bonus_count<3){
+            this.butter_bonus_count++;
+            gameStage.addChild(this.butter_sprites_Arr[this.butter_bonus_count-1]);
+        }
 
     };
 
     //removes butter bonus
     this.removeButterBonus = function(){
         console.log("removing butter!");
-        gameStage.removeChild(this.butter_sprites_Arr[this.butter_bonus_count-1]);
-        this.butter_bonus_count--;
-    }
+        if(this.butter_bonus_count>0){
+            gameStage.removeChild(this.butter_sprites_Arr[this.butter_bonus_count-1]);
+            this.butter_bonus_count--;
+        }
+    };
 
     //adds sun bonus value. Takes an int for added bonus
     this.addSunBonus = function(){
         console.log(this.sunValues);
-        this.sun_bonus_count++;
-
-        gameStage.addChild(this.sun_sprite_Arr[this.sun_bonus_count-1]);
+        if(this.sun_bonus_count<3){
+            this.sun_bonus_count++;
+            gameStage.addChild(this.sun_sprite_Arr[this.sun_bonus_count-1]);
+        }
     };
 
     this.removeSunBonus = function(){
         console.log("Removing sun bonus!")
-        gameStage.removeChild(this.sun_sprite_Arr[this.sun_bonus_count-1]);
-        this.sun_bonus_count--;
+        if(this.sun_bonus_count>0){
+            gameStage.removeChild(this.sun_sprite_Arr[this.sun_bonus_count-1]);
+            this.sun_bonus_count--;
+        }
     }
 
     //returns the amount of butter bonuses
