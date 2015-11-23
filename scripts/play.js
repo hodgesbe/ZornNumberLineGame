@@ -134,6 +134,7 @@ function GameController() {
         .add("help_down", "assets/artwork/help_down.png")
         .add("cloud1", "assets/artwork/cloud1.png")
         .add("butter_bonus", "assets/artwork/butter.png")
+        .add("sun_bonus", "assets/artwork/Bonus_Sun.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -400,47 +401,84 @@ function Hero() {
 
 //Creates Bonus Objects with getter and setter methods
 function Bonus() {
-    var bonusPositions = {"butter_positions": [
-        {"x": 725, "y": 50}, 
-        {"x": 662, "y": 50}, 
-        {"x": 599, "y":50}
-    ]
-    };
+
+    this.butter_sprites_Arr;
+    this.sun_sprite_Arr;
+    this.butter_bonus_count;
+    this.sun_bonus_count;
+
 
     //creates bonus object with empty sun and butter values
     this.init = function(){
-        this.sunValues = 2;
-        this.butterValues = 0;
         console.log("Bonus init. Sun: " + this.sunValues + ", Butter: " + this.butterValues + ".");
+
+
+        this.butter_bonus_count = 0,
+        this.sun_bonus_count = 0;
+
+        //creates 3 butter_bonus sprites
+        var butter_sprite1 = new Sprite(resources.butter_bonus.texture);
+        var butter_sprite2 = new Sprite(resources.butter_bonus.texture);
+        var butter_sprite3 = new Sprite(resources.butter_bonus.texture);
+
+        //assigns position to the sprites
+        butter_sprite1.position.x = 684;
+        butter_sprite1.position.y = 50;
+        butter_sprite2.position.x = 747;
+        butter_sprite2.position.y = 50;
+        butter_sprite3.position.x = 810;
+        butter_sprite3.position.y = 50;
+
+        //adds butter_bonus sprites to an array
+        this.butter_sprites_Arr = [butter_sprite1, butter_sprite2, butter_sprite3];
+
+        //Creates 3 sun_bonus_sprite objects
+        var sun_bonus_sprite1 = new Sprite(resources.sun_bonus.texture);
+        var sun_bonus_sprite2 = new Sprite(resources.sun_bonus.texture);
+        var sun_bonus_sprite3 = new Sprite(resources.sun_bonus.texture);
+
+        //assigns position to sun_bonus_sprites
+        sun_bonus_sprite1.position.x = 537;
+        sun_bonus_sprite1.position.y = 50;
+        sun_bonus_sprite2.position.x = 435;
+        sun_bonus_sprite2.position.y = 50;
+        sun_bonus_sprite3.position.x = 333;
+        sun_bonus_sprite3.position.y = 50;
+
+        //adds sun_bonus_sprites to array
+        this.sun_sprite_Arr = [sun_bonus_sprite1, sun_bonus_sprite2, sun_bonus_sprite3];
+
     };
 
     //adds butter bonus value. Takes an int for added bonus
-    this.addButterBonus = function(butterAdded){
-        this.butterValues += butterAdded;
+    this.addButterBonus = function(){
         console.log(this.butterValues);
+        this.butter_bonus_count++;
 
-        //Tests for adding butter
-        this.butter_sprite = new Sprite(resources.butter_bonus.texture);
-        this.butter_sprite.position.x = bonusPositions.butter_positions[0].x;
-        this.butter_sprite.position.y = bonusPositions.butter_positions[0].y;
-        gameStage.addChild(this.butter_sprite);
+        gameStage.addChild(this.butter_sprites_Arr[this.butter_bonus_count-1]);
 
-        this.butter_sprite2 = new Sprite(resources.butter_bonus.texture);
-        this.butter_sprite2.position.x = bonusPositions.butter_positions[1].x;
-        this.butter_sprite2.position.y = bonusPositions.butter_positions[1].y;
-        gameStage.addChild(this.butter_sprite2);
-
-        this.butter_sprite3 = new Sprite(resources.butter_bonus.texture);
-        this.butter_sprite3.position.x = bonusPositions.butter_positions[2].x;
-        this.butter_sprite3.position.y = bonusPositions.butter_positions[2].y;
-        gameStage.addChild(this.butter_sprite3);
     };
+
+    //removes butter bonus
+    this.removeButterBonus = function(){
+        console.log("removing butter!");
+        gameStage.removeChild(this.butter_sprites_Arr[this.butter_bonus_count-1]);
+        this.butter_bonus_count--;
+    }
 
     //adds sun bonus value. Takes an int for added bonus
-    this.addSunBonus = function(sunAdded){
-        this.sunValues += sunAdded;
+    this.addSunBonus = function(){
         console.log(this.sunValues);
+        this.sun_bonus_count++;
+
+        gameStage.addChild(this.sun_sprite_Arr[this.sun_bonus_count-1]);
     };
+
+    this.removeSunBonus = function(){
+        console.log("Removing sun bonus!")
+        gameStage.removeChild(this.sun_sprite_Arr[this.sun_bonus_count-1]);
+        this.sun_bonus_count--;
+    }
 
     //returns the amount of butter bonuses
     this.getButterBonus = function(){
