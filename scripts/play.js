@@ -135,7 +135,7 @@ function GameController() {
         .add("cloud1", "assets/artwork/cloud1.png")
         .add("butter_bonus", "assets/artwork/butter.png")
         .add("sun_bonus", "assets/artwork/Bonus_Sun.png")
-        .add("game_character", "assets/artwork/game_character.png")
+        .add("game_character", "assets/artwork/hero.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -377,6 +377,7 @@ var Point = function Point(value, index, length) {
 function Hero() {
 
     //Creates a new Hero object with full health
+
     this.init = function () {
         this.health = 100;
         console.log("Current Hero health: " + this.health);
