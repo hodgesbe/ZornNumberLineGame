@@ -135,6 +135,7 @@ function GameController() {
         .add("cloud1", "assets/artwork/cloud1.png")
         .add("butter_bonus", "assets/artwork/butter.png")
         .add("sun_bonus", "assets/artwork/Bonus_Sun.png")
+        .add("game_character", "assets/artwork/game_character.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -381,6 +382,13 @@ function Hero() {
         console.log("Current Hero health: " + this.health);
     };
 
+    this.showHero = function(){
+        var hero_sprite = new Sprite(resources.game_character.texture);
+        hero_sprite.position.x = 590;
+        hero_sprite.position.y = 500;
+        gameStage.addChild(hero_sprite);
+    };
+
     //default damage (decrements by 5)
     this.takeDamage = function () {
         this.health = this.health - 5;
@@ -413,8 +421,9 @@ function Bonus() {
         console.log("Bonus init. Sun: " + this.sunValues + ", Butter: " + this.butterValues + ".");
 
 
-        this.butter_bonus_count = 0,
+        this.butter_bonus_count = 0;
         this.sun_bonus_count = 0;
+
 
         //creates 3 butter_bonus sprites
         var butter_sprite1 = new Sprite(resources.butter_bonus.texture);
@@ -482,12 +491,12 @@ function Bonus() {
 
     //returns the amount of butter bonuses
     this.getButterBonus = function(){
-      return this.butterValues;
+      return this.butter_bonus_count;
     };
 
     //returns the amount of sun bonuses
     this.getSunBonus = function(){
-        return this.sunValues;
+        return this.sun_bonus_count;
     };
 
 }
