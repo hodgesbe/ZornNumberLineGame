@@ -40,6 +40,7 @@ stage
 var stage;                  // The container for PIXI.JS, also called "stage" by a lot of documentation
 var gameStage;              // The container for all other game layers
 var infoStage;              // Container for our information screen
+var gameOverStage;          //Container for our game over screen
 var mainMenu;               // Container for main menu screen
 var backgroundLayer;        // Contains static background images
 var cloudLayer;             // Contains moving clouds
@@ -128,6 +129,7 @@ function GameController() {
         stage = new PIXI.Container();
         gameStage = new PIXI.Container();
         infoStage = new PIXI.Container();
+        gameOverStage = new PIXI.Container();
         mainMenu = new PIXI.Container();
         
         backgroundLayer = new PIXI.Container();
@@ -163,6 +165,9 @@ function GameController() {
         .add("reset_over", "assets/artwork/reset_over.png")
         .add("reset_down", "assets/artwork/reset_down.png")
         .add("pow_effect", "assets/artwork/pow_effect.png")
+        .add("play_again_up", "assets/artwork/play_again.png")
+        .add("play_again_over", "assets/artwork/play_again_over.png")
+        .add("play_again_down", "assets/artwork/play_again_down.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -216,10 +221,12 @@ function GameController() {
         
         // Hide other screens
         infoStage.visible = false;
+        gameOverStage.visible = false;
 
         // Now that everything is constructed, we can add them to the scene
         stage.addChild(gameStage);
         stage.addChild(infoStage);
+        stage.addChild(gameOverStage)
         
         gameStage.addChild(backgroundLayer);
         gameStage.addChild(cloudLayer);
@@ -467,25 +474,30 @@ function Hero() {
 
     //default damage (decrements by 10)
     this.takeDamage = function () {
-        this.health = this.health - 10;
-        console.log("Current Hero health: " + this.health);
-        //take damage is not updating health bar.
-        //Should be decrementing when takeDamage is called so should be listening outside the hero function
-        healthBar.outer.width -= 20;
-        gameStage.removeChild(healthTitle);
-        healthTitle = new PIXI.Text(
-            "Hero's Health: " + this.health + "%",
-            {font: "32px Sans-serif", fill: "white"}
-        );
-        healthTitle.x = 878;
-        healthTitle.y = 2;
-        gameStage.addChild(healthTitle);
+        if(this.health>0) {
+            this.health = this.health - 10;
+            console.log("Current Hero health: " + this.health);
+            //take damage is not updating health bar.
+            //Should be decrementing when takeDamage is called so should be listening outside the hero function
+            healthBar.outer.width -= 20;
+            gameStage.removeChild(healthTitle);
+            healthTitle = new PIXI.Text(
+                "Hero's Health: " + this.health + "%",
+                {font: "32px Sans-serif", fill: "white"}
+            );
+            healthTitle.x = 878;
+            healthTitle.y = 2;
+            gameStage.addChild(healthTitle);
 
-        var pow = new Sprite(resources.pow_effect.texture);
-        pow.position.set(550, 400);
-        gameStage.addChild(pow);
-        //Need to add a remove or fade function.
-
+            var pow = new Sprite(resources.pow_effect.texture);
+            pow.position.set(550, 400);
+            gameStage.addChild(pow);
+            //Need to add a remove or fade function.
+        }else if(this.health === 0){
+            buildGameOverScreen();
+            gameStage.visible = false;
+            gameOverStage.visible = true;
+        }
     };
 
     //returns hero health
@@ -943,6 +955,33 @@ function buildInfoScreen() {
         gameStage.interactive = true;
         infoStage.interactive = false;
     }
+}
+
+function buildGameOverScreen() {
+    var title = new PIXI.Text("Game Over",
+        {font: "48px sans-serif", fill: "black"});
+    gameOverStage.addChild(title);
+    title.position.x = 25;
+    var information = new PIXI.Text("Sorry, Captain Corn was defeated by the zombies.",
+        {font: "24px sans-serif", fill: "black"});
+    gameOverStage.addChild(information);
+    information.position.y = 100;
+    information.position.x = 25;
+
+    var genericButtonFrames = [
+        resources.play_again_up.texture,
+        resources.play_again_over.texture,
+        resources.play_again_down.texture
+    ];
+    var playAgainPosition = {
+        x: 25,
+        y: renderHeight - 100
+    };
+
+    var backButton = tink.button(genericButtonFrames, playAgainPosition.x, playAgainPosition.y);
+
+    gameOverStage.addChild(backButton);
+
 }
 
 function buildStaticGraphics() {
