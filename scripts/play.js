@@ -16,11 +16,7 @@
 // The scene itself, and positioning of the objects in the scene
 // -------------------------------------------------
 var htmlWindow;             // This will be the render window
-var stage;                  // The container for PIXI.JS, also called "stage" by a lot of documentation
-var gameStage;              // The container for all other game stages
-var dynamicStage;           // The container for all game sprites, a child of stage
-var infoStage;              // Container for our information screen
-var mainMenu;               // Container for main menu screen
+
 var renderer;               // Will create either a Canvas or WebGL renderer depending on the user's computer
 var renderWidth = 1280;
 var renderHeight = 720;
@@ -28,6 +24,28 @@ var gameAssets;             // Contains references to our game's loaded assets
 var level;                  // Current level of game
 var tink;                   // Handler to access the Tink library of functions. See: https://github.com/kittykatattack/tink
 var pointer;                // Our mouse pointer object
+
+/**
+In terms of hierarchy, our scene works as such:
+stage
+    mainMenu
+    gameStage
+        backgroundLayer
+        cloudLayer
+        hudLayer
+        dynamicLayer
+        topLayer
+    infoStage
+**/
+var stage;                  // The container for PIXI.JS, also called "stage" by a lot of documentation
+var gameStage;              // The container for all other game layers
+var infoStage;              // Container for our information screen
+var mainMenu;               // Container for main menu screen
+var backgroundLayer;        // Contains static background images
+var cloudLayer;             // Contains moving clouds
+var hudLayer;               // Contains UI elements such as buttons
+var dynamicLayer;           // Contains apples, zombies, player, etc.
+var topLayer;               // Contains whatever item is currently being dragged
 
 //  Graphic Items coordinates as JSON array object.
 var itemAreas;
@@ -108,10 +126,15 @@ function GameController() {
         htmlWindow = document.getElementById("renderWindow");
         renderer = PIXI.autoDetectRenderer(renderWidth, renderHeight);
         stage = new PIXI.Container();
-        dynamicStage = new PIXI.Container();
         gameStage = new PIXI.Container();
         infoStage = new PIXI.Container();
         mainMenu = new PIXI.Container();
+        
+        backgroundLayer = new PIXI.Container();
+        cloudLayer = new PIXI.Container();
+        hudLayer = new PIXI.Container();
+        dynamicLayer = new PIXI.Container();
+        topLayer = new PIXI.Container();
         
         renderer.backgroundColor = 0xAAAAAA; 
         htmlWindow.appendChild(renderer.view);
@@ -178,9 +201,7 @@ function GameController() {
         
         // add dynamic stage
         // Child all screens to the main stage
-        stage.addChild(gameStage);
-        stage.addChild(infoStage);
-        stage.addChild(dynamicStage);
+
         
         // Build the HUD
         buildHud();
@@ -192,6 +213,15 @@ function GameController() {
         // Hide other screens
         infoStage.visible = false;
 
+        // Now that everything is constructed, we can add them to the scene
+        stage.addChild(gameStage);
+        stage.addChild(infoStage);
+        
+        gameStage.addChild(backgroundLayer);
+        gameStage.addChild(cloudLayer);
+        gameStage.addChild(hudLayer);
+        gameStage.addChild(dynamicLayer);
+        gameStage.addChild(topLayer);
         render();
     };
     
@@ -579,6 +609,7 @@ var Fruit = function Fruit (fruitValue){
                 dragParams.previousPos.x = this.fruitSprite.position.x;
                 dragParams.previousPos.y = this.fruitSprite.position.y;
                 dragParams.currentFruit = this.fruitSprite;
+                topLayer.addChild(this.fruitSprite);
             }
         };
         
@@ -595,6 +626,7 @@ var Fruit = function Fruit (fruitValue){
                     
                 }
                 dragParams.currentFruit = null;
+                dynamicLayer.addChild(this.fruitSprite);
 
             }
         };
@@ -660,8 +692,8 @@ function FruitBin() {
             
             //add graphics to dynamicStage container      -----------------------------------NOT WORKING HERE-----------------------
             console.log(posFruitBin[i].fruitGraphic);
-            dynamicStage.addChild(posFruitBin[i].fruitGraphic);
-            dynamicStage.addChild(negFruitBin[i].fruitGraphic);
+            dynamicLayer.addChild(posFruitBin[i].fruitGraphic);
+            dynamicLayer.addChild(negFruitBin[i].fruitGraphic);
         }
     }
     
@@ -731,7 +763,7 @@ function displayNumberLine() {
         //console.log("x: " + numberLine.points[i].x + ", y: " + numberLine.points[i].y);
         dash.drawRect(numberLine.points[i].x, numberLine.points[i].y, dashWidth, itemAreas.sidewalk.height);
         dash.endFill();
-        dynamicStage.addChild(dash);
+        backgroundLayer.addChild(dash);
         
         // Create a number
         // It should be placed beneath the bottom of the dash that has just been drawn
@@ -739,7 +771,7 @@ function displayNumberLine() {
                                {font: "24px sans-serif", fill: "white"});
         message.position.set(numberLine.points[i].x, numberLine.points[i].y + itemAreas.sidewalk.height);
         message.anchor.set(0.5, 0);
-        dynamicStage.addChild(message);
+        backgroundLayer.addChild(message);
     }
 }
 
@@ -760,14 +792,14 @@ function buildHud() {
     
     // Bonus counter
     hud.lineStyle(3);
-    hud.drawRect(counter.x, counter.y, counter.width, counter.height);
-    message = new PIXI.Text("Bonus Counter");
+    // hud.drawRect(counter.x, counter.y, counter.width, counter.height);
+    message = new PIXI.Text("Bonus!");
     message.position.set(counter.x + counter.width/2, counter.y);
     message.anchor.x = 0.5;
     hud.addChild(message);
     // Zombie counter
     hud.drawRect(zombie.x, zombie.y, zombie.width, zombie.height);
-    message = new PIXI.Text("Zombie Counter");
+    message = new PIXI.Text("Zombies Left");
     message.position.set(zombie.x + zombie.width/2, zombie.y);
     message.anchor.x = 0.5;
     hud.addChild(message);
@@ -797,7 +829,9 @@ function buildHud() {
         // Only do buttons if we aren't dragging fruit
         if (dragParams.currentFruit === null) {
             infoStage.visible = true;
-            dynamicStage.visible = false;
+            gameStage.visible = false;
+            gameStage.interactive = false;
+            infoStage.interactive = true;
         }
 
     };
@@ -807,7 +841,7 @@ function buildHud() {
     
     gameController.hud = hud;
     gameController.fruitAmount = fruitAmount;
-    gameStage.addChild(gameController.hud); 
+    hudLayer.addChild(gameController.hud); 
 
 }
 
@@ -852,7 +886,9 @@ function buildInfoScreen() {
     infoStage.addChild(backMessage);
     backButton.press = () => {
         infoStage.visible = false;
-        dynamicStage.visible = true;
+        gameStage.visible = true;
+        gameStage.interactive = true;
+        infoStage.interactive = false;
     }
 }
 
@@ -914,7 +950,7 @@ var Cloud = function Cloud() {
         sprite.position.x -= sprite.width;
         sprite.position.y = Math.random() * 100;
         speed = Math.random()*1.5 + 1; // 1-2.5 
-        gameStage.addChild(sprite);
+        cloudLayer.addChild(sprite);
         
     };
     
@@ -927,7 +963,7 @@ var Cloud = function Cloud() {
     };
     
     this.Remove = function() {
-        gameStage.removeChild(sprite);
+        cloudLayer.removeChild(sprite);
         // TODO: Fix this so that we don't have a massive array memory leak
         // gameController.clouds.removeCloudAt(index);
     };
