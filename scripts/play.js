@@ -159,6 +159,10 @@ function GameController() {
         .add("butter_bonus", "assets/artwork/butter.png")
         .add("sun_bonus", "assets/artwork/Bonus_Sun.png")
         .add("game_character", "assets/artwork/hero.png")
+        .add("reset_up", "assets/artwork/reset_up.png")
+        .add("reset_over", "assets/artwork/reset_over.png")
+        .add("reset_down", "assets/artwork/reset_down.png")
+        .add("pow_effect", "assets/artwork/pow_effect.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -410,15 +414,20 @@ function Hero() {
     var healthBar = new PIXI.Container();
     var innerBar = new Graphics();
     var outerBar = new PIXI.Graphics();
+    var healthTitle;
+    var damageCount = 0;
 
+    //should display character on initilization but is not working
+    //the function is called and the console logs show up
+    //possibly is being called before the stage is being built?
     this.init = function () {
         this.health = 100;
         console.log("Current Hero health: " + this.health);
-
-        //health bar
+        this.showHero();
     };
 
-    this.showHero = function(){
+    //temporary function to display hero until we can figure out why it wont display during initialization
+    this.showHero = function () {
         var hero_sprite = new Sprite(resources.game_character.texture);
         hero_sprite.position.x = 590;
         hero_sprite.position.y = 500;
@@ -445,8 +454,8 @@ function Hero() {
 
         //text with health is not working properly as health is not updating when player takes damage.
         //should also be placed in the "play" function or outside of the hero function
-        var healthTitle = new PIXI.Text(
-            "Hero's Health: "+this.health+"%",
+        healthTitle = new PIXI.Text(
+            "Hero's Health: " + this.health + "%",
             {font: "32px Sans-serif", fill: "white"}
         );
         healthTitle.x = 878;
@@ -456,24 +465,31 @@ function Hero() {
     };
 
 
-    //default damage (decrements by 5)
-    this.takeDamage = function () {
-        this.health = this.health - 5;
-        console.log("Current Hero health: " + this.health);
-        //take damage is not updating health bar.
-        //Should be decrementing when takeDamage is called so should be listening outside the hero function
-        healthBar.outer.width -=20;
-    };
-
-    //decreases hero health by amount passed to function as int
+    //default damage (decrements by 10)
     this.takeDamage = function () {
         this.health = this.health - 10;
         console.log("Current Hero health: " + this.health);
+        //take damage is not updating health bar.
+        //Should be decrementing when takeDamage is called so should be listening outside the hero function
+        healthBar.outer.width -= 20;
+        gameStage.removeChild(healthTitle);
+        healthTitle = new PIXI.Text(
+            "Hero's Health: " + this.health + "%",
+            {font: "32px Sans-serif", fill: "white"}
+        );
+        healthTitle.x = 878;
+        healthTitle.y = 2;
+        gameStage.addChild(healthTitle);
+
+        var pow = new Sprite(resources.pow_effect.texture);
+        pow.position.set(550, 400);
+        gameStage.addChild(pow);
+        //Need to add a remove or fade function.
 
     };
 
     //returns hero health
-    this.returnHealth = function(){
+    this.returnHealth = function () {
         return this.health;
     };
 }
@@ -811,6 +827,7 @@ function buildHud() {
         i,
         launchButton,
         helpButton,
+        resetButton,
     //Alias
         counter = itemAreas.bonusCounter,
         zombie = itemAreas.zombieCounter,
@@ -842,7 +859,7 @@ function buildHud() {
         resources["launch_down"].texture
     ];
 
-    launchButton = tink.button(launchFrame, renderWidth / 2, 300);
+    launchButton = tink.button(launchFrame, renderWidth / 2.3, 250);
     hud.addChild(launchButton);
 
     //help button
@@ -863,6 +880,14 @@ function buildHud() {
         }
 
     };
+    //reset button
+    var resetFrame = [
+        resources["reset_up"].texture,
+        resources['reset_over'].texture,
+        resources["reset_down"].texture
+    ];
+    resetButton = tink.button(resetFrame, renderWidth / 1.9, 270);
+    hud.addChild(resetButton);
     
     
     hud.addChild(helpButton);
