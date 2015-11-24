@@ -559,9 +559,9 @@ var Fruit = function Fruit (fruitValue){
         // this.fruitSprite.anchor.set(0.5, 0.5);
         //overlay message on sprite
         if (fruitValue < 0) {
-            message.anchor.set(-0.5, -0.5);
+            message.anchor.set(-0.5, -0.55);
         } else {
-            message.anchor.set(-1, -0.7);
+            message.anchor.set(-1.1, -0.55);
         }
         
         message.position.set(0,0);
@@ -621,19 +621,31 @@ function FruitBin() {
         //Alias
         var pos = itemAreas.rightTree,
             neg = itemAreas.leftTree,
-            row,
-            col,
+            row, col,
             fruitSprite = new Sprite(resources.apple.texture),
+            fx, fy,
+            posLoc = [[],[],[],[],[],[],[],[],[]], negLoc = [[],[],[],[],[],[],[],[],[]],
+            r, c, box;
+        
             fx = fruitSprite.width,
             fy = fruitSprite.height;
-        console.log("Setting location:");
-        console.log(fx);
-        for (row = fx/2; row < pos.width; row += fx){
-            for (col = fy/2; col < pos.height; col += fy){
-                this.posLocation.push([pos.x-(fx/2)+row,pos.y+col]);
-                this.negLocation.push([neg.x-(fx/2)+row,neg.y+col]);
+            
+        //Fill location values with all available locations within tree boxes
+        for (row = fx/2; row < neg.width-0.5*fx; row += 1.5*fx){
+            if (row < neg.width/3){r=0;}
+            else if (row < neg.width*2/3){r=1;}
+            else {r=2;}
+            for (col = fy/2; col < neg.height-0.5*fy; col += 1.5*fy){
+                if (col < neg.height/3){c=0;}
+                else if (col < neg.height*2/3){c=1;}
+                else {c=2;}
+                box = 3*r+c;
+                posLoc[box].push([pos.x-(fx/2)+row,pos.y+col]);
+                negLoc[box].push([neg.x-(fx/2)+row,neg.y+col]);
             }
         }
+        this.posLocation = posLoc;
+        this.negLocation = negLoc;        
     }
     
     //---Function to set sprite locations for each fruit
@@ -641,28 +653,44 @@ function FruitBin() {
         console.log("Adding fruit");
         
         var i,
+            posPool,
+            negPool,
             index,
-            coords = [];
+            coords = [],
+            box,
+            counter = 0;
         
-        this.setLocation(); //fill pos and neg arrays with possible values
+        //fill pos and neg arrays with possible values
+        this.setLocation(); 
+        console.log("Needed Fruit: "+posFruitBin.length);
+        console.log("Set location:");
+        
         //randomly select a location for each fruit from posible location
         for (i = 0; i < posFruitBin.length; i++){
-            console.log("Adding fruit: " + i);
-            //randomly select positve location
-            index = randomInt(0,this.posLocation.length-1);
-            coords = this.posLocation.splice(index, 1);
+            counter++;
+            box = i%9;
+            posPool = this.posLocation[box];
+            negPool = this.negLocation[box];
+            console.log("Adding fruit: " + box);
+            console.log(posPool);
+            //randomly select positve location from pool of positive indices
+            index = randomInt(0, posPool.length-1);
+            coords = posPool.splice(index, 1);
+            //console.log("index: "+index+" coords: ");
+            //console.log(coords);
             posFruitBin[i].addLoc(coords[0][0],coords[0][1]);
             
-            //randomly select negative location
-            index = randomInt(0,this.negLocation.length-1);
-            coords = this.negLocation.splice(index, 1);
+            //randomly select negative location from pool of negative indices
+            index = randomInt(0, negPool.length-1);
+            coords = negPool.splice(index, 1);
             negFruitBin[i].addLoc(coords[0][0],coords[0][1]);
             
             //add graphics to dynamicStage container      -----------------------------------NOT WORKING HERE-----------------------
-            console.log(posFruitBin[i].fruitGraphic);
+            //console.log(posFruitBin[i].fruitGraphic);
             dynamicStage.addChild(posFruitBin[i].fruitGraphic);
             dynamicStage.addChild(negFruitBin[i].fruitGraphic);
         }
+        console.log("Ending fruit: "+counter);
     }
     
     //---Randomly select fruit values, create fruit with those values
