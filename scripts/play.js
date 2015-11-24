@@ -114,6 +114,8 @@ function GameController() {
     this.numberLine = "";
     this.clouds = "";
     this.game = new Game(this);
+    this.basket1 = "";
+    this.basket2 = "";
     
     
     fruitAmount: 0;
@@ -170,6 +172,7 @@ function GameController() {
         .add("play_again_up", "assets/artwork/play_again.png")
         .add("play_again_over", "assets/artwork/play_again_over.png")
         .add("play_again_down", "assets/artwork/play_again_down.png")
+        .add("basket", "assets/artwork/Basket.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -206,6 +209,15 @@ function GameController() {
         this.sun.position.x = itemAreas.sun.x;
         this.sun.position.y = itemAreas.sun.y;
         gameStage.addChild(this.sun);
+        
+        this.basket1 = new Sprite(gameAssets.basket.texture);
+        this.basket1.position.x = itemAreas.basket1.x;
+        this.basket1.position.y = itemAreas.basket1.y;
+        this.basket2 = new Sprite(gameAssets.basket.texture);
+        this.basket2.position.x = itemAreas.basket2.x;
+        this.basket2.position.y = itemAreas.basket2.y;
+        gameStage.addChild(this.basket1);
+        gameStage.addChild(this.basket2);
     
         // Build the clouds
         this.clouds = new Clouds();
@@ -862,7 +874,7 @@ function buildHud() {
     message.anchor.x = 0.5;
     hud.addChild(message);
     // Zombie counter
-    hud.drawRect(zombie.x, zombie.y, zombie.width, zombie.height);
+    // hud.drawRect(zombie.x, zombie.y, zombie.width, zombie.height);
     message = new PIXI.Text("Zombies Left");
     message.position.set(zombie.x + zombie.width/2, zombie.y);
     message.anchor.x = 0.5;
@@ -879,6 +891,11 @@ function buildHud() {
     ];
 
     launchButton = tink.button(launchFrame, renderWidth / 2.3, 250);
+    launchButton.press = () => {
+        if (dragParams.currentFruit === null) {
+            
+        }
+    };
     hud.addChild(launchButton);
 
     //help button
@@ -908,6 +925,8 @@ function buildHud() {
     resetButton = tink.button(resetFrame, renderWidth / 1.9, 270);
     resetButton.press = () => {
         var i;
+        // Only do buttons if we aren't dragging fruit
+        if (dragParams.currentFruit === null) {
         for (i = 0; i < dragParams.fruitsInBasket.length; i++) {
             console.log("Trying to reset fruit");
             console.log(dragParams.fruitsInBasket[i].fruitSprite.position.x)
@@ -916,6 +935,7 @@ function buildHud() {
             dragParams.fruitsInBasket[i].fruitSprite.draggable = true;
         }
         dragParams.fruitsInBasket = [];
+        }
     };
     hud.addChild(resetButton);
     
