@@ -866,14 +866,15 @@ function buildMainMenu() {
 
 var Clouds = function Clouds() {
     var currentTicks = 0,
-        createNewAtTick = 120,
+        createNewAtTick = Math.random() * 120 + 120, // Every 2 to 4 seconds
         clouds = [];
     
     this.Move = function() {
         currentTicks++;
         if (currentTicks > createNewAtTick) {
             currentTicks = 0;
-            console.log(clouds.length);
+            createNewAtTick = Math.random() * 120 + 120;
+            // console.log(clouds.length);
             var cloud = new Cloud();
             cloud.init(clouds.length);
             clouds[clouds.length] = cloud;
@@ -882,9 +883,19 @@ var Clouds = function Clouds() {
         var i;
         for (i = 0; i < clouds.length; i++) {
             clouds[i].Move();
+            if(clouds[i].isOffscreen()) {
+                clouds[i].Remove();
+                clouds.splice(i, 1);
+            }
         }
         // console.log(currentTicks);
     };
+    
+    this.addCloud = function() {
+        var cloud = new Cloud();
+        cloud.init(clouds.length);
+        clouds[clouds.length] = cloud;
+    }
     
     /**
     this.removeCloudAt = function (index) {
@@ -902,16 +913,17 @@ var Cloud = function Cloud() {
         sprite = new Sprite(resources.cloud1.texture);
         sprite.position.x -= sprite.width;
         sprite.position.y = Math.random() * 100;
-        speed = Math.random()*4 + 2; // 2-6 
+        speed = Math.random()*1.5 + 1; // 1-2.5 
         gameStage.addChild(sprite);
         
     };
     
     this.Move = function() {
         sprite.position.x += speed;
-        if(sprite.position.x > renderWidth) {
-            this.Remove();
-        }
+    };
+    
+    this.isOffscreen = function() {
+        return sprite.position.x > renderWidth;
     };
     
     this.Remove = function() {
