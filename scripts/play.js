@@ -309,10 +309,6 @@ function Game(gc) {
     
 }
 
-
-    
-
-
 // Builds the static HUD elements like counters, buttons, etc.
 function buildHud() {
 

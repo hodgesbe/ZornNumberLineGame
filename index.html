@@ -12,10 +12,11 @@
 </head>
 <body>
 
+    <!-- PIXI will be rendered here. -->
     <div id="renderWindow">
-        <!-- Note that in CSS this is defined to completely encircle a 1280x720 canvas. We might want to set it resizable, but that seems a safe size for most modern PCs. -->
-        <!--<img src="assets/artwork/Initial_PreMockup-01-01.jpg" alt="Mockup Game Artwork"/> -->
     </div>
+    
+    <!-- Start Debug -->
     <div>
         These buttons should be part of the game interface.
         <br>
@@ -33,7 +34,7 @@
         <button onclick="gameController.game.hero.takeDamage()">Hero Damage</button>
         <button onclick="gameController.clouds.addCloud()">Cloud Me Bro!</button>
     </div>
-
+    <!-- End debug -->
     
     
     <!-- Include our logic scripts. We put them at the bottom here so that we can access things that load in the body of
@@ -49,4 +50,3 @@ this webpage.-->
     <script src="scripts/play.js"></script> <!-- Type lets us use things like "let", delete and it will break -->
 </body>
 </html>
-
