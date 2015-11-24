@@ -49,37 +49,10 @@ var Tink = (function () {
         sprites[_key] = arguments[_key];
       }
 
-      //If the first argument isn't an array of sprites...
-      if (!(sprites[0] instanceof Array)) {
-        sprites.forEach(function (sprite) {
-          _this.draggableSprites.push(sprite);
-
-          //If the sprite's `draggable` property hasn't already been defined by
-          //another library, like Hexi, define it
-          if (sprite.draggable === undefined) {
-            sprite.draggable = true;
-            sprite._localDraggableAllocation = true;
-          }
-        });
-      }
-
-      //If the first argument is an array of sprites...
-      else {
-          var spritesArray = sprites[0];
-          if (spritesArray.length > 0) {
-            for (var i = spritesArray.length - 1; i >= 0; i--) {
-              var sprite = spritesArray[i];
-              this.draggableSprites.push(sprite);
-
-              //If the sprite's `draggable` property hasn't already been defined by
-              //another library, like Hexi, define it
-              if (sprite.draggable === undefined) {
-                sprite.draggable = true;
-                sprite._localDraggableAllocation = true;
-              }
-            }
-          }
-        }
+      sprites.forEach(function (sprite) {
+        _this.draggableSprites.push(sprite);
+        sprite.draggable = true;
+      });
     }
 
     //`makeUndraggable` removes the sprite from the `draggableSprites`
@@ -93,25 +66,10 @@ var Tink = (function () {
         sprites[_key2] = arguments[_key2];
       }
 
-      //If the first argument isn't an array of sprites...
-      if (!(sprites[0] instanceof Array)) {
-        sprites.forEach(function (sprite) {
-          _this2.draggableSprites.splice(_this2.draggableSprites.indexOf(sprite), 1);
-          if (sprite._localDraggableAllocation === true) sprite.draggable = false;
-        });
-      }
-
-      //If the first argument is an array of sprites
-      else {
-          var spritesArray = sprites[0];
-          if (spritesArray.length > 0) {
-            for (var i = spritesArray.length - 1; i >= 0; i--) {
-              var sprite = spritesArray[i];
-              this.draggableSprites.splice(this.draggableSprites.indexOf(sprite), 1);
-              if (sprite._localDraggableAllocation === true) sprite.draggable = false;
-            }
-          }
-        }
+      sprites.forEach(function (sprite) {
+        _this2.draggableSprites.splice(_this2.draggableSprites.indexOf(sprite), 1);
+        sprite.undraggable = false;
+      });
     }
   }, {
     key: "makePointer",
@@ -524,10 +482,10 @@ var Tink = (function () {
         //draggable sprite
         draggableSprites.some(function (sprite) {
           if (pointer.hitTestSprite(sprite) && sprite.draggable) {
-            if (pointer.visible) pointer.cursor = "pointer";
+            if (!pointer.visible) pointer.cursor = "pointer";
             return true;
           } else {
-            if (pointer.visible) pointer.cursor = "auto";
+            if (!pointer.visible) pointer.cursor = "auto";
             return false;
           }
         });
@@ -761,7 +719,7 @@ var Tink = (function () {
     /*
     `keyboard` is a method that listens for and captures keyboard events. It's really
     just a convenient wrapper function for HTML `keyup` and `keydown` events so that you can keep your application code clutter-free and easier to write and read.
-     Here's how to use the `keyboard` method. Create a new keyboard object like this:
+      Here's how to use the `keyboard` method. Create a new keyboard object like this:
     ```js
     let keyObject = keyboard(asciiKeyCodeNumber);
     ```
