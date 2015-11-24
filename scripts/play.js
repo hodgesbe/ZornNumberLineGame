@@ -78,7 +78,9 @@ var dragParams = {
             return true;
         }
         return false;
-    }
+    },
+    maxFruit: 2,
+    fruitsInBasket: []
 };
 
 var numLineParams = {
@@ -606,6 +608,7 @@ var Fruit = function Fruit (fruitValue){
     this.fruitValue = fruitValue; //value to be displayed on fruit
     this.fruitGraphic = new Graphics(); //Graphic that contains both fruit sprite and value message
     this.fruitSprite = new Sprite(resources.apple.texture); //actual sprite
+    this.previousPos = {x: 0, y: 0};
     var message = new PIXI.Text("" + this.fruitValue,
                                {font: "16px sans-serif", fill: "white"}); //message which displays value
     
@@ -644,10 +647,14 @@ var Fruit = function Fruit (fruitValue){
         // If the mouse is released while dragging this sprite, return it to previous position
         this.fruitSprite.release = () => {
             if (dragParams.currentFruit === this.fruitSprite) {
-                if (dragParams.overBasket(this.fruitSprite) === true) {
+                if (dragParams.overBasket(this.fruitSprite) === true && dragParams.fruitsInBasket.length < dragParams.maxFruit) {
                     gameController.currentFruitValue += this.fruitValue;
                     console.log("Fruit in basket = " + gameController.currentFruitValue);
                     this.fruitSprite.draggable = false;
+                    dragParams.fruitsInBasket[dragParams.fruitsInBasket.length] = this;
+                    console.log(dragParams.fruitsInBasket.length);
+                    this.previousPos.x = dragParams.previousPos.x;
+                    this.previousPos.y = dragParams.previousPos.y;
                 } else {
                     this.fruitSprite.position.x = dragParams.previousPos.x;
                     this.fruitSprite.position.y = dragParams.previousPos.y;
@@ -899,6 +906,17 @@ function buildHud() {
         resources["reset_down"].texture
     ];
     resetButton = tink.button(resetFrame, renderWidth / 1.9, 270);
+    resetButton.press = () => {
+        var i;
+        for (i = 0; i < dragParams.fruitsInBasket.length; i++) {
+            console.log("Trying to reset fruit");
+            console.log(dragParams.fruitsInBasket[i].fruitSprite.position.x)
+            dragParams.fruitsInBasket[i].fruitSprite.position.x = dragParams.fruitsInBasket[i].previousPos.x;
+            dragParams.fruitsInBasket[i].fruitSprite.position.y = dragParams.fruitsInBasket[i].previousPos.y;
+            dragParams.fruitsInBasket[i].fruitSprite.draggable = true;
+        }
+        dragParams.fruitsInBasket = [];
+    };
     hud.addChild(resetButton);
     
     

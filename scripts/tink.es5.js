@@ -761,7 +761,7 @@ var Tink = (function () {
     /*
     `keyboard` is a method that listens for and captures keyboard events. It's really
     just a convenient wrapper function for HTML `keyup` and `keydown` events so that you can keep your application code clutter-free and easier to write and read.
-     Here's how to use the `keyboard` method. Create a new keyboard object like this:
+      Here's how to use the `keyboard` method. Create a new keyboard object like this:
     ```js
     let keyObject = keyboard(asciiKeyCodeNumber);
     ```
