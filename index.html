@@ -1,35 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Zorn Number Line Defense</title>
-    <meta name="author" content="Jason, Nicholas, Ben, Brett">
-    <meta name="description" content="Zorn is a number line defense game aimed at helping students
-    learn the basic principle of number lines.">
-    <meta name="keywords" content="Zorn, math games, number lines, math, tower defense">
-    <link rel="stylesheet" href="css/style.css" type="text/css">
-    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="scripts/numberLine.js"></script>
+    <title>Zorn!!!</title>
+    <!-- Include required libraries for pixi.js    -->
+    <script src="scripts/pixi3.08.js"></script>
+    <script src="scripts/tink.es5.js"></script>
+
+    <!-- Include styling -->
+    <link rel="stylesheet" href="CSS/style.css" type="text/css">
 </head>
 <body>
 
-    <img id="underConstruction" src="assets/artwork/Under-construction-sign1.jpg" alt="" align="center"/>
-    <h1>Welcome to Zorn Number Line Defense</h1>
-
-
-    <div class="intro">
-        <h3>Instructions</h3>
-        <img src="assets/artwork/cartoon-zombies-1.jpg" alt="picture of a zombie" align="top"/>
-        <p>The objective of the game is to prevent zombies from reaching your house. You must pick a piece of fruit from each tree
-        and place it into your fruito-matic targeting system. Each piece of fruit represents either a positive or negative number and
-        these numbers must add up to equal the position of the zombie on the side walk.</p>
+    <div id="renderWindow">
+        <!-- Note that in CSS this is defined to completely encircle a 1280x720 canvas. We might want to set it resizable, but that seems a safe size for most modern PCs. -->
+        <!--<img src="assets/artwork/Initial_PreMockup-01-01.jpg" alt="Mockup Game Artwork"/> -->
     </div>
+    <div>
+        These buttons should be part of the game interface.
+        <br>
+        <button onclick="location.href='index.html'">Home</button>
+        <button onclick="location.href='play.html'">Start Over</button>
+        <button onclick="window.open('help.html','fullscreen=no','width=550, height=375','menubar=no')">Help!!</button>
+        <br>
+        Debug buttons.
+        <br>
+        <button onclick="gameController.game.bonus.addButterBonus()">Butter!</button>
+        <button onclick="gameController.game.bonus.removeButterBonus()">Butter-Be-Gone!</button>
+        <button onclick="gameController.game.bonus.addSunBonus()">Sun!</button>
+        <button onclick="gameController.game.bonus.removeSunBonus()">Sun-Be-Gone!</button>
+        <button onclick="gameController.game.hero.showHero()">HEROOOO!</button>
+        <button onclick="gameController.game.hero.takeDamage()">Hero Damage</button>
+        <button onclick="gameController.clouds.addCloud()">Cloud Me Bro!</button>
+    </div>
+
     
-    <h3>Game Logic Flow Chart</h3>
-    <img src="assets/BRAINSTORMING/GameLogic.png" alt="Game Logic Flowchart"/>
-
-    <button onclick="location.href = 'play.html'">Play Game!!</button>
-
-
+    
+    <!-- Include our logic scripts. We put them at the bottom here so that we can access things that load in the body of
+this webpage.-->
+    <script src="scripts/classes/numberLine.js"></script>
+    <script src="scripts/classes/clouds.js"></script>
+    <script src="scripts/classes/fruit.js"></script>
+    <script src="scripts/classes/bonus.js"></script>
+    <script src="scripts/classes/hero.js"></script>
+    <script src="scripts/classes/zombie.js"></script>
+    <!-- Load classes before functions that need them! -->
+    <!-- Main game logic should go there -->
+    <script src="scripts/play.js"></script> <!-- Type lets us use things like "let", delete and it will break -->
 </body>
 </html>
+
