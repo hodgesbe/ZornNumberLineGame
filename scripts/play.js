@@ -377,10 +377,15 @@ var Point = function Point(value, index, length) {
 function Hero() {
 
     //Creates a new Hero object with full health
+    var healthBar = new PIXI.Container();
+    var innerBar = new Graphics();
+    var outerBar = new PIXI.Graphics();
 
     this.init = function () {
         this.health = 100;
         console.log("Current Hero health: " + this.health);
+
+        //health bar
     };
 
     this.showHero = function(){
@@ -388,18 +393,53 @@ function Hero() {
         hero_sprite.position.x = 590;
         hero_sprite.position.y = 500;
         gameStage.addChild(hero_sprite);
+
+
+        //Health Bar (Should probably be moved to game hero init but doesnt currently work from there)
+        healthBar.position.set(910, 45);
+        gameStage.addChild(healthBar);
+
+        //healthBar Inner
+        innerBar.beginFill(0x000000);
+        innerBar.drawRect(0, 0, 200, 30);
+        innerBar.endFill();
+        healthBar.addChild(innerBar);
+
+        //HealthBar Outer
+        outerBar.beginFill(0xFF3300);
+        outerBar.drawRect(0, 0, 200, 30);
+        outerBar.endFill();
+        healthBar.addChild(outerBar);
+        healthBar.outer = outerBar;
+
+
+        //text with health is not working properly as health is not updating when player takes damage.
+        //should also be placed in the "play" function or outside of the hero function
+        var healthTitle = new PIXI.Text(
+            "Hero's Health: "+this.health+"%",
+            {font: "32px Sans-serif", fill: "white"}
+        );
+        healthTitle.x = 878;
+        healthTitle.y = 2;
+        gameStage.addChild(healthTitle);
+
     };
+
 
     //default damage (decrements by 5)
     this.takeDamage = function () {
         this.health = this.health - 5;
         console.log("Current Hero health: " + this.health);
+        //take damage is not updating health bar.
+        //Should be decrementing when takeDamage is called so should be listening outside the hero function
+        healthBar.outer.width -=20;
     };
 
     //decreases hero health by amount passed to function as int
-    this.takeDamage = function (amountToDecrease) {
-        this.health = this.health - amountToDecrease;
+    this.takeDamage = function () {
+        this.health = this.health - 10;
         console.log("Current Hero health: " + this.health);
+
     };
 
     //returns hero health
@@ -432,12 +472,9 @@ function Bonus() {
         var butter_sprite3 = new Sprite(resources.butter_bonus.texture);
 
         //assigns position to the sprites
-        butter_sprite1.position.x = 684;
-        butter_sprite1.position.y = 50;
-        butter_sprite2.position.x = 747;
-        butter_sprite2.position.y = 50;
-        butter_sprite3.position.x = 810;
-        butter_sprite3.position.y = 50;
+        butter_sprite1.position.set(684, 50);
+        butter_sprite2.position.set(747, 50);
+        butter_sprite3.position.set(810, 50);
 
         //adds butter_bonus sprites to an array
         this.butter_sprites_Arr = [butter_sprite1, butter_sprite2, butter_sprite3];
@@ -448,12 +485,9 @@ function Bonus() {
         var sun_bonus_sprite3 = new Sprite(resources.sun_bonus.texture);
 
         //assigns position to sun_bonus_sprites
-        sun_bonus_sprite1.position.x = 537;
-        sun_bonus_sprite1.position.y = 50;
-        sun_bonus_sprite2.position.x = 435;
-        sun_bonus_sprite2.position.y = 50;
-        sun_bonus_sprite3.position.x = 333;
-        sun_bonus_sprite3.position.y = 50;
+        sun_bonus_sprite1.position.set(537, 50);
+        sun_bonus_sprite2.position.set(435, 50);
+        sun_bonus_sprite3.position.set(333, 50);
 
         //adds sun_bonus_sprites to array
         this.sun_sprite_Arr = [sun_bonus_sprite1, sun_bonus_sprite2, sun_bonus_sprite3];
