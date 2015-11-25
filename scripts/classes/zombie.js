@@ -86,7 +86,9 @@ var zombie = function zombie(id, type, speed, start){
     }
 };
 
-
+//  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//  DONT DELETE THIS STUFF YET !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //function ZombieController() {
 //
 //    var zombie = function (zombieIndex, zSpeed, zHealth, indexOfTarget, indexOfStart) {
