@@ -1,0 +1,76 @@
+{"frames": {
+
+  "zombie0_001.png":
+  {
+    "frame": {"x":377,"y":1,"w":180,"h":264},
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": {"x":22,"y":24,"w":180,"h":264},
+    "sourceSize": {"w":202,"h":288}
+  },
+  "zombie0_002.png":
+  {
+    "frame": {"x":191,"y":1,"w":184,"h":265},
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": {"x":18,"y":23,"w":184,"h":265},
+    "sourceSize": {"w":202,"h":288}
+  },
+  "zombie0_003.png":
+  {
+    "frame": {"x":1,"y":1,"w":188,"h":266},
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": {"x":14,"y":22,"w":188,"h":266},
+    "sourceSize": {"w":202,"h":288}
+  },
+  "zombie0_004.png":
+  {
+    "frame": {"x":559,"y":1,"w":180,"h":264},
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": {"x":22,"y":24,"w":180,"h":264},
+    "sourceSize": {"w":202,"h":288}
+  },
+  "zombie0_005.png":
+  {
+    "frame": {"x":920,"y":1,"w":170,"h":260},
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": {"x":32,"y":28,"w":170,"h":260},
+    "sourceSize": {"w":202,"h":288}
+  },
+  "zombie0_006.png":
+  {
+    "frame": {"x":1262,"y":1,"w":168,"h":258},
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": {"x":34,"y":30,"w":168,"h":258},
+    "sourceSize": {"w":202,"h":288}
+  },
+  "zombie0_007.png":
+  {
+    "frame": {"x":1092,"y":1,"w":168,"h":260},
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": {"x":34,"y":28,"w":168,"h":260},
+    "sourceSize": {"w":202,"h":288}
+  },
+  "zombie0_008.png":
+  {
+    "frame": {"x":741,"y":1,"w":177,"h":262},
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": {"x":25,"y":26,"w":177,"h":262},
+    "sourceSize": {"w":202,"h":288}
+  }},
+  "meta": {
+    "app": "http://www.codeandweb.com/texturepacker",
+    "version": "1.0",
+    "image": "zombie0.png",
+    "format": "RGBA8888",
+    "size": {"w":1431,"h":268},
+    "scale": "1",
+    "smartupdate": "$TexturePacker:SmartUpdate:b8a9fae6399ab4f27066672a40e93247:cd2500b61bfa00c4f3980558f45102a9:c482d498600e8bc730b57c8b06e7992b$"
+  }
+}

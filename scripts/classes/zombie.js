@@ -2,19 +2,15 @@
 // -----------------------ZOMBIE STUFF------------------------------
 // *****************************************************************
 var zombies = [];
-
+var zombieDataDir = "assets/zombieData/";
 var zombieTypes = [
-    {"typeID": 0, "name": "creeper", "tsSource": "zombie0ts.png", "tsStates": {
-        "stand": "zombie0ts_stand.json",
-        "walk": "zombie0ts_walk.json"}
-    },
-    {"typeID": 1, "name": "stinker", "tsSource": "zombie1ts.png", "tsStates": {
-        "stand": "zombie1ts_stand.json",
-        "walk": "zombie1ts_walk.json"}
+    {"typeID": 0, "name": "creeper", "tsSource": zombieDataDir + "zombie0.png", "tsStates": {
+        "stand": "zombie0.json",
+        "walk": "zombie0.json"}
     }];
 
 var loader = PIXI.loader;
-loader.add("zombie0ts_stand.json").load(onZombieLoad);
+loader.add(zombieTypes[0].tsSource).load(onZombieLoad);
 loader.on('loaded', function(evt) {
     evt.content.json;
 });
@@ -22,7 +18,7 @@ var movie;
 function onZombieLoad(){
     var frames = [];
     for(var i = 1; i < 4; i++){
-        frames.push(PIXI.Texture.fromFrame('standing0' + i));
+        frames.push(PIXI.Texture.fromFrame('zombie0_00' + i + '.png'));
     }
     movie = new PIXI.extras.MovieClip(frames);
 
