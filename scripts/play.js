@@ -54,8 +54,8 @@ itemAreas = {
     "background": {"x": 0, "y": 0, "width": 1024, "height": 768},
     "leftTree": {"x": 65, "y": 180, "width": 330, "height": 250},
     "rightTree": {"x": 880, "y": 180, "width": 330, "height": 250},
-    "basket1": {"x": 450, "y": 315, "width": 151, "height": 126},
-    "basket2": {"x": 695, "y": 315, "width": 151, "height": 126},
+    "leftBasket": {"x": 450, "y": 315, "width": 151, "height": 126},
+    "rightBasket": {"x": 695, "y": 315, "width": 151, "height": 126},
     "sidewalk": {"x": 0, "y": 625, "width": 1024, "height": 32},
     "sun": {"x": renderWidth -150, "y": 30, "width": 50, "height": 50},
     "zombieCounter": {"x": 0, "y": 0, "width": renderWidth / 4, "height": 100},
@@ -63,7 +63,7 @@ itemAreas = {
 };
 
 //arrays of fruit objects for positive values and negative values
-var posFruitBin = [], 
+var posFruitBin = [],
     negFruitBin = [];
 
 // Draggable fruit handler variables and functions
@@ -71,16 +71,19 @@ var dragParams = {
     previousPos: {x: 0, y: 0},
     currentFruit: null,
     overBasket: function (fruitSprite) {
-        if ((fruitSprite.position.x < itemAreas.basket1.x + itemAreas.basket1.width && fruitSprite.position.x > itemAreas.basket1.x
-            && fruitSprite.position.y < itemAreas.basket1.y + itemAreas.basket1.height && fruitSprite.position.y > itemAreas.basket1.y) ||
-            (fruitSprite.position.x < itemAreas.basket2.x + itemAreas.basket2.width && fruitSprite.position.x > itemAreas.basket2.x
-            && fruitSprite.position.y < itemAreas.basket2.y + itemAreas.basket2.height && fruitSprite.position.y > itemAreas.basket2.y)) {
-            return true;
+        if ((fruitSprite.position.x < itemAreas.leftBasket.x + itemAreas.leftBasket.width && fruitSprite.position.x > itemAreas.leftBasket.x
+            && fruitSprite.position.y < itemAreas.leftBasket.y + itemAreas.leftBasket.height && fruitSprite.position.y > itemAreas.leftBasket.y)
+            ) {
+            return 'left';
         }
-        return false;
+        else if((fruitSprite.position.x < itemAreas.rightBasket.x + itemAreas.rightBasket.width && fruitSprite.position.x > itemAreas.rightBasket.x
+            && fruitSprite.position.y < itemAreas.rightBasket.y + itemAreas.rightBasket.height && fruitSprite.position.y > itemAreas.rightBasket.y)){
+            return 'right';
+        }
+        return null;
     },
-    maxFruit: 2,
-    fruitsInBasket: []
+    leftBasket: null,
+    rightBasket: null
 };
 
 var numLineParams = {
@@ -114,18 +117,18 @@ function GameController() {
     this.numberLine = "";
     this.clouds = "";
     this.game = new Game(this);
-    this.basket1 = "";
-    this.basket2 = "";
-    
-    
+    this.leftBasket = "";
+    this.rightBasket = "";
+
+
     fruitAmount: 0;
     this.currentFruitValue = 0;
-    
+
     //Alias
     var game = this.game;
-    
+
     this.init = function () {
-        
+
         console.log("Initializing game controller and PIXI window.");
 
         htmlWindow = document.getElementById("renderWindow");
@@ -135,16 +138,16 @@ function GameController() {
         infoStage = new PIXI.Container();
         gameOverStage = new PIXI.Container();
         mainMenu = new PIXI.Container();
-        
+
         backgroundLayer = new PIXI.Container();
         cloudLayer = new PIXI.Container();
         hudLayer = new PIXI.Container();
         dynamicLayer = new PIXI.Container();
         topLayer = new PIXI.Container();
-        
-        renderer.backgroundColor = 0xAAAAAA; 
+
+        renderer.backgroundColor = 0xAAAAAA;
         htmlWindow.appendChild(renderer.view);
-        
+
         // Load in assets
         PIXI.loader
         .add("staticBG", "assets/artwork/ZornBG_1280x720-ALT.png")
@@ -179,12 +182,12 @@ function GameController() {
         });
         // console.log(resources);
     };
-    
+
     // We have to wait for the assets to finish loading before we can start anything else
     // They load asynchronously, so this is called in the PIXI.loader itself.
     this.onAssetsLoaded = function () {
         console.log("Assets have been loaded");
-    
+
         // Tink stuff for event handlers and what not
         tink = new Tink(PIXI, renderer.view);
         pointer = tink.makePointer();
@@ -193,12 +196,12 @@ function GameController() {
         this.buildGameWindow();
         this.buildLevelGraphics();
     };
-    
+
     // Graphics that stay the same throughout levels should be put here.
     this.buildGameWindow = function () {
         console.log("Building the game window.");
         var i;
-        
+
         // STATIC OBJECTS
         this.staticBG = new Sprite(gameAssets.staticBG.texture);
         this.staticBG.position.x = itemAreas.background.x;
@@ -209,30 +212,30 @@ function GameController() {
         this.sun.position.x = itemAreas.sun.x;
         this.sun.position.y = itemAreas.sun.y;
         gameStage.addChild(this.sun);
-        
-        this.basket1 = new Sprite(gameAssets.basket.texture);
-        this.basket1.position.x = itemAreas.basket1.x;
-        this.basket1.position.y = itemAreas.basket1.y;
-        this.basket2 = new Sprite(gameAssets.basket.texture);
-        this.basket2.position.x = itemAreas.basket2.x;
-        this.basket2.position.y = itemAreas.basket2.y;
-        gameStage.addChild(this.basket1);
-        gameStage.addChild(this.basket2);
-    
+
+        this.leftBasket = new Sprite(gameAssets.basket.texture);
+        this.leftBasket.position.x = itemAreas.leftBasket.x;
+        this.leftBasket.position.y = itemAreas.leftBasket.y;
+        this.rightBasket = new Sprite(gameAssets.basket.texture);
+        this.rightBasket.position.x = itemAreas.rightBasket.x;
+        this.rightBasket.position.y = itemAreas.rightBasket.y;
+        gameStage.addChild(this.leftBasket);
+        gameStage.addChild(this.rightBasket);
+
         // Build the clouds
         this.clouds = new Clouds();
-        
+
         // add dynamic stage
         // Child all screens to the main stage
 
-        
+
         // Build the HUD
         buildHud();
 
-        
+
         // Build other screens
         buildInfoScreen();
-        
+
         // Hide other screens
         infoStage.visible = false;
         gameOverStage.visible = false;
@@ -241,7 +244,7 @@ function GameController() {
         stage.addChild(gameStage);
         stage.addChild(infoStage);
         stage.addChild(gameOverStage)
-        
+
         gameStage.addChild(backgroundLayer);
         gameStage.addChild(cloudLayer);
         gameStage.addChild(hudLayer);
@@ -249,7 +252,7 @@ function GameController() {
         gameStage.addChild(topLayer);
         render();
     };
-    
+
     // Level-specific graphics should go here
     this.buildLevelGraphics = function () {
         displayNumberLine(this.game.getNumberLine());
@@ -274,7 +277,7 @@ function Game(gc) {
     this.directHits = 0;
     this.fruitBucket = "";
     this.fruitBin = new FruitBin();
-    
+
     // Stuff that should happen once, at the start of a game
     this.init = function () {
         // Level starts at 0
@@ -283,30 +286,30 @@ function Game(gc) {
         this.bonus.init();
         this.buildLevel ();
     };
-    
+
     // Stuff that should happen every level
     this.buildLevel = function () {
-        
+
         this.numberLine = new NumberLine();
         this.numberLine.init();
         this.numberLine.printPoints(); //prints value of each point in console log
         this.fruitBin.init();
 
         //  Zombie Stuff
-        this.zombieController = new ZombieController();
-        this.zombieController.generateZombies();
-        
+        //this.zombieController = new ZombieController();
+        //this.zombieController.generateZombies();
+
         console.log("Level " + " created.");
     };
-    
+
     this.getBonusController = function () {
         return this.bonus;
     };
-    
+
     this.getNumberLine = function () {
         return this.numberLine;
     };
-    
+
 }
 
 // Builds the static HUD elements like counters, buttons, etc.
@@ -324,7 +327,7 @@ function buildHud() {
         fruitAmount;
         //pos = itemAreas.rightTree,
         //neg = itemAreas.leftTree;
-    
+
     // Bonus counter
     hud.lineStyle(3);
     // hud.drawRect(counter.x, counter.y, counter.width, counter.height);
@@ -338,7 +341,7 @@ function buildHud() {
     message.position.set(zombie.x + zombie.width/2, zombie.y);
     message.anchor.x = 0.5;
     hud.addChild(message);
-    
+
 
     // ---Buttons---
 
@@ -352,7 +355,7 @@ function buildHud() {
     launchButton = tink.button(launchFrame, renderWidth / 2.3, 250);
     launchButton.press = () => {
         if (dragParams.currentFruit === null) {
-            
+
         }
     };
     hud.addChild(launchButton);
@@ -386,24 +389,32 @@ function buildHud() {
         var i;
         // Only do buttons if we aren't dragging fruit
         if (dragParams.currentFruit === null) {
-        for (i = 0; i < dragParams.fruitsInBasket.length; i++) {
             console.log("Trying to reset fruit");
-            console.log(dragParams.fruitsInBasket[i].fruitSprite.position.x)
-            dragParams.fruitsInBasket[i].fruitSprite.position.x = dragParams.fruitsInBasket[i].previousPos.x;
-            dragParams.fruitsInBasket[i].fruitSprite.position.y = dragParams.fruitsInBasket[i].previousPos.y;
-            dragParams.fruitsInBasket[i].fruitSprite.draggable = true;
-        }
-        dragParams.fruitsInBasket = [];
+            //reset left basket
+            if (dragParams.leftBasket != null){
+                dragParams.leftBasket.fruitSprite.position.x = dragParams.leftBasket.previousPos.x;
+                dragParams.leftBasket.fruitSprite.position.y = dragParams.leftBasket.previousPos.y;
+                dragParams.leftBasket.fruitSprite.draggable = true;
+                dragParams.leftBasket.fruitSprite.scale.set(1,1);
+                dragParams.leftBasket = null;
+            //reset right basket
+            } if (dragParams.rightBasket != null){
+                dragParams.rightBasket.fruitSprite.position.x = dragParams.rightBasket.previousPos.x;
+                dragParams.rightBasket.fruitSprite.position.y = dragParams.rightBasket.previousPos.y;
+                dragParams.rightBasket.fruitSprite.draggable = true;
+                dragParams.rightBasket.fruitSprite.scale.set(1,1);
+                dragParams.rightBasket = null;
+            }
         }
     };
     hud.addChild(resetButton);
-    
-    
+
+
     hud.addChild(helpButton);
-    
+
     gameController.hud = hud;
     gameController.fruitAmount = fruitAmount;
-    hudLayer.addChild(gameController.hud); 
+    hudLayer.addChild(gameController.hud);
 
 }
 
@@ -420,7 +431,7 @@ function buildInfoScreen() {
     infoStage.addChild(information);
     information.position.y = 100;
     information.position.x = 25;
-    
+
     // Back button
     // Generic button stuff
     var genericButtonFrames = [
@@ -432,7 +443,7 @@ function buildInfoScreen() {
         x: 25,
         y: renderHeight - 100
     };
-    
+
     var backButton = tink.button(genericButtonFrames, backPosition.x, backPosition.y);
     var backMessage = new PIXI.Text("Back");
     backMessage.position.x = backPosition.x;
@@ -477,9 +488,9 @@ function buildGameOverScreen() {
 }
 
 function buildStaticGraphics() {
-    
+
 }
 
 function buildMainMenu() {
-    
+
 }

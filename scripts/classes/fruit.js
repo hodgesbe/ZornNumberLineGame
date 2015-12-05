@@ -6,28 +6,33 @@ var Fruit = function Fruit (fruitValue){
     this.fruitSprite = new Sprite(resources.apple.texture); //actual sprite
     this.previousPos = {x: 0, y: 0};
     var message = new PIXI.Text("" + this.fruitValue,
-                               {font: "16px sans-serif", fill: "white"}); //message which displays value
-    
+                               {font: "16px sans-serif", fill: "white"}), //message which displays value
+       //find and save center of baskets
+       leftBasketCenter = {x: itemAreas.leftBasket.x + (itemAreas.leftBasket.width/2) - (this.fruitSprite.width/2) * 1.25,
+                           y: itemAreas.leftBasket.y + (itemAreas.leftBasket.height/2) - (this.fruitSprite.height) * 1.25},
+       rightBasketCenter = {x: itemAreas.rightBasket.x + (itemAreas.rightBasket.width/2) - (this.fruitSprite.width/2) * 1.25,
+                            y: itemAreas.rightBasket.y + (itemAreas.rightBasket.height/2) - (this.fruitSprite.height) * 1.25};
+
+    console.log(leftBasketCenter);
+
     //---Function to update sprites location and adjust message location as well
     this.addLoc = function (X, Y){
         //adjust sprite to be correct size and location
         this.fruitSprite.position.set(X,Y);
-        // this.fruitSprite.scale.set(0.07, 0.07);
-        // this.fruitSprite.anchor.set(0.5, 0.5);
         //overlay message on sprite
         if (fruitValue < 0) {
             message.anchor.set(-0.5, -0.55);
         } else {
             message.anchor.set(-1.1, -0.55);
         }
-        
+
         message.position.set(0,0);
-        
+
         // Sprite event handlers
         // this.fruitSprite.circular = true;
         tink.makeDraggable(this.fruitSprite);
         tink.makeInteractive(this.fruitSprite);
-        
+
         // If the mouse is pressed while over this sprite and not currently dragging something else,
         // pick this sprite up and remember its previous position.
         this.fruitSprite.press = () => { // Using = () => over function () binds this object's referencing environment
@@ -39,30 +44,45 @@ var Fruit = function Fruit (fruitValue){
                 topLayer.addChild(this.fruitSprite);
             }
         };
-        
+
         // If the mouse is released while dragging this sprite, return it to previous position
         this.fruitSprite.release = () => {
             if (dragParams.currentFruit === this.fruitSprite) {
-                if (dragParams.overBasket(this.fruitSprite) === true && dragParams.fruitsInBasket.length < dragParams.maxFruit) {
+                if (dragParams.overBasket(this.fruitSprite) === 'left' && dragParams.leftBasket === null) {
                     gameController.currentFruitValue += this.fruitValue;
-                    console.log("Fruit in basket = " + gameController.currentFruitValue);
+                    console.log("Fruit in left basket = " + gameController.currentFruitValue);
                     this.fruitSprite.draggable = false;
-                    dragParams.fruitsInBasket[dragParams.fruitsInBasket.length] = this;
-                    console.log(dragParams.fruitsInBasket.length);
+                    dragParams.leftBasket = this;
+                    //console.log(dragParams.fruitsInBasket.length);
                     this.previousPos.x = dragParams.previousPos.x;
                     this.previousPos.y = dragParams.previousPos.y;
+                    //place fruit in center
+                    this.fruitSprite.position.set(leftBasketCenter.x, leftBasketCenter.y);
+                    this.fruitSprite.scale.set(1.25,1.25);
+                } else if (dragParams.overBasket(this.fruitSprite) === 'right' && dragParams.rightBasket === null) {
+                    gameController.currentFruitValue += this.fruitValue;
+                    console.log("Fruit in right basket = " + gameController.currentFruitValue);
+                    this.fruitSprite.draggable = false;
+                    dragParams.rightBasket = this;
+                    //console.log(dragParams.fruitsInBasket.length);
+                    this.previousPos.x = dragParams.previousPos.x;
+                    this.previousPos.y = dragParams.previousPos.y;
+                    //place fruit in center
+                    console.log(rightBasketCenter);
+                    this.fruitSprite.position.set(rightBasketCenter.x, rightBasketCenter.y);
+                    this.fruitSprite.scale.set(1.25,1.25);
                 } else {
                     this.fruitSprite.position.x = dragParams.previousPos.x;
                     this.fruitSprite.position.y = dragParams.previousPos.y;
-                    
+
                 }
                 dragParams.currentFruit = null;
                 dynamicLayer.addChild(this.fruitSprite);
 
             }
         };
-        
-        
+
+
         //add sprite and message to graphic
         this.fruitGraphic.addChild(this.fruitSprite);
         this.fruitSprite.addChild(message);
@@ -70,15 +90,15 @@ var Fruit = function Fruit (fruitValue){
     }
 };
 
-function FruitBin() { 
-    
-    var fruitTarget, //target sum of all fruit values        
+function FruitBin() {
+
+    var fruitTarget, //target sum of all fruit values
         fruitMin, //minimum number of all fruit needed for level
         possibleValues = [], //array of values for fruit
         i; //index for iteration
     this.posLocation = [];
     this.negLocation = [];
-        
+
     //---Function to create 2d array of coordinates to display fruit based off leftTree and tree2item areas
     this.setLocation = function (){
         //Alias
@@ -89,10 +109,10 @@ function FruitBin() {
             fx, fy,
             posLoc = [[],[],[],[],[],[],[],[],[]], negLoc = [[],[],[],[],[],[],[],[],[]],
             r, c, box;
-        
+
             fx = fruitSprite.width,
             fy = fruitSprite.height;
-            
+
         //Fill location values with all available locations within tree boxes
         for (row = fx/2; row < neg.width-0.5*fx; row += 1.5*fx){
             if (row < neg.width/3){r=0;}
@@ -108,13 +128,13 @@ function FruitBin() {
             }
         }
         this.posLocation = posLoc;
-        this.negLocation = negLoc;        
+        this.negLocation = negLoc;
     }
-    
+
     //---Function to set sprite locations for each fruit
     this.addFruit = function (){
         console.log("Adding fruit");
-        
+
         var i,
             posPool,
             negPool,
@@ -122,46 +142,41 @@ function FruitBin() {
             coords = [],
             box,
             counter = 0;
-        
+
         //fill pos and neg arrays with possible values
-        this.setLocation(); 
+        this.setLocation();
         console.log("Needed Fruit: "+posFruitBin.length);
         console.log("Set location:");
-        
+
         //randomly select a location for each fruit from posible location
         for (i = 0; i < posFruitBin.length; i++){
             counter++;
             box = i%9;
             posPool = this.posLocation[box];
             negPool = this.negLocation[box];
-            console.log("Adding fruit: " + box);
-            console.log(posPool);
             //randomly select positve location from pool of positive indices
             index = randomInt(0, posPool.length-1);
             coords = posPool.splice(index, 1);
-            //console.log("index: "+index+" coords: ");
-            //console.log(coords);
             posFruitBin[i].addLoc(coords[0][0],coords[0][1]);
-            
+
             //randomly select negative location from pool of negative indices
             index = randomInt(0, negPool.length-1);
             coords = negPool.splice(index, 1);
             negFruitBin[i].addLoc(coords[0][0],coords[0][1]);
-            
-            //add graphics to dynamicStage container      -----------------------------------NOT WORKING HERE-----------------------
-            //console.log(posFruitBin[i].fruitGraphic);
+
+            //add graphics to dynamicStage container
             dynamicLayer.addChild(posFruitBin[i].fruitGraphic);
             dynamicLayer.addChild(negFruitBin[i].fruitGraphic);
         }
         console.log("Ending fruit: "+counter);
     }
-    
+
     //---Randomly select fruit values, create fruit with those values
     this.init = function (){
         console.log("Creating a fruit bin");
         var posFruitValues = [],
             negFruitValues = [];
-        
+
         switch (level) {
             case 0:
                 console.log("Switching on level creating bin - level: " + level);
@@ -175,18 +190,18 @@ function FruitBin() {
             //reset fruit sum and list of fruit values
             var fruitSum = 0,
                 index,
-                fruitValue; 
-            posFruitValues = [];     
+                fruitValue;
+            posFruitValues = [];
             negFruitValues = [];
             //pick fruit values up to Max value
             while (fruitSum < fruitTarget){
                 index = Math.floor(Math.random()*possibleValues.length);
                 fruitValue = possibleValues[index];
                 //add positive and negative fruit values to fruit values
-                posFruitValues.push(fruitValue); 
-                negFruitValues.push(-fruitValue); 
-                fruitSum += fruitValue;  
-            }            
+                posFruitValues.push(fruitValue);
+                negFruitValues.push(-fruitValue);
+                fruitSum += fruitValue;
+            }
         }
         //add fruit objects using value array
         for (i=0; i<posFruitValues.length; i++){
@@ -195,7 +210,7 @@ function FruitBin() {
         }
         this.addFruit();
     };
-  
+
 };
 
 //Random number helper function with inclusive bounds

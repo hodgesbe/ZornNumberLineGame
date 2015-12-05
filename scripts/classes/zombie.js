@@ -10,15 +10,15 @@ var zombieTypes = [
     }];
 
 var loader = PIXI.loader;
-loader.add(zombieTypes[0].tsSource).load(onZombieLoad);
+/*loader.add(zombieTypes[0].tsSource).load(onZombieLoad);
 loader.on('loaded', function(evt) {
     evt.content.json;
-});
+});*/
 var movie;
 function onZombieLoad(){
     var frames = [];
     for(var i = 1; i < 4; i++){
-        frames.push(PIXI.Texture.fromFrame('zombie0_00' + i + '.png'));
+        //frames.push(PIXI.Texture.fromFrame('zombie0_00' + i + '.png'));
     }
     movie = new PIXI.extras.MovieClip(frames);
 
