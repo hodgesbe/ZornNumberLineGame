@@ -15,7 +15,7 @@
     <!-- PIXI will be rendered here. -->
     <div id="renderWindow">
     </div>
-    
+
     <!-- Start Debug -->
     <div>
         These buttons should be part of the game interface.
@@ -35,8 +35,8 @@
         <button onclick="gameController.clouds.addCloud()">Cloud Me Bro!</button>
     </div>
     <!-- End debug -->
-    
-    
+
+
     <!-- Include our logic scripts. We put them at the bottom here so that we can access things that load in the body of
 this webpage.-->
     <script src="scripts/classes/numberLine.js"></script>
@@ -45,6 +45,7 @@ this webpage.-->
     <script src="scripts/classes/bonus.js"></script>
     <script src="scripts/classes/hero.js"></script>
     <script src="scripts/classes/zombie.js"></script>
+    <script src="scripts/classes/containers.js"></script>
     <!-- Load classes before functions that need them! -->
     <!-- Main game logic should go there -->
     <script src="scripts/play.js"></script> <!-- Type lets us use things like "let", delete and it will break -->
