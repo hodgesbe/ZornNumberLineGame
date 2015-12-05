@@ -95,7 +95,8 @@ function buildHud() {
                 dragParams.rightBasket.fruitSprite.scale.set(1,1);
                 dragParams.rightBasket = null;
             }
-            currentFruitBin = [];
+            gameController.currentFruitBin = [];
+            gameController.currentFruitValue = 0;
         }
     };
     hud.addChild(resetButton);
