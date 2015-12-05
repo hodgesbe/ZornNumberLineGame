@@ -13,8 +13,6 @@ var Fruit = function Fruit (fruitValue){
        rightBasketCenter = {x: itemAreas.rightBasket.x + (itemAreas.rightBasket.width/2) - (this.fruitSprite.width/2) * 1.25,
                             y: itemAreas.rightBasket.y + (itemAreas.rightBasket.height/2) - (this.fruitSprite.height) * 1.25};
 
-    console.log(leftBasketCenter);
-
     //---Function to update sprites location and adjust message location as well
     this.addLoc = function (X, Y){
         //adjust sprite to be correct size and location
@@ -50,6 +48,7 @@ var Fruit = function Fruit (fruitValue){
             if (dragParams.currentFruit === this.fruitSprite) {
                 if (dragParams.overBasket(this.fruitSprite) === 'left' && dragParams.leftBasket === null) {
                     gameController.currentFruitValue += this.fruitValue;
+                    gameController.currentFruitBin.push(this.fruitSprite);
                     console.log("Fruit in left basket = " + gameController.currentFruitValue);
                     this.fruitSprite.draggable = false;
                     dragParams.leftBasket = this;
@@ -61,6 +60,7 @@ var Fruit = function Fruit (fruitValue){
                     this.fruitSprite.scale.set(1.25,1.25);
                 } else if (dragParams.overBasket(this.fruitSprite) === 'right' && dragParams.rightBasket === null) {
                     gameController.currentFruitValue += this.fruitValue;
+                    gameController.currentFruitBin.push(this.fruitSprite);
                     console.log("Fruit in right basket = " + gameController.currentFruitValue);
                     this.fruitSprite.draggable = false;
                     dragParams.rightBasket = this;
@@ -146,7 +146,7 @@ function FruitBin() {
         //fill pos and neg arrays with possible values
         this.setLocation();
         console.log("Needed Fruit: "+posFruitBin.length);
-        console.log("Set location:");
+        console.log("Setting fruit location:");
 
         //randomly select a location for each fruit from posible location
         for (i = 0; i < posFruitBin.length; i++){

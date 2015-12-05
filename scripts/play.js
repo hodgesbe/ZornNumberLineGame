@@ -67,23 +67,29 @@ var posFruitBin = [],
     negFruitBin = [];
 
 // Draggable fruit handler variables and functions
-var dragParams = {
-    previousPos: {x: 0, y: 0},
-    currentFruit: null,
-    overBasket: function (fruitSprite) {
-        if ((fruitSprite.position.x < itemAreas.leftBasket.x + itemAreas.leftBasket.width && fruitSprite.position.x > itemAreas.leftBasket.x
-            && fruitSprite.position.y < itemAreas.leftBasket.y + itemAreas.leftBasket.height && fruitSprite.position.y > itemAreas.leftBasket.y)
-            ) {
-            return 'left';
-        }
-        else if((fruitSprite.position.x < itemAreas.rightBasket.x + itemAreas.rightBasket.width && fruitSprite.position.x > itemAreas.rightBasket.x
-            && fruitSprite.position.y < itemAreas.rightBasket.y + itemAreas.rightBasket.height && fruitSprite.position.y > itemAreas.rightBasket.y)){
-            return 'right';
-        }
-        return null;
-    },
-    leftBasket: null,
-    rightBasket: null
+var dragParams;
+
+function dragParamsInit (){
+    dragParams = {
+        previousPos: {x: 0, y: 0},
+        currentFruit: null,
+        overBasket: function (fruitSprite) {
+            if ((fruitSprite.position.x < itemAreas.leftBasket.x + itemAreas.leftBasket.width && fruitSprite.position.x > itemAreas.leftBasket.x
+                && fruitSprite.position.y < itemAreas.leftBasket.y + itemAreas.leftBasket.height && fruitSprite.position.y > itemAreas.leftBasket.y)
+                ) {
+                    return 'left';
+                }
+                else if((fruitSprite.position.x < itemAreas.rightBasket.x + itemAreas.rightBasket.width && fruitSprite.position.x > itemAreas.rightBasket.x
+                    && fruitSprite.position.y < itemAreas.rightBasket.y + itemAreas.rightBasket.height && fruitSprite.position.y > itemAreas.rightBasket.y)){
+                        return 'right';
+                    }
+                else{
+                    return null;
+                }
+        },
+        leftBasket: null,
+        rightBasket: null
+    };
 };
 
 var numLineParams = {
@@ -124,7 +130,8 @@ function GameController() {
 
     fruitAmount: 0;
     this.currentFruitValue = 0;
-
+    this.currentFruitBin = [];
+    dragParamsInit();
     //Alias
     var game = this.game;
 
@@ -177,6 +184,7 @@ function GameController() {
         .add("play_again_over", "assets/artwork/play_again_over.png")
         .add("play_again_down", "assets/artwork/play_again_down.png")
         .add("basket", "assets/artwork/Basket.png")
+        .add("Rock","assets/artwork/Rock.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -260,6 +268,32 @@ function GameController() {
         // displayFruit
         // displayZombies
     };
+
+    /**
+    Function to perform necessary steps when player has clicked lauch button:
+    1. Use currentFruitValue to determine how far rock will fly
+    2. Determine if zombie exists at point of rock landing
+        2a. If so, damage zombie, increase necessary bonuses, determine if last zombie in level
+            2aI. If so, build new level
+    3. Remove Fruit from board
+    4. If bonuses used, decrement bonus used
+        4a. Else, move zombies
+    5. Reset currentFruitValue
+    */
+    this.launch = function (){
+        console.log("Nuclear launch detected.");
+        //Determine flight of rock
+        //Determine if zomie exists at this location
+        //Remove Fruit from board
+        console.log(this.currentFruitValue);
+        console.log(gameController.currentFruitBin);
+        dynamicLayer.removeChild(gameController.currentFruitBin[0]);
+        dynamicLayer.removeChild(gameController.currentFruitBin[1]);
+        dragParamsInit();
+        gameController.currentFruitBin = [];
+        //Check for bonuses used and if not, move zomibes
+        this.currentFruitValue = 0;
+    }
 }
 
 // This is our animation/game loop.

@@ -42,7 +42,10 @@ function buildHud() {
     launchButton.press = () => {
         // Only do buttons if not draggin fruit
         if (dragParams.currentFruit === null) {
-
+            //Only do if both baskets are full
+            if(dragParams.leftBasket != null && dragParams.rightBasket != null){
+                gameController.launch();
+            }
         }
     };
     hud.addChild(launchButton);
@@ -92,6 +95,7 @@ function buildHud() {
                 dragParams.rightBasket.fruitSprite.scale.set(1,1);
                 dragParams.rightBasket = null;
             }
+            currentFruitBin = [];
         }
     };
     hud.addChild(resetButton);
