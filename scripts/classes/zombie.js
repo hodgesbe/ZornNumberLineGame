@@ -1,7 +1,7 @@
 // *****************************************************************
-// -----------------------ZOMBIE STUFF------------------------------
+// -------------------  ZOMBIE CONSTANTS  --------------------------
 // *****************************************************************
-var zombies = [];
+console.log(gameController);
 var zombieDataDir = "assets/zombieData/";
 var zombieTypes = [
     {"typeID": 0, "name": "creeper", "tsSource": zombieDataDir + "zombie0.png", "tsStates": {
@@ -9,85 +9,145 @@ var zombieTypes = [
         "walk": "zombie0.json"}
     }];
 
-var loader = PIXI.loader;
-/*loader.add(zombieTypes[0].tsSource).load(onZombieLoad);
-loader.on('loaded', function(evt) {
-    evt.content.json;
-});*/
-var movie;
-function onZombieLoad(){
-    var frames = [];
-    for(var i = 1; i < 4; i++){
-        //frames.push(PIXI.Texture.fromFrame('zombie0_00' + i + '.png'));
-    }
-    movie = new PIXI.extras.MovieClip(frames);
 
-    movie.position.set(300);
-    movie.anchor.set(0.5);
-    movie.aniamtionSpeed = 600;
-    movie.play();
-    stage.addChild(movie);
-
-    animate();
-}
-
-
-console.log(loader);
 var gameLevels = [
-    {"id": 0, "descrption": "beginner", "zombieCount": 1, "zombieSpeed": 1, "lineSize": 20},
-    {"id": 1, "descrption": "easy", "zombieCount": 2, "zombieSpeed": 1, "lineSize": 16},
-    {"id": 2, "descrption": "moderate", "zombieCount": 4,  "zombieSpeed": 1, "lineSize": 12},
-    {"id": 3, "descrption": "insane", "zombieCount": 6, "zombieSpeed": 1, "lineSize": 8}];
+    {"id": 0, "descrption": "beginner", "zombieCount": 1, "zombieSpeed": 1, "lineSize": 20, "zombieTypeMaxID": 1},
+    {"id": 1, "descrption": "easy", "zombieCount": 2, "zombieSpeed": 1, "lineSize": 16, "zombieTypeMaxID": 2},
+    {"id": 2, "descrption": "moderate", "zombieCount": 4,  "zombieSpeed": 1, "lineSize": 12, "zombieTypeMaxID": 2},
+    {"id": 3, "descrption": "insane", "zombieCount": 6, "zombieSpeed": 1, "lineSize": 8, "zombieTypeMaxID": 3}];
 var zombieConstants = {"zombieTypesCount": 2};
 
-var ZombieController = function(levelID){
-    var level = gameLevels[levelID];
-    var maxZombies = zombieConstants["zombieTypesCount"];
-    this.createZombies = function(){
-        var count = level["zombieCount"];
-        console.log(count + " zombies of level: " + level["descrption"] + "\n will be created!");
+// *****************************************************************
+// -------------------- ZOMBIE OBJECT    ---------------------------
+// *****************************************************************
+//  Constructor
+var Zombie = function Zombie(id, type, speed, startPoint, targetPoint){
+    this.zID = id;
+    this.zData = zombieTypes[type];
+    this.zSpeed = speed;
+    this.zPosition = startPoint;
+    this.target = targetPoint;
+    this.resourceID = "zombie" + this.zID;
+
+//  Sprite
+    //  Create new sprite
+    this.zSprite = new Sprite(resources[this.resourceID].texture);
+    stage.addChild(this.zSprite);
+    //  Set anchor points
+    this.zSprite.anchor.x = this.zSprite.width/2;
+    this.zSprite.anchor.y = this.zSprite.height;
+    //  Set initial start position
+    this.zSprite.position.x = gameController.numberLine.points[startPoint].x
+    this.zSprite.position.y = gameController.numberLine.points[startPoint].y
+
+    //  Function to update the zombies location on the number line
+    this.goToNextPoint = function(){
+        if(this.zPosition > this.target) {
+            //  The zombie is right of the target
+            if(checkHit("right")){
+                //  Zombie has hit the target
+                //  Call target-hit subroutine
+                heroHit();
+            }
+            else{
+                //  Move Zombie left
+                moveZombie("left");
+            }
+        }
+        if(this.zPosition < this.target){
+            //  The zombie is left of the target
+            if(checkHit("left")){
+                //  Zombie has hit the target
+                //  Call target-hit subroutine
+                heroHit();
+            }
+            else{
+                //  Move Zombie right
+                moveZombie("right");
+            }
+        }
+    };
+//gameController.numberLine.points[currentPoint].x
+    function moveZombie(direction){
+        if(direction == "left"){
+            this.zPosition = this.zPosition -1;
+        }
+        if(direction == "right"){
+            this.zPosition = this.zPosition +1;
+        }
+        this.position.x = gameController.numberLine.points[this.zPosition];
+    }
+
+    function checkHit(direction){
+        if(direction == "right"){
+            if(this.target = this.zPosition -1){
+                return true;
+            }else{ return false; }
+        }
+        else{
+            if(this.target = this.zPosition +1){
+                return true;
+            }else{ return false; }
+        }
+    };
+
+    function heroHit(){
+        gameController.game.hero.takeDamage()
+    }
+
+
+    this.getMC = function(){ return "MovieClip"}
+
+    //  Utility method for determining zombie instance data values
+    this.getData = function(){
+        var output =
+            "ID: " + this.zID +
+            "\nName: " + this.zData.name + "(" + this.zData.typeID +")" +
+            "\nSpeed: " + this.zSpeed +
+            "\nPosition: " + this.zPosition +
+            "\nTileSheet: " + this.zData.tsSource +
+            "\nStand: " + this.zData.tsStates.stand +
+            "\nWalk: " + this.zData.tsStates.walk;
+        return output;
+    };
+};
+
+// *****************************************************************
+// -------------------- ZOMBIE CONTROLLER OBJECT -------------------
+// *****************************************************************
+var ZombieController = function(levelID, lineSize){
+    this.level = gameLevels[levelID];
+    this.targetPointIndex = ((lineSize - 1) / 2);
+    this.maxZombieLevel = gameLevels["zombieTypeMaxID"];
+    this.generateZombies = function(){
+        var count = this.level["zombieCount"];
+        console.log(count + " zombies of level: " + this.level["descrption"] + "\n will be created!");
         var randomZombie = 0;
-        var startSide = -1;
         for( var i = 0; i < count; i++){
-            if(randomZombie == maxZombies -1){ randomZombie = 0; }else{ randomZombie++; }
-            startSide *= -1;
-            zombies.push(new zombie(i, randomZombie, level["zombieSpeed"], level["lineSize"] * startSide ));
+
+            if(randomZombie == this.maxZombieLevel -1){ randomZombie = 0; }else{ randomZombie++; }
+            //Zombie(id, type, speed, startPoint, targetPoint)
+            zombies.push(new Zombie(i, randomZombie, level["zombieSpeed"], randomStartIndex(lineSize), this.targetPointIndex ));
             zombies[i].init(i);
         };
     };
-};
-var zombie = function zombie(id, type, speed, start){
-    var zID = id;
-    var zData = zombieTypes[type];
-    var zSpeed = speed;
-    var zPosition = start;
 
-    this.getMC = function(){ return "MovieClip"}
-    this.getData = function(){
-        var output =
-            "ID: " + zID +
-            "\nName: " + zData.name + "(" + zData.typeID +")" +
-            "\nSpeed: " + zSpeed +
-            "\nPosition: " + zPosition +
-            "\nTileSheet: " + zData.tsSource +
-            "\nStand: " + zData.tsStates.stand +
-            "\nWalk: " + zData.tsStates.walk;
-        return output;
+    function randomStartIndex(lineSize){
+        var rStart = randomInt(0,1);
+        if( rStart = 0){
+            return 0;
+        }
+        else{ return lineSize -1; }
     };
-    this.init = function(index){
-        loader.add('zombie' + index, zData.tsStates.stand).load(onLoadZombie);
-    }
-    function onLoadZombie(){
-        console.log("Zombie " + this.getMC() + "has loaded");
-    }
 };
+
 
 //  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //  DONT DELETE THIS STUFF YET !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //function ZombieController() {
 //
-//    var zombie = function (zombieIndex, zSpeed, zHealth, indexOfTarget, indexOfStart) {
+//    var Zombie = function (zombieIndex, zSpeed, zHealth, indexOfTarget, indexOfStart) {
 //        this.id = zombieIndex;
 //        this.speed = zSpeed;
 //        this.health = zHealth;
@@ -134,14 +194,14 @@ var zombie = function zombie(id, type, speed, start){
 //        var i;
 //        for(i = 0; i < gameLevels[0].zombieCount; i++){
 //            console.log("Attempting to create zombie");
-//            this.zombieArray[i] = new zombie(i, 1, 1, 5, 10);
+//            this.zombieArray[i] = new Zombie(i, 1, 1, 5, 10);
 //            console.log("Pushing zombie onto zombieArray!")
 //        }
 //    };
 //
 //    /**
 //     for (var zombies of this.count){
-//        // this.zombieArray.push(zombie(zombies, ));
+//        // this.zombieArray.push(Zombie(zombies, ));
 //    }
 //
 //    var updateZombies = function () {
