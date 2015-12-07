@@ -186,6 +186,9 @@ function GameController() {
         .add("play_again_down", "assets/artwork/play_again_down.png")
         .add("basket", "assets/artwork/Basket.png")
         .add("Rock","assets/artwork/Rock.png")
+        .add("zombie0", "assets/artwork/zombie0.png")
+        .add("zombie1", "assets/artwork/zombie1.png")
+        .add("zombie2", "assets/artwork/zombie2.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -341,8 +344,9 @@ function Game(gc) {
         this.fruitBin.init();
         this.hero.init();
         //  Zombie Stuff
-        //this.zombieController = new ZombieController();
-        //this.zombieController.generateZombies();
+        console.log("numberLine.lengt" + gameController.game.numberLine.length);
+        // this.zombieController = new ZombieController(0, gameController.game.numberLine.length);
+        // this.zombieController.generateZombies();
 
         console.log("Level " + " created.");
     };
