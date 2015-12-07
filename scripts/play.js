@@ -317,7 +317,7 @@ function Game(gc) {
     this.init = function () {
         // Level starts at 0
         level = 0;
-        this.hero.init();
+        //this.hero.init();
         this.bonus.init();
         this.buildLevel ();
     };
@@ -329,7 +329,7 @@ function Game(gc) {
         this.numberLine.init();
         this.numberLine.printPoints(); //prints value of each point in console log
         this.fruitBin.init();
-
+        this.hero.init();
         //  Zombie Stuff
         //this.zombieController = new ZombieController();
         //this.zombieController.generateZombies();
