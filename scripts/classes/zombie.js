@@ -15,13 +15,13 @@ var gameLevels = [
     {"id": 2, "descrption": "moderate", "zombieCount": 4,  "zombieSpeed": 1, "lineSize": 12, "zombieTypeMaxID": 2},
     {"id": 3, "descrption": "insane", "zombieCount": 6, "zombieSpeed": 1, "lineSize": 8, "zombieTypeMaxID": 3}];
 var zombieConstants = {"zombieTypesCount": 2};
-
 // *****************************************************************
 // -------------------- ZOMBIE OBJECT    ---------------------------
 // *****************************************************************
 //  Constructor
 var Zombie = function Zombie(id, type, speed, startPoint, targetPoint){
     this.zID = id;
+    this.typeID = type;
     this.zData = zombieTypes[type];
     this.zSpeed = speed;
     this.zPosition = startPoint;
@@ -30,6 +30,7 @@ var Zombie = function Zombie(id, type, speed, startPoint, targetPoint){
 
 //  Sprite
     //  Create new sprite
+
     this.zSprite = new Sprite(resources[this.resourceID].texture);
     stage.addChild(this.zSprite);
     //  Set anchor points
@@ -99,22 +100,25 @@ var Zombie = function Zombie(id, type, speed, startPoint, targetPoint){
 
     //  Utility method for determining zombie instance data values
     this.getData = function(){
+        console.log(this.zData);
         var output =
             "ID: " + this.zID +
-            "\nName: " + this.zData.name + "(" + this.zData.typeID +")" +
+            "\nName: " + this.zData[this.typeID]["name"] + "(" + this.zData["typeID"] +")" +
             "\nSpeed: " + this.zSpeed +
             "\nPosition: " + this.zPosition +
-            "\nTileSheet: " + this.zData.tsSource +
-            "\nStand: " + this.zData.tsStates.stand +
-            "\nWalk: " + this.zData.tsStates.walk;
+            "\nTileSheet: " + this.zData["tsSource"];
+
         return output;
     };
 };
 
+var testZombie = new Zombie(0, 0, 1, 11, 5);
+testZombie.getData();
 // *****************************************************************
 // -------------------- ZOMBIE CONTROLLER OBJECT -------------------
 // *****************************************************************
 var ZombieController = function(levelID, lineSize){
+
     this.lineSize = lineSize;
     console.log("this.lineSize : " + this.lineSize);
     console.log("lineSize : " + lineSize);
@@ -130,8 +134,8 @@ var ZombieController = function(levelID, lineSize){
 
             if(this.randomZombie == this.maxZombieLevel -1){ this.randomZombie = 0; }else{ this.randomZombie++; }
             //Zombie(id, type, speed, startPoint, targetPoint)
-            gameController.game.zombies[i] = new Zombie(i, this.randomZombie, this.level["zombieSpeed"], randomStartIndex(this.lineSize), this.targetPointIndex );
-            gameController.game.zombies[i].init(i);
+            gameController.zombies[i] = new Zombie(i, this.randomZombie, this.level["zombieSpeed"], randomStartIndex(this.lineSize), this.targetPointIndex );
+            gameController.zombies[i].getData();
         };
     };
 
