@@ -173,9 +173,13 @@ function buildGameOverScreen() {
         y: renderHeight - 100
     };
 
-    var backButton = tink.button(genericButtonFrames, playAgainPosition.x, playAgainPosition.y);
+    var playAgainButton = tink.button(genericButtonFrames, playAgainPosition.x, playAgainPosition.y);
 
-    gameOverStage.addChild(backButton);
+    gameOverStage.addChild(playAgainButton);
+
+    playAgainButton.press = () => {
+        window.location.replace('./index.html');
+    }
 
 }
 

@@ -22,12 +22,12 @@ function Hero() {
         var hero_sprite = new Sprite(resources.game_character.texture);
         hero_sprite.position.x = 590;
         hero_sprite.position.y = 500;
-        gameStage.addChild(hero_sprite);
+        topLayer.addChild(hero_sprite);
 
 
         //Health Bar (Should probably be moved to game hero init but doesnt currently work from there)
         healthBar.position.set(910, 45);
-        gameStage.addChild(healthBar);
+        topLayer.addChild(healthBar);
 
         //healthBar Inner
         innerBar.beginFill(0x000000);
@@ -51,7 +51,7 @@ function Hero() {
         );
         healthTitle.x = 878;
         healthTitle.y = 2;
-        gameStage.addChild(healthTitle);
+        topLayer.addChild(healthTitle);
 
     };
 
@@ -64,18 +64,18 @@ function Hero() {
             //take damage is not updating health bar.
             //Should be decrementing when takeDamage is called so should be listening outside the hero function
             healthBar.outer.width -= 20;
-            gameStage.removeChild(healthTitle);
+            topLayer.removeChild(healthTitle);
             healthTitle = new PIXI.Text(
                 "Hero's Health: " + this.health + "%",
                 {font: "32px Sans-serif", fill: "white"}
             );
             healthTitle.x = 878;
             healthTitle.y = 2;
-            gameStage.addChild(healthTitle);
+            topLayer.addChild(healthTitle);
 
             var pow = new Sprite(resources.pow_effect.texture);
             pow.position.set(550, 400);
-            gameStage.addChild(pow);
+            topLayer.addChild(pow);
             //Need to add a remove or fade function.
         }else if(this.health === 0){
             buildGameOverScreen();
