@@ -126,6 +126,7 @@ function GameController() {
     this.game = new Game(this);
     this.leftBasket = "";
     this.rightBasket = "";
+    this.rocks = "";
 
 
     fruitAmount: 0;
@@ -238,6 +239,8 @@ function GameController() {
         this.clouds = new Clouds();
 
         // add dynamic stage
+        // build the rock handler
+        this.rocks = new RockHandler();
         // Child all screens to the main stage
 
 
@@ -286,7 +289,13 @@ function GameController() {
     this.launch = function (){
         console.log("Nuclear launch detected.");
         //Determine flight of rock
-        //Determine if zomie exists at this location
+        this.game.numberLine.printPoints();
+        this.rocks.addRocks(this.game.numberLine.getPoint(this.currentFruitValue));
+
+    };
+    
+    this.finishLaunch = function() {
+        //Determine if zombie exists at target location
         //Remove Fruit from board
         console.log(this.currentFruitValue);
         console.log(gameController.currentFruitBin);
@@ -296,7 +305,7 @@ function GameController() {
         gameController.currentFruitBin = [];
         //Check for bonuses used and if not, move zomibes
         this.currentFruitValue = 0;
-    }
+    };
 }
 
 // This is our animation/game loop.
@@ -304,6 +313,7 @@ function render() {
     requestAnimationFrame(render); // This line ensures that render is called each frame, not just once.
     tink.update();
     gameController.clouds.Move();
+    gameController.rocks.Move();
     renderer.render(stage);
 }
 
@@ -348,5 +358,4 @@ function Game(gc) {
     this.getNumberLine = function () {
         return this.numberLine;
     };
-
 }
