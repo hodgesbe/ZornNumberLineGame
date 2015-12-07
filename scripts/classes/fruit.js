@@ -182,7 +182,7 @@ function FruitBin() {
                 console.log("Switching on level creating bin - level: " + level);
                 fruitTarget = 42;
                 fruitMin = 15;
-                possibleValues = [1,1,1,2,2,2,2,2,3,3,3,3,3,3,3,4,4,4,4,5];
+                possibleValues = [1,1,1,2,2,2,2,2,3,3,3,3,3,3,4,4,4,5,5,5];
                 break;
         }
         //continue picking fruit until number is larger than minimum number of fruit for level

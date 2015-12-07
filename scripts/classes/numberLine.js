@@ -10,7 +10,7 @@ var NumberLine = function NumberLine() {
         switch (level) {
         case 0:
                 console.log("Numberline case 0");
-            this.start = -10;
+            this.start = -7;
             break;
         }
         

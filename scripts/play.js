@@ -159,36 +159,39 @@ function GameController() {
 
         // Load in assets
         PIXI.loader
-        .add("staticBG", "assets/artwork/ZornBG_1280x720-ALT.png")
-        .add("image_sun", "assets/artwork/sun.png")
+        // Environment (static)
+        .add("staticBG", "assets/artwork/environment/ZornBG_1280x720-ALT.png")
+        .add("image_sun", "assets/artwork/environment/sun.png")
+        .add("cloud1", "assets/artwork/environment/cloud1.png")
+        .add("basket", "assets/artwork/environment/Basket.png")
+        // Actors (stuff that moves)
+        .add("zombie0", "assets/artwork/actors/zombie0.png")
+        .add("zombie1", "assets/artwork/actors/zombie1.png")
+        .add("zombie2", "assets/artwork/actors/zombie2.png")
         .add("iZombie", "assets/artwork/zombie8.png")
-        .add("infoButton", "assets/ui/Info.png")
-        .add("apple", "assets/artwork/apple_small.png")
-        .add("buttonUp", "assets/ui/button_up.png")
-        .add("buttonOver", "assets/ui/button_over.png")
-        .add("buttonDown", "assets/ui/button_down.png")
-        .add("launch_up", "assets/artwork/launch_up.png")
-        .add("launch_over", "assets/artwork/launch_over.png")
-        .add("launch_down", "assets/artwork/launch_down.png")
-        .add("help_up", "assets/artwork/help_up.png")
-        .add("help_over", "assets/artwork/help_over.png")
-        .add("help_down", "assets/artwork/help_down.png")
-        .add("cloud1", "assets/artwork/cloud1.png")
-        .add("butter_bonus", "assets/artwork/butter.png")
-        .add("sun_bonus", "assets/artwork/Bonus_Sun.png")
-        .add("game_character", "assets/artwork/hero.png")
-        .add("reset_up", "assets/artwork/reset_up.png")
-        .add("reset_over", "assets/artwork/reset_over.png")
-        .add("reset_down", "assets/artwork/reset_down.png")
-        .add("pow_effect", "assets/artwork/pow_effect.png")
-        .add("play_again_up", "assets/artwork/play_again.png")
-        .add("play_again_over", "assets/artwork/play_again_over.png")
-        .add("play_again_down", "assets/artwork/play_again_down.png")
-        .add("basket", "assets/artwork/Basket.png")
-        .add("Rock","assets/artwork/Rock.png")
-        .add("zombie0", "assets/artwork/zombie0.png")
-        .add("zombie1", "assets/artwork/zombie1.png")
-        .add("zombie2", "assets/artwork/zombie2.png")
+        .add("apple", "assets/artwork/actors/apple_small.png")
+        .add("Rock","assets/artwork/actors/Rock.png")
+        .add("game_character", "assets/artwork/actors/hero.png")
+        // Buttons
+        .add("play_again_up", "assets/artwork/buttons/play_again.png")
+        .add("play_again_over", "assets/artwork/buttons/play_again_over.png")
+        .add("play_again_down", "assets/artwork/buttons/play_again_down.png")
+        .add("reset_up", "assets/artwork/buttons/reset_up.png")
+        .add("reset_over", "assets/artwork/buttons/reset_over.png")
+        .add("reset_down", "assets/artwork/buttons/reset_down.png")
+        .add("help_up", "assets/artwork/buttons/help_up.png")
+        .add("help_over", "assets/artwork/buttons/help_over.png")
+        .add("help_down", "assets/artwork/buttons/help_down.png")
+        .add("buttonUp", "assets/artwork/buttons/button_up.png")
+        .add("buttonOver", "assets/artwork/buttons/button_over.png")
+        .add("buttonDown", "assets/artwork/buttons/button_down.png")
+        .add("launch_up", "assets/artwork/buttons/launch_up.png")
+        .add("launch_over", "assets/artwork/buttons/launch_over.png")
+        .add("launch_down", "assets/artwork/buttons/launch_down.png")
+        // Other UI Stuff
+        .add("sun_bonus", "assets/artwork/misc_sprites/Bonus_Sun.png")
+        .add("butter_bonus", "assets/artwork/misc_sprites/butter.png")
+        .add("pow_effect", "assets/artwork/misc_sprites/pow_effect.png")
         .load(function (loader, resources) {
             gameAssets = resources;
             gameController.onAssetsLoaded();
@@ -326,7 +329,7 @@ function Game(gc) {
     this.directHits = 0;
     this.fruitBucket = "";
     this.fruitBin = new FruitBin();
-    this.zombieController = new ZombieController();;
+    this.zombieController = new ZombieController();
 
     // Stuff that should happen once, at the start of a game
     this.init = function () {

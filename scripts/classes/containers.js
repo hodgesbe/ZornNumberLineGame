@@ -127,7 +127,13 @@ function buildInfoScreen() {
     var information = new PIXI.Text("Thanks for trying out our cool game!\n\n"
                                     + "The zombie apocalypse has happened! You are the lone survivor of your town, trying to hold out for rescue.\n"
                                     +"Using your fruit, target and destroy incoming zombies - get a direct hit and earn "
-                                    +"some butter - or maybe even the \nlegendary power of the sun!",
+                                    +"some butter - or maybe even the \nlegendary power of the sun!"
+                                    +"\n\nHow To Play\n"
+                                    +"Zombies will appear on the number line. They are trying to eat you and steal your butter! Find their position\n"
+                                    +"on the number line, and "
+                                    +"pick two fruit whose values equal that on the number line. Then click launch, and\n"
+                                    +"if you got it right, you will take them out, maybe even earning a bonus!\n"
+                                    +"But beware, miss too many and you just might find yourself on the receiving end of an attack yourself!\n\nGood luck!",
                                     {font: "24px sans-serif", fill: "black"});
     infoStage.addChild(information);
     information.position.y = 100;
