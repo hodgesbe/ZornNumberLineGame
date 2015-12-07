@@ -334,8 +334,9 @@ function Game(gc) {
         this.fruitBin.init();
         this.hero.init();
         //  Zombie Stuff
-        //this.zombieController = new ZombieController(0, gameController.numberLine.length);
-        //this.zombieController.generateZombies();
+        console.log("numberLine.lengt" + gameController.game.numberLine.length);
+        // this.zombieController = new ZombieController(0, gameController.game.numberLine.length);
+        // this.zombieController.generateZombies();
 
         console.log("Level " + " created.");
     };
