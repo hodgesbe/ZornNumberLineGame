@@ -21,7 +21,7 @@ var renderer;               // Will create either a Canvas or WebGL renderer dep
 var renderWidth = 1280;
 var renderHeight = 720;
 var gameAssets;             // Contains references to our game's loaded assets
-var level;                  // Current level of game
+var level = 0;                  // Current level of game
 var tink;                   // Handler to access the Tink library of functions. See: https://github.com/kittykatattack/tink
 var pointer;                // Our mouse pointer object
 
@@ -207,7 +207,6 @@ function GameController() {
 
         game.init();
         this.buildGameWindow();
-        this.buildLevelGraphics();
     };
 
     // Graphics that stay the same throughout levels should be put here.
@@ -255,6 +254,8 @@ function GameController() {
         infoStage.visible = false;
         gameOverStage.visible = false;
 
+        this.buildLevelGraphics();
+
         // Now that everything is constructed, we can add them to the scene
         stage.addChild(gameStage);
         stage.addChild(infoStage);
@@ -272,7 +273,7 @@ function GameController() {
     this.buildLevelGraphics = function () {
         displayNumberLine(this.game.getNumberLine());
         // displayFruit
-        // displayZombies
+        this.game.zombieController.generateZombies();
     };
 
     /**
@@ -325,6 +326,7 @@ function Game(gc) {
     this.directHits = 0;
     this.fruitBucket = "";
     this.fruitBin = new FruitBin();
+    this.zombieController = new ZombieController();;
 
     // Stuff that should happen once, at the start of a game
     this.init = function () {
@@ -343,10 +345,7 @@ function Game(gc) {
         this.numberLine.printPoints(); //prints value of each point in console log
         this.fruitBin.init();
         this.hero.init();
-        //  Zombie Stuff
-        console.log("numberLine.length " + gameController.game.numberLine.length);
-        this.zombieController = new ZombieController(0, gameController.game.numberLine.length);
-        this.zombieController.generateZombies();
+        this.zombieController.init(level, this.numberLine.length);
 
         console.log("Level " + " created.");
     };

@@ -19,7 +19,7 @@ var NumberLine = function NumberLine() {
         
         // Build points
         for (i = 0; i < this.length; i += 1) {
-            console.log(this.start+i);
+            // console.log(this.start+i);
             this.points[i] = new Point(this.start + i, i, this.length);
         }
     };
