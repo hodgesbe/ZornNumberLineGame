@@ -10,7 +10,7 @@ var NumberLine = function NumberLine() {
         switch (level) {
         case 0:
                 console.log("Numberline case 0");
-            this.start = randomInt(-10, -2);
+            this.start = -10;
             break;
         }
         
@@ -19,6 +19,7 @@ var NumberLine = function NumberLine() {
         
         // Build points
         for (i = 0; i < this.length; i += 1) {
+            console.log(this.start+i);
             this.points[i] = new Point(this.start + i, i, this.length);
         }
     };
@@ -27,8 +28,20 @@ var NumberLine = function NumberLine() {
         var i;
         //console.log("Printing points. Length = " + this.length);
         for (i = 0; i < this.length; i += 1) {
-            //console.log(this.points[i].index);
+             console.log("Point " + this.points[i].index + " has value " + this.points[i].value);
         }
+    };
+    
+    this.getPoint = function (value) {
+        for (i = 0; i < this.length; i++) {
+            console.log("Does " + this.points[i].value + " equal " + this.points[i].value);
+            if (this.points[i].value === value) {
+                console.log("Yes!");
+                return this.points[i];
+            }
+        }
+        console.log("No points found, returning 0.");
+        return 0;
     };
 };
 

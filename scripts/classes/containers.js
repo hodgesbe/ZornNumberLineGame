@@ -39,7 +39,7 @@ function buildHud() {
     ];
 
     launchButton = tink.button(launchFrame, renderWidth / 2.3, 250);
-    launchButton.press = () => {
+    launchButton.tap = () => {
         // Only do buttons if not draggin fruit
         if (dragParams.currentFruit === null) {
             //Only do if both baskets are full
@@ -49,6 +49,15 @@ function buildHud() {
         }
     };
     hud.addChild(launchButton);
+    
+    // menu button
+    var genericButtonFrames = [
+        resources.buttonUp.texture,
+        resources.buttonOver.texture,
+        resources.buttonDown.texture
+    ];
+    var menuButton = tink.button(genericButtonFrames, 0, zombie.height);
+
 
     //help button
     var helpFrame = [
@@ -57,8 +66,8 @@ function buildHud() {
         resources["help_down"].texture
     ];
 
-    helpButton = tink.button(helpFrame, 0, zombie.height);
-    helpButton.press = () => {
+    helpButton = tink.button(helpFrame, 0, zombie.height+50);
+    helpButton.tap = () => {
         // Only do buttons if we aren't dragging fruit
         if (dragParams.currentFruit === null) {
             infoStage.visible = true;
@@ -75,7 +84,7 @@ function buildHud() {
         resources["reset_down"].texture
     ];
     resetButton = tink.button(resetFrame, renderWidth / 1.9, 270);
-    resetButton.press = () => {
+    resetButton.tap = () => {
         var i;
         // Only do buttons if we aren't dragging fruit
         if (dragParams.currentFruit === null) {
@@ -101,7 +110,7 @@ function buildHud() {
     };
     hud.addChild(resetButton);
 
-
+    //hud.addChild(menuButton);
     hud.addChild(helpButton);
 
     gameController.hud = hud;
@@ -144,7 +153,7 @@ function buildInfoScreen() {
     backMessage.anchor.y = -0.6;
     infoStage.addChild(backButton);
     infoStage.addChild(backMessage);
-    backButton.press = () => {
+    backButton.tap = () => {
         infoStage.visible = false;
         gameStage.visible = true;
         gameStage.interactive = true;
