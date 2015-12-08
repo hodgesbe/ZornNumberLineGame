@@ -21,7 +21,9 @@ var NumberLine = function NumberLine() {
                 break;
             case 2:
                 this.start = -15;
+                break;
             default:
+                this.start = -15;
                 break;
         }
         

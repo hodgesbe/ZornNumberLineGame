@@ -34,6 +34,7 @@ stage
         cloudLayer
         hudLayer
         dynamicLayer
+            fruitLayer
         topLayer
     infoStage
 **/
@@ -46,6 +47,7 @@ var backgroundLayer;        // Contains static background images
 var cloudLayer;             // Contains moving clouds
 var hudLayer;               // Contains UI elements such as buttons
 var dynamicLayer;           // Contains apples, zombies, player, etc.
+var fruitLayer;             // <--
 var topLayer;               // Contains whatever item is currently being dragged
 
 var launchInProgress = false;
@@ -159,6 +161,7 @@ function GameController() {
         cloudLayer = new Container();
         hudLayer = new Container();
         dynamicLayer = new Container();
+        fruitLayer = new Container();
         topLayer = new Container();
 
         renderer.backgroundColor = 0xAAAAAA;
@@ -277,6 +280,7 @@ function GameController() {
         gameStage.addChild(cloudLayer);
         gameStage.addChild(hudLayer);
         gameStage.addChild(dynamicLayer);
+        dynamicLayer.addChild(fruitLayer);
         gameStage.addChild(topLayer);
         render();
     };
@@ -323,8 +327,14 @@ function GameController() {
         //Remove Fruit from board
         // console.log(this.currentFruitValue);
         // console.log(gameController.currentFruitBin);
-        dynamicLayer.removeChild(gameController.currentFruitBin[0]);
-        dynamicLayer.removeChild(gameController.currentFruitBin[1]);
+        tink.makeUndraggable(gameController.currentFruitBin[0]);
+        tink.makeUndraggable(gameController.currentFruitBin[1]);
+        gameController.currentFruitBin[0].interactable = false;
+        gameController.currentFruitBin[1].interactable = false;
+        fruitLayer.removeChild(gameController.currentFruitBin[0]);
+        fruitLayer.removeChild(gameController.currentFruitBin[1]);
+        delete(gameController.currentFruitBin[0]);
+        delete(gameController.currentFruitBin[1]);
         dragParamsInit();
         gameController.currentFruitBin = [];
         this.currentFruitValue = 0;
@@ -341,6 +351,9 @@ function GameController() {
     this.newLevel = function() {
         console.log("Building a new level.");
         level++;
+        dynamicLayer.removeChild(fruitLayer);
+        fruitLayer = new Container();
+        dynamicLayer.addChild(fruitLayer);
         game.buildLevel();
         this.buildLevelGraphics(false);
     }
@@ -375,7 +388,6 @@ function Game(gc) {
         //this.hero.init();
         this.bonus.init();
         this.hero.init();
-        this.fruitBin.init();
         this.buildLevel();
     };
 
@@ -383,6 +395,7 @@ function Game(gc) {
     this.buildLevel = function () {
         this.numberLine.init();
         this.zombieController.init(level, this.numberLine.length);
+        this.fruitBin.init();
         console.log("Level " + level + " created.");
     };
 
