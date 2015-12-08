@@ -67,7 +67,7 @@ var ZombieController = function ZombieController() {
             }
             //Zombie(id, type, speed, startPoint, targetPoint)
             var zombie = new Zombie();
-            zombie.init(i, this.randomZombie, this.level.zombieSpeed + 4, this.randomStartIndex(this.lineSize, i), this.targetPointIndex);
+            zombie.init(i, this.randomZombie, this.level.zombieSpeed, this.randomStartIndex(this.lineSize, i), this.targetPointIndex);
             // console.log("Placing zombie at: " + this.randomStartIndex(this.lineSize, i));
             console.log("They have a speed of " + this.level.zombieSpeed);
             
