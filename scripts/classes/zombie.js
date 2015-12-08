@@ -202,8 +202,8 @@ var Zombie = function Zombie() {
         // this.zSprite.anchor.x = this.zSprite.width/2;
         this.zSprite.anchor.set(0.5,1);
         if(this.zPosition < this.heroPos){
-            this.zSprite.scale.set(0.5, 1);
-        }else{this.zSprite.scale.set(-0.5, 1); }
+            this.zSprite.scale.set(0.5, 0.5);
+        }else{this.zSprite.scale.set(-0.5, 0.5); }
 
         //  Set initial start position
         this.zSprite.position.x = gameController.game.numberLine.getPoint(this.target).x;
