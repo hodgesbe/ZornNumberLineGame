@@ -139,6 +139,7 @@ var ZombieController = function ZombieController() {
                 // So now we know that you hit a zombie, but we should add a bonus if it was a direct hit
                 if (value === this.zombies[i].target) {
                     console.log("Direct hit, adding a bonus");
+                    gameController.game.bonus.addButterBonus();
                 }
             }
             // Or, check to see if value is less than zombie if zombie is to the left of number line
@@ -149,6 +150,7 @@ var ZombieController = function ZombieController() {
                 // So now we know that you hit a zombie, but we should add a bonus if it was a direct hit
                 if (value === this.zombies[i].target) {
                     console.log("Direct hit, adding a bonus");
+                    gameController.game.bonus.addSunBonus();
                 }
             }
             
