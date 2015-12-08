@@ -59,7 +59,7 @@ function buildHud() {
 
             gameController.butterBonusArmed = false;
         }
-
+        //checks for bonus
         if (gameController.sunBonusArmed){
             //needs to halt zombie
 
