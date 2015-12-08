@@ -166,7 +166,7 @@ function buildInfoScreen() {
     var information = new PIXI.Text("Thanks for trying out our cool game!\n\n"
                                     + "The zombie apocalypse has happened! You are the lone survivor of your town, trying to hold out for rescue.\n"
                                     +"Using your fruit, target and destroy incoming zombies - get a direct hit and earn "
-                                    +"some butter - or maybe even the \nlegendary power of the sun!"
+                                    +"a bonus.  Butter gives you an extra attach\nThe legendary power of the sun, stuns the zombies for one round!"
                                     +"\n\nHow To Play\n"
                                     +"Zombies will appear on the number line. They are trying to eat you and steal your butter! Find their position\n"
                                     +"on the number line, and "
