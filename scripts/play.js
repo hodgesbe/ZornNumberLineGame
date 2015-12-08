@@ -133,6 +133,7 @@ function GameController() {
     this.butterBonusArmed = false;
     this.sunBonusArmed = false;
     this.zombieCount = "";
+    this.levelText = "";
 
 
     fruitAmount: 0;
@@ -285,6 +286,8 @@ function GameController() {
         displayNumberLine(newLevel);
         // displayFruit
         this.game.zombieController.generateZombies();
+        this.levelText = new LevelText();
+        this.levelText.init();
     };
 
     // 1. Launch rocks at the player's target
@@ -351,6 +354,7 @@ function render() {
     gameController.rocks.Move();
     gameController.explosions.Update();
     gameController.game.zombieController.moveZombies();
+    gameController.levelText.updateText();
     renderer.render(stage);
 }
 

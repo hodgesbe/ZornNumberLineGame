@@ -56,7 +56,7 @@ var ZombieController = function ZombieController() {
         var count = this.level.zombieCount;
         console.log(count + " zombies of level: " + this.level["descrption"] + "\n will be created!");
         for(i = 0; i < count; i++){
-            console.log("Creating zombie");
+            // console.log("Creating zombie");
 
             if(this.randomZombie === this.maxZombieLevel -1)
             { 
@@ -68,6 +68,8 @@ var ZombieController = function ZombieController() {
             //Zombie(id, type, speed, startPoint, targetPoint)
             var zombie = new Zombie();
             zombie.init(i, this.randomZombie, this.level.zombieSpeed + 4, this.randomStartIndex(this.lineSize, i), this.targetPointIndex);
+            // console.log("Placing zombie at: " + this.randomStartIndex(this.lineSize, i));
+            console.log("They have a speed of " + this.level.zombieSpeed);
             
             this.zombies.push(zombie);
             // gameController.zombies[i].getData();
@@ -82,7 +84,7 @@ var ZombieController = function ZombieController() {
         // console.log("Amount to add is: " + amountToAdd);
         if(index%2 === 0){
             // console.log("right side");
-            return Math.floor(lineSize / 2) + amountToAdd;
+            return Math.floor(lineSize / 2) - amountToAdd;
         }
         else
         { 

@@ -251,8 +251,3 @@ function updateZombieCount(amount) {
     gameController.hud.addChild(zombieCount);
     gameController.zombieCount = zombieCount;
 }
-
-// Display a new level message every new level, then disappear
-var LevelText = function LevelText() {
-    
-}
