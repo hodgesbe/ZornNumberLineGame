@@ -64,6 +64,7 @@ function Bonus() {
         ]
         useButterButton = tink.button(useButterFrame, 712, 0);
 
+        //updates game controller boolean if pushed
         useButterButton.press = () => {
             gameController.butterBonusArmed = true;
             this.removeButterBonus();
