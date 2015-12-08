@@ -4,7 +4,7 @@
 var NumberLine = function NumberLine() {
     // Constructor
     this.points = [];
-    this.start = 0;
+    this.start = 0; // The numeric start point of the number line, should be negative so that it is equally sized to the left and right of 0.
     this.length = 0;
         
     this.init = function () {
@@ -27,6 +27,7 @@ var NumberLine = function NumberLine() {
         }
     };
     
+    // Print out all of the points
     this.printPoints = function () {
         var i;
         //console.log("Printing points. Length = " + this.length);
@@ -39,15 +40,24 @@ var NumberLine = function NumberLine() {
     // or false if it doesn't exist.
     this.getPoint = function (value) {
         for (i = 0; i < this.length; i++) {
-            console.log("Does " + this.points[i].value + " equal " + this.points[i].value);
+            // console.log("Does " + this.points[i].value + " equal " + this.points[i].value);
             if (this.points[i].value === value) {
-                console.log("Yes!");
+                //console.log("Yes!");
                 return this.points[i];
             }
         }
-        console.log("No points found, returning 0.");
+        // console.log("No points found, returning 0.");
         return false;
     };
+    
+    this.getPointIndex = function(index) {
+        return (this.points[index]);
+    };
+    
+    // Returns the origin point of the hero
+    this.getOrigin = function() {
+        return 0;
+    }
 };
 
 // A Point object knows its index as well as the x and y position on the screen to render

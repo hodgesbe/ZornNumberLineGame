@@ -33,7 +33,12 @@ var RockHandler = function RockHandler() {
     this.addRocks = function(targetPoint) {
         console.log("Adding a rock with value: " + targetPoint.value);
         var rock = new Rock();
-        rock.init(targetPoint);
+        if (targetPoint === false) {
+            console.log("No point found, shoot rock off screen!");
+            rock.createSpaceRock();
+        } else {
+            rock.init(targetPoint);
+        }
         rocks[rocks.length] = rock;
         numRocks++;
         turnEnding = true;
@@ -49,6 +54,17 @@ var Rock = function Rock() {
     this.init = function(targetPoint) {
         targetX = targetPoint.x;
         console.log(targetPoint.x);
+        sprite = new PIXI.Sprite(resources.Rock.texture);
+        sprite.position.y = itemAreas.sidewalk.y - 100;
+        sprite.position.x = renderWidth / 2;
+        sprite.scale.set(0.2, 0.2);
+        topLayer.addChild(sprite);
+    }
+    
+    // If the player tried to hit something outside of the number line, this rock will shoot off into space
+    this.createSpaceRock = function() {
+        targetX = 1400;
+        // console.log(targetPoint.x);
         sprite = new PIXI.Sprite(resources.Rock.texture);
         sprite.position.y = itemAreas.sidewalk.y - 100;
         sprite.position.x = renderWidth / 2;

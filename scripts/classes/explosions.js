@@ -18,7 +18,7 @@ var Explosion = function Explosion() {
     };
     
     this.timedOut = function() {
-        console.log("Timer: " + timer + ", fadeTime: " + fadeTime);
+        // console.log("Timer: " + timer + ", fadeTime: " + fadeTime);
         if (timer < fadeTime) {
             // console.log("removing explosion!");
             return false;
@@ -29,7 +29,7 @@ var Explosion = function Explosion() {
     
     this.fade = function() {
         timer++;
-        console.log("Timer: " + timer);
+        // console.log("Timer: " + timer);
     };
     
     this.delete = function() {
@@ -53,7 +53,7 @@ var ExplosionHandler = function ExplosionHandler() {
     this.Update = function() {
         
         for (i = 0; i < explosions.length; i++) {
-            console.log("Updating explosions!");
+            // console.log("Updating explosions!");
             explosions[i].fade();
             if (explosions[i].timedOut() === true) {
                 explosions[i].delete(); 

@@ -44,7 +44,12 @@ function buildHud() {
         if (dragParams.currentFruit === null) {
             //Only do if both baskets are full
             if(dragParams.leftBasket != null && dragParams.rightBasket != null){
-                gameController.launch();
+                // Also make sure that there is no launch in progress
+                if (launchInProgress === false) {
+                    gameController.launch();
+                    launchInProgress = true;
+                }
+
             }
         }
     };

@@ -48,6 +48,8 @@ var hudLayer;               // Contains UI elements such as buttons
 var dynamicLayer;           // Contains apples, zombies, player, etc.
 var topLayer;               // Contains whatever item is currently being dragged
 
+var launchInProgress = false;
+
 //  Graphic Items coordinates as JSON array object.
 var itemAreas;
 itemAreas = {
@@ -90,7 +92,7 @@ function dragParamsInit (){
         leftBasket: null,
         rightBasket: null
     };
-};
+}
 
 var numLineParams = {
     offset: 15,
@@ -304,9 +306,10 @@ function GameController() {
     After rocks hit their target (aka the animation is done), do the actual calculation and game logic update.
     **/
     this.finishLaunch = function() {
+        console.log("Finishing launch!");
         //Determine if zombie exists at target location
         // Or if the rock flew past them - direct hit gives a random bonus, shooting it past them just hurts them.
-        
+        this.game.zombieController.updateZombies();
         
         //Remove Fruit from board
         console.log(this.currentFruitValue);
@@ -317,6 +320,9 @@ function GameController() {
         gameController.currentFruitBin = [];
         //Check for bonuses used and if not, move zomibes
         this.currentFruitValue = 0;
+        
+        // Launch has completed
+        launchInProgress = false;
     };
 }
 
@@ -327,6 +333,7 @@ function render() {
     gameController.clouds.Move();
     gameController.rocks.Move();
     gameController.explosions.Update();
+    gameController.game.zombieController.moveZombies();
     renderer.render(stage);
 }
 
