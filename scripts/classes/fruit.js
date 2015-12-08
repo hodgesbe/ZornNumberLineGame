@@ -68,7 +68,7 @@ var Fruit = function Fruit (fruitValue){
                     this.previousPos.x = dragParams.previousPos.x;
                     this.previousPos.y = dragParams.previousPos.y;
                     //place fruit in center
-                    console.log(rightBasketCenter);
+                    // console.log(rightBasketCenter);
                     this.fruitSprite.position.set(rightBasketCenter.x, rightBasketCenter.y);
                     this.fruitSprite.scale.set(1.25,1.25);
                 } else {

@@ -105,7 +105,7 @@ function buildHud() {
     resetButton.tap = () => {
         var i;
         // Only do buttons if we aren't dragging fruit nor is there a launch in progress
-        if (dragParams.currentFruit === null && gameController.launchInProgress === false) {
+        if (dragParams.currentFruit === null && launchInProgress === false) {
             console.log("Trying to reset fruit");
             //reset left basket
             if (dragParams.leftBasket != null){

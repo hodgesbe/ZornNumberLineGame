@@ -23,10 +23,10 @@ var zombieTypes = [
 
 
 var gameLevels = [
-    {"id": 0, "descrption": "beginner", "zombieCount": 1, "zombieSpeed": 1, "lineSize": 20, "zombieTypeMaxID": 1},
-    {"id": 1, "descrption": "easy", "zombieCount": 2, "zombieSpeed": 1, "lineSize": 16, "zombieTypeMaxID": 2},
-    {"id": 2, "descrption": "moderate", "zombieCount": 4,  "zombieSpeed": 1, "lineSize": 12, "zombieTypeMaxID": 2},
-    {"id": 3, "descrption": "insane", "zombieCount": 6, "zombieSpeed": 1, "lineSize": 8, "zombieTypeMaxID": 3}];
+    {"id": 0, "descrption": "beginner", "zombieCount": 1, "zombieSpeed": 2, "lineSize": 20, "zombieTypeMaxID": 1},
+    {"id": 1, "descrption": "easy", "zombieCount": 2, "zombieSpeed": 3, "lineSize": 16, "zombieTypeMaxID": 2},
+    {"id": 2, "descrption": "moderate", "zombieCount": 4,  "zombieSpeed": 4, "lineSize": 12, "zombieTypeMaxID": 2},
+    {"id": 3, "descrption": "insane", "zombieCount": 5, "zombieSpeed": 4, "lineSize": 8, "zombieTypeMaxID": 3}];
 var zombieConstants = {"zombieTypesCount": 2};
 
 
@@ -40,9 +40,6 @@ var ZombieController = function ZombieController() {
     var i,
         moving = false;
     
-    this.levelID = "";
-    this.lineSize = "";
-    
     this.init = function(levelID, lineSize) {
         console.log("We are creating the zombies for level: " + levelID);
         this.levelID = levelID;
@@ -51,13 +48,15 @@ var ZombieController = function ZombieController() {
         this.level = gameLevels[this.levelID];
         this.targetPointIndex = ((lineSize - 1) / 2);
         this.maxZombieLevel = this.level.zombieTypeMaxID;
-        this.randomZombie = 0;
+        this.randomZombie = this.levelID;
     };
     
     this.generateZombies = function() {
+        this.zombies = [];
         var count = this.level.zombieCount;
-        // console.log(count + " zombies of level: " + this.level["descrption"] + "\n will be created!");
+        console.log(count + " zombies of level: " + this.level["descrption"] + "\n will be created!");
         for(i = 0; i < count; i++){
+            console.log("Creating zombie");
 
             if(this.randomZombie === this.maxZombieLevel -1)
             { 
@@ -68,29 +67,33 @@ var ZombieController = function ZombieController() {
             }
             //Zombie(id, type, speed, startPoint, targetPoint)
             var zombie = new Zombie();
-            zombie.init(i, this.randomZombie, this.level.zombieSpeed * 8, this.randomStartIndex(this.lineSize), this.targetPointIndex);
+            zombie.init(i, this.randomZombie, this.level.zombieSpeed + 4, this.randomStartIndex(this.lineSize, i), this.targetPointIndex);
             
-            this.zombies[i] = zombie;
+            this.zombies.push(zombie);
             // gameController.zombies[i].getData();
         }
     };
 
-    this.randomStartIndex = function(lineSize){
-        var rStart = Math.random(0,1);
-        console.log("Random index is " + rStart);
-        if( rStart < 0.5){
-            return 0;
+    // I'm a little too proud of this math function - Nicholas
+    this.randomStartIndex = function(lineSize, index){
+        var amountToAdd = Math.floor(index/2);
+        // console.log("Index is: " + index);
+        // console.log("Amount to add is: " + amountToAdd);
+        if(index%2 === 0){
+            // console.log("right side");
+            return Math.floor(lineSize / 2) + amountToAdd;
         }
         else
         { 
-            return lineSize -1; 
+            // console.log("left side");
+            return Math.floor(-lineSize / 2) + amountToAdd + 1; 
         }
     };
     
     this.moveZombies = function() {
         var checkMoving;
         if (moving === true) {
-            console.log("Doing a move, so checkMoving is getting set to false.");
+            // console.log("Doing a move, so checkMoving is getting set to false.");
             checkMoving = false;
         }
         for (i = 0; i < this.zombies.length; i++) {
@@ -98,9 +101,9 @@ var ZombieController = function ZombieController() {
             // console.log("Moving zombies!");
             this.zombies[i].moveZombie();
             if (moving === true) {
-                console.log("Is zombie moving?" + this.zombies[i].moving);
+                // console.log("Is zombie moving?" + this.zombies[i].moving);
                 if (this.zombies[i].moving === true) {
-                    console.log("Setting checkMoving to true!");
+                    // console.log("Setting checkMoving to true!");
                     checkMoving = true;
                 }
             }
@@ -109,14 +112,14 @@ var ZombieController = function ZombieController() {
         if (moving === true && checkMoving === false) {
             moving = false;
             gameController.finishLaunch();
-            console.log("Zombie has reached its destination");
+            // console.log("Zombie has reached its destination");
         } else if (moving === true) {
-            console.log("Still moving");
+            // console.log("Still moving");
         }
     };
     
     this.updateZombies = function() {
-        console.log("Trying to update zombies");
+        // console.log("Trying to update zombies");
         for (i = 0; i < this.zombies.length; i++) {
             this.zombies[i].updatePoint();
         }
@@ -127,35 +130,36 @@ var ZombieController = function ZombieController() {
     * This function should check to see if any of the zombies were hit, and whether they were direct hits or not.
     */
     this.checkZombiesHit = function(value) {
-        console.log("Checking if the player has hit a zombie")
+        // console.log("Checking if the player has hit a zombie")
         for (i = 0; i < this.zombies.length; i++) {
             // console.log(value + ", " + this.zombies[i].target);
             var zombieHit = false;
             // Check to see if value is greater than zombie if zombie is to the right of number line
-            if (value >= this.zombies[i].target > 0) {
+            if (this.zombies[i].target > 0 && value >= this.zombies[i].target) {
                 console.log("You shot past zombie on the right");
                 zombieHit = true;
                 
                 // So now we know that you hit a zombie, but we should add a bonus if it was a direct hit
                 if (value === this.zombies[i].target) {
-                    console.log("Direct hit, adding a bonus");
+                    // console.log("Direct hit, adding a bonus");
                     gameController.game.bonus.addButterBonus();
                 }
             }
             // Or, check to see if value is less than zombie if zombie is to the left of number line
-            else if (value <= this.zombies[i].target < 0) {
+            else if (this.zombies[i].target < 0 && value <= this.zombies[i].target) {
                 console.log("You shot past zombie on the left");
                 zombieHit = true;
                 
                 // So now we know that you hit a zombie, but we should add a bonus if it was a direct hit
                 if (value === this.zombies[i].target) {
-                    console.log("Direct hit, adding a bonus");
+                    // console.log("Direct hit, adding a bonus");
                     gameController.game.bonus.addSunBonus();
                 }
             }
             
             // Remove the zombie if it is hit
             if (zombieHit === true) {
+                console.log("Zombie was hit!");
                 this.zombies[i].Remove();
                 this.zombies.splice(i, 1);
             }
@@ -164,9 +168,10 @@ var ZombieController = function ZombieController() {
     
     this.checkZombiesAttack = function() {
         for (i = 0; i < this.zombies.length; i++) {
-            console.log("Checking zombie target: " + this.zombies[i].target + ", " + this.zombies[i].heroPos);
+            // console.log("Checking zombie target: " + this.zombies[i].target + ", " + this.zombies[i].heroPos);
             if (this.zombies[i].target === this.zombies[i].heroPos) {
-                console.log("Zombie attacking hero!");
+                // console.log("Zombie attacking hero!");
+                console.log("Deleting zombie!");
                 this.zombies[i].Remove();
                 this.zombies.splice(i, 1);
                 this.heroHit();
@@ -175,6 +180,7 @@ var ZombieController = function ZombieController() {
     }
     
     this.heroHit = function(){
+        console.log("Hero hit by one zombie!");
         gameController.game.hero.takeDamage();
     };
 };
@@ -186,16 +192,17 @@ var ZombieController = function ZombieController() {
 var Zombie = function Zombie() {
     
     this.init = function(id, type, speed, startPoint, targetPoint) {
+        // console.log(startPoint);
         this.moving = false;
         this.zID = id;
         this.typeID = type;
         this.zData = zombieTypes[type];
         this.zSpeed = speed;
         this.zPosition = startPoint;
-        this.target = targetPoint; // This is the numeric value of the target point
+        this.target = startPoint; // This is the numeric value of the target point
         this.heroPos = gameController.game.numberLine.getOrigin(); // This is the value of the hero position
         this.resourceID = "zombie" + this.zID;
-        console.log("Want zombie resource: " + this.resourceID);
+        // console.log("Want zombie resource: " + this.resourceID);
         this.zSprite = new Sprite(resources[this.resourceID].texture);
         dynamicLayer.addChild(this.zSprite);
         //  Set anchor points
@@ -204,7 +211,7 @@ var Zombie = function Zombie() {
         this.zSprite.scale.set(0.1, 0.1);
         //  Set initial start position
         this.zSprite.position.x = gameController.game.numberLine.getPoint(this.target).x;
-        this.zSprite.position.y = gameController.game.numberLine.points[startPoint].y;
+        this.zSprite.position.y = gameController.game.numberLine.getPoint(this.target).y;
         
         // console.log("Zombie sprite created at point " + targetPoint);
         // console.log(this.zSprite);
@@ -229,7 +236,7 @@ var Zombie = function Zombie() {
                 // console.log("Not moving!");
             }
         } else if (this.moving === true) {
-            console.log("Not moving anymore.");
+            // console.log("Not moving anymore.");
             this.moving = false;
         }
     };
@@ -238,20 +245,20 @@ var Zombie = function Zombie() {
         // console.log("Updating zombie target point!");
         if (this.target > this.heroPos) { // We are to the right, so go left at speed
             this.target -= this.zSpeed;
-            // console.log("New target " + this.target);
+            console.log("New target " + this.target);
             // Check if we've passed the hero now.
             // console.log(this.target + ", " + this.heroPos);
             if (this.target <= this.heroPos) {
-                console.log("Zombie has hit the player!");
+                console.log("Zombie has hit the player! from the right");
                 this.target = this.heroPos;
             }
         } else { // We are to the left, so go right at speed
             this.target += this.zSpeed;
-            console.log(this.target + ", " + this.heroPos);
+            // console.log(this.target + ", " + this.heroPos);
             // console.log("New target " + this.target);
             // Check if we've passed the target
             if (this.target >= this.heroPos) {
-                console.log("Zombie has hit the player!");
+                console.log("Zombie has hit the player! from the left");
                 this.target = this.heroPos;
             }
         }
@@ -263,7 +270,7 @@ var Zombie = function Zombie() {
 
     //  Utility method for determining zombie instance data values
     this.getData = function(){
-        console.log(this.zData);
+        // console.log(this.zData);
         var output =
             "ID: " + this.zID +
             "\nName: " + this.zData[this.typeID].name + "(" + this.zData["typeID"] +")" +

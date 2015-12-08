@@ -173,7 +173,8 @@ function GameController() {
         .add("zombie0", "assets/artwork/actors/zombie0.png")
         .add("zombie1", "assets/artwork/actors/zombie1.png")
         .add("zombie2", "assets/artwork/actors/zombie2.png")
-        .add("iZombie", "assets/artwork/zombie8.png")
+        .add("zombie3", "assets/artwork/actors/zombie3.png")
+        .add("iZombie", "assets/artwork/actors/zombie8.png")
         .add("apple", "assets/artwork/actors/apple_small.png")
         .add("Rock","assets/artwork/actors/Rock.png")
         .add("game_character", "assets/artwork/actors/hero.png")
@@ -248,19 +249,13 @@ function GameController() {
         gameStage.addChild(this.leftBasket);
         gameStage.addChild(this.rightBasket);
 
-        // Build the clouds
+        // Build the dynamic elements that the player doesn't control directly
         this.clouds = new Clouds();
-
-        // add dynamic stage
-        // build the rock handler
         this.rocks = new RockHandler();
         this.explosions = new ExplosionHandler();
-        // Child all screens to the main stage
-
 
         // Build the HUD
         buildHud();
-
 
         // Build other screens
         buildInfoScreen();
@@ -269,7 +264,7 @@ function GameController() {
         infoStage.visible = false;
         gameOverStage.visible = false;
 
-        this.buildLevelGraphics();
+        this.buildLevelGraphics(true);
 
         // Now that everything is constructed, we can add them to the scene
         stage.addChild(gameStage);
@@ -285,8 +280,8 @@ function GameController() {
     };
 
     // Level-specific graphics should go here
-    this.buildLevelGraphics = function () {
-        displayNumberLine(this.game.getNumberLine());
+    this.buildLevelGraphics = function (newLevel) {
+        displayNumberLine(newLevel);
         // displayFruit
         this.game.zombieController.generateZombies();
     };
@@ -303,34 +298,47 @@ function GameController() {
     this.checkZombies = function() {
         console.log("Checking zombies!");
         //Determine if zombie exists at target location, let the controller handle all that
+        console.log("Fruit value: " + this.currentFruitValue);
         this.game.zombieController.checkZombiesHit(this.currentFruitValue);
-        
+        // If there are no zombies left, and the hero is still alive, next level!
         if (this.game.zombieController.zombies.length <= 0) {
-            // We've won!
-            console.log("Game over!");
+            this.finishLaunch();
+        } else {
+            // Otherwise
+            // Update the zombies and continue
+            this.game.zombieController.updateZombies();
         }
-        // Update the zombies
-        this.game.zombieController.updateZombies();
     };
     
     // 3. Check game state and finish up launch
     this.finishLaunch = function() {
-        console.log("Finish Launch called.");
+        // console.log("Finish Launch called.");
         // Did a zombie hit the player?
         this.game.zombieController.checkZombiesAttack();
         
         //Remove Fruit from board
-        console.log(this.currentFruitValue);
-        console.log(gameController.currentFruitBin);
+        // console.log(this.currentFruitValue);
+        // console.log(gameController.currentFruitBin);
         dynamicLayer.removeChild(gameController.currentFruitBin[0]);
         dynamicLayer.removeChild(gameController.currentFruitBin[1]);
         dragParamsInit();
         gameController.currentFruitBin = [];
-        //Check for bonuses used and if not, move zomibes
         this.currentFruitValue = 0;
         
         // Launch has completed
         launchInProgress = false;
+        
+        // If there are no zombies left, and the hero is still alive, next level!
+        if (this.game.zombieController.zombies.length <= 0) {
+            this.newLevel();
+        }
+    }
+    
+    this.newLevel = function() {
+        console.log("Building a new level.");
+        level++;
+        game.buildLevel();
+        this.buildLevelGraphics(false);
     }
 }
 
@@ -349,7 +357,7 @@ function Game(gc) {
     this.gameController = gc;
     this.bonus = new Bonus();
     this.hero = new Hero();
-    this.numberLine = ""; // We want to initialize this again every new level
+    this.numberLine = new NumberLine(); // We want to initialize this again every new level
     this.directHits = 0;
     this.fruitBucket = "";
     this.fruitBin = new FruitBin();
@@ -361,20 +369,16 @@ function Game(gc) {
         level = 0;
         //this.hero.init();
         this.bonus.init();
-        this.buildLevel ();
+        this.hero.init();
+        this.fruitBin.init();
+        this.buildLevel();
     };
 
     // Stuff that should happen every level
     this.buildLevel = function () {
-
-        this.numberLine = new NumberLine();
         this.numberLine.init();
-        // this.numberLine.printPoints(); //prints value of each point in console log
-        this.fruitBin.init();
-        this.hero.init();
         this.zombieController.init(level, this.numberLine.length);
-
-        console.log("Level " + " created.");
+        console.log("Level " + level + " created.");
     };
 
     this.getBonusController = function () {
