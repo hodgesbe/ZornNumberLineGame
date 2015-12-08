@@ -79,7 +79,7 @@ var ZombieController = function ZombieController() {
 
     // I'm a little too proud of this math function - Nicholas
     this.randomStartIndex = function(lineSize, index){
-        var amountToAdd = Math.floor(index/2);
+        var amountToAdd = Math.floor(index/2) * 2;
         // console.log("Index is: " + index);
         // console.log("Amount to add is: " + amountToAdd);
         if(index%2 === 0){
