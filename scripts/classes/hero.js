@@ -72,10 +72,13 @@ function Hero() {
             healthTitle.x = 878;
             healthTitle.y = 2;
             topLayer.addChild(healthTitle);
+            
+            gameController.explosions.addExplosion(45, 550, 400);
 
+            /**
             var pow = new Sprite(resources.pow_effect.texture);
             pow.position.set(550, 400);
-            topLayer.addChild(pow);
+            topLayer.addChild(pow); **/
             //Need to add a remove or fade function.
         }else if(this.health === 0){
             buildGameOverScreen();

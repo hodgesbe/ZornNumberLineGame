@@ -283,33 +283,33 @@ function GameController() {
         this.game.zombieController.generateZombies();
     };
 
-    /**
-    Function to perform necessary steps when player has clicked lauch button:
-    1. Use currentFruitValue to determine how far rock will fly
-    2. Determine if zombie exists at point of rock landing
-        2a. If so, damage zombie, increase necessary bonuses, determine if last zombie in level
-            2aI. If so, build new level
-    3. Remove Fruit from board
-    4. If bonuses used, decrement bonus used
-        4a. Else, move zombies
-    5. Reset currentFruitValue
-    */
+    // 1. Launch rocks at the player's target
     this.launch = function (){
         console.log("Nuclear launch detected.");
-        //Determine flight of rock
-        this.game.numberLine.printPoints();
+        // this.game.numberLine.printPoints();
         this.rocks.addRocks(this.game.numberLine.getPoint(this.currentFruitValue));
 
     };
     
-    /**
-    After rocks hit their target (aka the animation is done), do the actual calculation and game logic update.
-    **/
-    this.finishLaunch = function() {
-        console.log("Finishing launch!");
-        //Determine if zombie exists at target location
-        // Or if the rock flew past them - direct hit gives a random bonus, shooting it past them just hurts them.
+    // 2. Move zombies
+    this.checkZombies = function() {
+        console.log("Checking zombies!");
+        //Determine if zombie exists at target location, let the controller handle all that
+        this.game.zombieController.checkZombiesHit(this.currentFruitValue);
+        
+        if (this.game.zombieController.zombies.length <= 0) {
+            // We've won!
+            console.log("Game over!");
+        }
+        // Update the zombies
         this.game.zombieController.updateZombies();
+    };
+    
+    // 3. Check game state and finish up launch
+    this.finishLaunch = function() {
+        console.log("Finish Launch called.");
+        // Did a zombie hit the player?
+        this.game.zombieController.checkZombiesAttack();
         
         //Remove Fruit from board
         console.log(this.currentFruitValue);
@@ -323,7 +323,7 @@ function GameController() {
         
         // Launch has completed
         launchInProgress = false;
-    };
+    }
 }
 
 // This is our animation/game loop.

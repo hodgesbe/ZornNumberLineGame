@@ -12,7 +12,7 @@ var NumberLine = function NumberLine() {
         // Set size based on level
         switch (level) {
         case 0:
-                console.log("Numberline case 0");
+                // console.log("Numberline case 0");
             this.start = -7;
             break;
         }
@@ -30,9 +30,9 @@ var NumberLine = function NumberLine() {
     // Print out all of the points
     this.printPoints = function () {
         var i;
-        //console.log("Printing points. Length = " + this.length);
+        console.log("Printing points. Length = " + this.length);
         for (i = 0; i < this.length; i += 1) {
-             console.log("Point " + this.points[i].index + " has value " + this.points[i].value);
+            console.log("Point " + this.points[i].index + " has value " + this.points[i].value);
         }
     };
     

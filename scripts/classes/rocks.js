@@ -1,6 +1,7 @@
 // Rock scripts
 // Nicholas Blum
 
+// Rock handler is responsible for creating, maintaining, and destroying rock objects.
 var RockHandler = function RockHandler() {
     
     var rocks = [],
@@ -17,13 +18,13 @@ var RockHandler = function RockHandler() {
                     rocks[i].Remove();
                     rocks.splice(i, 1);
                     numRocks--;
-                    console.log("Removing rock, number of rocks remaining: " + numRocks);
+                    // console.log("Removing rock, number of rocks remaining: " + numRocks);
                 }
             }
             if (numRocks === 0) {
-                console.log("Rocks have reached targets, calling finish launch.");
+                // console.log("Rocks have reached targets, calling finish launch.");
                 turnEnding = false;
-                gameController.finishLaunch();
+                gameController.checkZombies();
             }
         }
 
@@ -31,11 +32,16 @@ var RockHandler = function RockHandler() {
     
     // Add rocks, then let the handler know that it is ok to move the rocks
     this.addRocks = function(targetPoint) {
-        console.log("Adding a rock with value: " + targetPoint.value);
+        // console.log("Adding a rock with value: " + targetPoint.value);
         var rock = new Rock();
         if (targetPoint === false) {
-            console.log("No point found, shoot rock off screen!");
-            rock.createSpaceRock();
+            // console.log("No point found, shoot rock off screen!");
+            if (gameController.currentFruitValue > 0) {
+                rock.createSpaceRock(true);
+            } else {
+                rock.createSpaceRock(false);
+            }
+            
         } else {
             rock.init(targetPoint);
         }
@@ -46,6 +52,7 @@ var RockHandler = function RockHandler() {
     
 };
 
+// Rock handles updating a singular rock sprite
 var Rock = function Rock() {
     var targetX,
         sprite,
@@ -53,7 +60,7 @@ var Rock = function Rock() {
     
     this.init = function(targetPoint) {
         targetX = targetPoint.x;
-        console.log(targetPoint.x);
+        // console.log(targetPoint.x);
         sprite = new PIXI.Sprite(resources.Rock.texture);
         sprite.position.y = itemAreas.sidewalk.y - 100;
         sprite.position.x = renderWidth / 2;
@@ -62,8 +69,13 @@ var Rock = function Rock() {
     }
     
     // If the player tried to hit something outside of the number line, this rock will shoot off into space
-    this.createSpaceRock = function() {
-        targetX = 1400;
+    this.createSpaceRock = function(isPositive) {
+        if (isPositive) {
+            targetX = 1400;
+        } else {
+            targetX = -200;
+        }
+        
         // console.log(targetPoint.x);
         sprite = new PIXI.Sprite(resources.Rock.texture);
         sprite.position.y = itemAreas.sidewalk.y - 100;

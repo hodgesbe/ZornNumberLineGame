@@ -91,8 +91,8 @@ function buildHud() {
     resetButton = tink.button(resetFrame, renderWidth / 1.9, 270);
     resetButton.tap = () => {
         var i;
-        // Only do buttons if we aren't dragging fruit
-        if (dragParams.currentFruit === null) {
+        // Only do buttons if we aren't dragging fruit nor is there a launch in progress
+        if (dragParams.currentFruit === null && gameController.launchInProgress === false) {
             console.log("Trying to reset fruit");
             //reset left basket
             if (dragParams.leftBasket != null){
