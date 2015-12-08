@@ -132,6 +132,7 @@ function GameController() {
     this.explosions = "";
     this.butterBonusArmed = false;
     this.sunBonusArmed = false;
+    this.zombieCount = "";
 
 
     fruitAmount: 0;

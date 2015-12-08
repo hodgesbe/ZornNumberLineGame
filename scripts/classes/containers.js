@@ -1,3 +1,5 @@
+// This script contains the HUD elements for our game
+
 // Builds the static HUD elements like counters, buttons, etc.
 function buildHud() {
 
@@ -27,6 +29,11 @@ function buildHud() {
     message.position.set(zombie.x + zombie.width/2, zombie.y);
     message.anchor.x = 0.5;
     hud.addChild(message);
+    // Zombie amount
+    gameController.zombieCount = new PIXI.Text("0");
+    gameController.zombieCount.position.set(zombie.x + zombie.width/2, zombie.y+50);
+    gameController.zombieCount.anchor.x = 0.5;
+    hud.addChild(gameController.zombieCount);
 
 
     // ---Buttons---
@@ -150,7 +157,7 @@ function buildHud() {
 
 
 }
-
+// This is the info screen.
 function buildInfoScreen() {
     var title = new PIXI.Text("Project Zorn",
                               {font: "48px sans-serif", fill: "black"});
@@ -199,6 +206,7 @@ function buildInfoScreen() {
     }
 }
 
+// This is the game over screen.
 function buildGameOverScreen() {
     var title = new PIXI.Text("Game Over",
         {font: "48px sans-serif", fill: "black"});
@@ -230,10 +238,21 @@ function buildGameOverScreen() {
 
 }
 
-function buildStaticGraphics() {
-
+// Displays a number on the screen letting the player know how many zombies are left.
+function updateZombieCount(amount) {
+    console.log("Updating zombie count with amount: " + amount);
+    var zombieCount = gameController.zombieCount;
+    console.log(zombieCount);
+    gameController.hud.removeChild(zombieCount);
+    zombieCount = new PIXI.Text(amount,
+        {font: "36px sans-serif", fill: "black"}); 
+    zombieCount.position.set(itemAreas.zombieCounter.x + itemAreas.zombieCounter.width/2, itemAreas.zombieCounter.y+40);
+    zombieCount.anchor.x = 0.5;
+    gameController.hud.addChild(zombieCount);
+    gameController.zombieCount = zombieCount;
 }
 
-function buildMainMenu() {
-
+// Display a new level message every new level, then disappear
+var LevelText = function LevelText() {
+    
 }

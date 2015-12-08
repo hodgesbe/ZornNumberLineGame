@@ -72,6 +72,7 @@ var ZombieController = function ZombieController() {
             this.zombies.push(zombie);
             // gameController.zombies[i].getData();
         }
+        updateZombieCount(this.zombies.length);
     };
 
     // I'm a little too proud of this math function - Nicholas
@@ -160,8 +161,7 @@ var ZombieController = function ZombieController() {
             // Remove the zombie if it is hit
             if (zombieHit === true) {
                 console.log("Zombie was hit!");
-                this.zombies[i].Remove();
-                this.zombies.splice(i, 1);
+                this.deleteZombie(i);
             }
         }
     }
@@ -172,9 +172,9 @@ var ZombieController = function ZombieController() {
             if (this.zombies[i].target === this.zombies[i].heroPos) {
                 // console.log("Zombie attacking hero!");
                 console.log("Deleting zombie!");
-                this.zombies[i].Remove();
-                this.zombies.splice(i, 1);
+                this.deleteZombie(i);
                 this.heroHit();
+                
             }
         }
     }
@@ -182,6 +182,12 @@ var ZombieController = function ZombieController() {
     this.heroHit = function(){
         console.log("Hero hit by one zombie!");
         gameController.game.hero.takeDamage();
+    };
+    
+    this.deleteZombie = function(index) {
+        this.zombies[index].Remove();
+        this.zombies.splice(index, 1);
+        updateZombieCount(this.zombies.length);
     };
 };
 
