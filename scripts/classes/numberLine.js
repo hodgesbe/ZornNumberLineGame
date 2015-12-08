@@ -1,3 +1,6 @@
+// Numberline scripts
+// Nicholas Blum
+
 var NumberLine = function NumberLine() {
     // Constructor
     this.points = [];
@@ -32,6 +35,8 @@ var NumberLine = function NumberLine() {
         }
     };
     
+    // Return a reference to the point on the numberline with the passed value,
+    // or false if it doesn't exist.
     this.getPoint = function (value) {
         for (i = 0; i < this.length; i++) {
             console.log("Does " + this.points[i].value + " equal " + this.points[i].value);
@@ -41,7 +46,7 @@ var NumberLine = function NumberLine() {
             }
         }
         console.log("No points found, returning 0.");
-        return 0;
+        return false;
     };
 };
 
@@ -66,7 +71,7 @@ function displayNumberLine() {
     
     // Create a dash and a number at each "point" on the number line.
     for (i = 0; i < numberLine.length; i++) {
-        console.log("Creating a point!");
+        // console.log("Creating a point!");
         // Create a point
         dash = new Graphics();
         dash.beginFill(0x000000);

@@ -1,3 +1,6 @@
+// Rock scripts
+// Nicholas Blum
+
 var RockHandler = function RockHandler() {
     
     var rocks = [],
@@ -32,7 +35,6 @@ var RockHandler = function RockHandler() {
         var rock = new Rock();
         rock.init(targetPoint);
         rocks[rocks.length] = rock;
-
         numRocks++;
         turnEnding = true;
     };
@@ -55,7 +57,7 @@ var Rock = function Rock() {
     }
     
     this.move = function() {
-        console.log(targetX + ", " + sprite.position.x);
+        // console.log(targetX + ", " + sprite.position.x);
         if (targetX > sprite.position.x) {
             sprite.position.x += speed;
         } else if (targetX < sprite.position.x) {
@@ -65,7 +67,7 @@ var Rock = function Rock() {
     
     this.hitTarget = function() {
         var difference = Math.abs(sprite.position.x - targetX);
-        console.log(difference);
+        // console.log(difference);
         if (difference < 15) { // Difference should always be greater than speed, otherwise the rock will bounce back and forth without ever getting detected as close enough to remove. I recommend about twice the speed.
             return true;
         } else {
@@ -73,7 +75,10 @@ var Rock = function Rock() {
         }
     }
     
+    // Delete this rock and create an explosion where it hit!
     this.Remove = function() {
+        gameController.explosions.addExplosion(45, sprite.position.x, sprite.position.y);
         topLayer.removeChild(sprite);
     }
 }
+

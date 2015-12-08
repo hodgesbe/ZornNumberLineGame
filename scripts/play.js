@@ -127,6 +127,7 @@ function GameController() {
     this.leftBasket = "";
     this.rightBasket = "";
     this.rocks = "";
+    this.explosions = "";
 
 
     fruitAmount: 0;
@@ -243,6 +244,7 @@ function GameController() {
         // add dynamic stage
         // build the rock handler
         this.rocks = new RockHandler();
+        this.explosions = new ExplosionHandler();
         // Child all screens to the main stage
 
 
@@ -298,8 +300,14 @@ function GameController() {
 
     };
     
+    /**
+    After rocks hit their target (aka the animation is done), do the actual calculation and game logic update.
+    **/
     this.finishLaunch = function() {
         //Determine if zombie exists at target location
+        // Or if the rock flew past them - direct hit gives a random bonus, shooting it past them just hurts them.
+        
+        
         //Remove Fruit from board
         console.log(this.currentFruitValue);
         console.log(gameController.currentFruitBin);
@@ -318,6 +326,7 @@ function render() {
     tink.update();
     gameController.clouds.Move();
     gameController.rocks.Move();
+    gameController.explosions.Update();
     renderer.render(stage);
 }
 
@@ -345,7 +354,7 @@ function Game(gc) {
 
         this.numberLine = new NumberLine();
         this.numberLine.init();
-        this.numberLine.printPoints(); //prints value of each point in console log
+        // this.numberLine.printPoints(); //prints value of each point in console log
         this.fruitBin.init();
         this.hero.init();
         this.zombieController.init(level, this.numberLine.length);

@@ -1,3 +1,6 @@
+// Cloud scripts
+// Nicholas Blum
+
 var Clouds = function Clouds() {
     var currentTicks = 0,
         createNewAtTick = Math.random() * 120 + 120, // Every 2 to 4 seconds
@@ -22,7 +25,6 @@ var Clouds = function Clouds() {
                 clouds.splice(i, 1);
             }
         }
-        // console.log(currentTicks);
     };
     
     this.addCloud = function() {
@@ -30,11 +32,6 @@ var Clouds = function Clouds() {
         cloud.init(clouds.length);
         clouds[clouds.length] = cloud;
     }
-    
-    /**
-    this.removeCloudAt = function (index) {
-        clouds.splice(index, 1);
-    }; **/
 }
 
 var Cloud = function Cloud() {
@@ -62,7 +59,5 @@ var Cloud = function Cloud() {
     
     this.Remove = function() {
         cloudLayer.removeChild(sprite);
-        // TODO: Fix this so that we don't have a massive array memory leak
-        // gameController.clouds.removeCloudAt(index);
     };
 }
