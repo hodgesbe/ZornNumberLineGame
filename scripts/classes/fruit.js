@@ -34,11 +34,12 @@ var Fruit = function Fruit (fruitValue){
         // If the mouse is pressed while over this sprite and not currently dragging something else,
         // pick this sprite up and remember its previous position.
         this.fruitSprite.press = () => { // Using = () => over function () binds this object's referencing environment
-            if (dragParams.currentFruit === null) {
+            if (dragParams.currentFruit === null && !(this.fruitSprite === undefined)) {
                 // console.log("Fruit clicked: " + this.fruitValue);
                 dragParams.previousPos.x = this.fruitSprite.position.x;
                 dragParams.previousPos.y = this.fruitSprite.position.y;
                 dragParams.currentFruit = this.fruitSprite;
+                fruitLayer.removeChild(this.fruitSprite);
                 topLayer.addChild(this.fruitSprite);
             }
         };
@@ -77,14 +78,15 @@ var Fruit = function Fruit (fruitValue){
 
                 }
                 dragParams.currentFruit = null;
-                dynamicLayer.addChild(this.fruitSprite);
+                topLayer.removeChild(this.fruitSprite);
+                fruitLayer.addChild(this.fruitSprite);
 
             }
         };
 
 
         //add sprite and message to graphic
-        this.fruitGraphic.addChild(this.fruitSprite);
+        //this.fruitGraphic.addChild(this.fruitSprite);
         this.fruitSprite.addChild(message);
         // dynamicStage.addChild(this.fruitSprite);
     }
@@ -165,8 +167,8 @@ function FruitBin() {
             negFruitBin[i].addLoc(coords[0][0],coords[0][1]);
 
             //add graphics to dynamicStage container
-            dynamicLayer.addChild(posFruitBin[i].fruitGraphic);
-            dynamicLayer.addChild(negFruitBin[i].fruitGraphic);
+            fruitLayer.addChild(posFruitBin[i].fruitSprite);
+            fruitLayer.addChild(negFruitBin[i].fruitSprite);
         }
         // console.log("Ending fruit: "+counter);
     }
@@ -175,14 +177,45 @@ function FruitBin() {
     this.init = function (){
         // console.log("Creating a fruit bin");
         var posFruitValues = [],
-            negFruitValues = [];
+            negFruitValues = [],
+            i;
+            
+        for (i=0; i<posFruitBin; i++) {
+            fruitLayer.removeChild(posFruitBin[i].fruitSprite);
+            tink.makeUndraggable(posFruitBin[i].fruitSprite);
+            posFruitBin[i].fruitSprite.interactable = false;
+            delete(posFruitBin[i].fruitSprite);
+        }
 
+        for (i=0; i<negFruitBin; i++) {
+            fruitLayer.removeChild(negFruitBin[i].fruitSprite);
+            tink.makeUndraggable(negFruitBin[i].fruitSprite);
+            negFruitBin[i].fruitSprite.interactable = false;
+            delete(negFruitBin[i].fruitSprite);
+        }
+        posFruitBin = [];
+        negFruitBin = [];
+        
         switch (level) {
             case 0:
                 // console.log("Switching on level creating bin - level: " + level);
                 fruitTarget = 42;
                 fruitMin = 15;
                 possibleValues = [1,1,1,2,2,2,2,2,3,3,3,3,3,3,4,4,4,5,5,5];
+                break;
+            case 1:
+                fruitTarget = 42;
+                fruitMin = 15;
+                possibleValues = [1,1,2,2,2,2,2,3,3,3,3,3,3,4,4,4,5,5,5,5];
+                break;
+            case 2:
+                fruitTarget = 45;
+                fruitMin = 16;
+                possibleValues = [1,2,2,2,2,2,3,3,3,3,3,3,4,4,4,5,5,5,5,5];
+            default:
+                fruitTarget = 48;
+                fruitMin = 16;
+                possibleValues = [2,2,2,2,2,3,3,3,3,3,3,4,4,4,5,5,5,5,5,5];
                 break;
         }
         //continue picking fruit until number is larger than minimum number of fruit for level
