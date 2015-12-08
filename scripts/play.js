@@ -130,6 +130,8 @@ function GameController() {
     this.rightBasket = "";
     this.rocks = "";
     this.explosions = "";
+    this.butterBonusArmed = false;
+    this.sunBonusArmed = false;
 
 
     fruitAmount: 0;

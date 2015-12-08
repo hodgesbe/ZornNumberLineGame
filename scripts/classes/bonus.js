@@ -50,6 +50,12 @@ function Bonus() {
         ]
         useSunButton = tink.button(useSunBonusFrame, 462, 0);
 
+        //function that arms a bonus on button press
+        useSunButton.press  = () => {
+            gameController.sunBonusArmed = true;
+            this.removeSunBonus();
+        }
+
         //Creates a butter bonus button
         var useButterFrame = [
             resources["use_butter_up"].texture,
@@ -58,6 +64,10 @@ function Bonus() {
         ]
         useButterButton = tink.button(useButterFrame, 712, 0);
 
+        useButterButton.press = () => {
+            gameController.butterBonusArmed = true;
+            this.removeButterBonus();
+        }
 
 
     };

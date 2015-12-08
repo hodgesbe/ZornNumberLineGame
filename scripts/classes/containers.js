@@ -52,6 +52,19 @@ function buildHud() {
 
             }
         }
+
+        //checks for bonus
+        if (gameController.butterBonusArmed){
+            //needs to halt zombie progress
+
+            gameController.butterBonusArmed = false;
+        }
+
+        if (gameController.sunBonusArmed){
+            //needs to halt zombie
+
+            gameController.sunBonusArmed = false;
+        }
     };
     hud.addChild(launchButton);
     
@@ -111,6 +124,17 @@ function buildHud() {
             }
             gameController.currentFruitBin = [];
             gameController.currentFruitValue = 0;
+        }
+
+        //reset butter bonus if armed
+        if (gameController.butterBonusArmed){
+            gameController.butterBonusArmed = false;
+            gameController.game.bonus.addButterBonus();
+        }
+        //reset sun bonus if armed
+        if (gameController.sunBonusArmed){
+            gameController.sunBonusArmed = false;
+            gameController.game.bonus.addSunBonus();
         }
     };
     hud.addChild(resetButton);
