@@ -115,12 +115,15 @@ function buildHud() {
     };
     hud.addChild(resetButton);
 
+
+
     //hud.addChild(menuButton);
     hud.addChild(helpButton);
 
     gameController.hud = hud;
     gameController.fruitAmount = fruitAmount;
     hudLayer.addChild(gameController.hud);
+
 
 }
 

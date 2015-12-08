@@ -191,6 +191,12 @@ function GameController() {
         .add("launch_up", "assets/artwork/buttons/launch_up.png")
         .add("launch_over", "assets/artwork/buttons/launch_over.png")
         .add("launch_down", "assets/artwork/buttons/launch_down.png")
+        .add("use_butter_up", "assets/artwork/buttons/use_butter_up.png")
+        .add("use_butter_over", "assets/artwork/buttons/use_butter_over.png")
+        .add("use_butter_down", "assets/artwork/buttons/use_butter_down.png")
+        .add("use_sun_up", "assets/artwork/buttons/use_sun_up.png")
+        .add("use_sun_over", "assets/artwork/buttons/use_sun_over.png")
+        .add("use_sun_down", "assets/artwork/buttons/use_sun_down.png")
         // Other UI Stuff
         .add("sun_bonus", "assets/artwork/misc_sprites/Bonus_Sun.png")
         .add("butter_bonus", "assets/artwork/misc_sprites/butter.png")
