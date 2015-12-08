@@ -35,7 +35,7 @@ var Fruit = function Fruit (fruitValue){
         // pick this sprite up and remember its previous position.
         this.fruitSprite.press = () => { // Using = () => over function () binds this object's referencing environment
             if (dragParams.currentFruit === null) {
-                console.log("Fruit clicked: " + this.fruitValue);
+                // console.log("Fruit clicked: " + this.fruitValue);
                 dragParams.previousPos.x = this.fruitSprite.position.x;
                 dragParams.previousPos.y = this.fruitSprite.position.y;
                 dragParams.currentFruit = this.fruitSprite;
@@ -49,7 +49,7 @@ var Fruit = function Fruit (fruitValue){
                 if (dragParams.overBasket(this.fruitSprite) === 'left' && dragParams.leftBasket === null) {
                     gameController.currentFruitValue += this.fruitValue;
                     gameController.currentFruitBin.push(this.fruitSprite);
-                    console.log("Fruit in left basket = " + gameController.currentFruitValue);
+                    // console.log("Fruit in left basket = " + gameController.currentFruitValue);
                     this.fruitSprite.draggable = false;
                     dragParams.leftBasket = this;
                     //console.log(dragParams.fruitsInBasket.length);
@@ -61,14 +61,14 @@ var Fruit = function Fruit (fruitValue){
                 } else if (dragParams.overBasket(this.fruitSprite) === 'right' && dragParams.rightBasket === null) {
                     gameController.currentFruitValue += this.fruitValue;
                     gameController.currentFruitBin.push(this.fruitSprite);
-                    console.log("Fruit in right basket = " + gameController.currentFruitValue);
+                    // console.log("Fruit in right basket = " + gameController.currentFruitValue);
                     this.fruitSprite.draggable = false;
                     dragParams.rightBasket = this;
                     //console.log(dragParams.fruitsInBasket.length);
                     this.previousPos.x = dragParams.previousPos.x;
                     this.previousPos.y = dragParams.previousPos.y;
                     //place fruit in center
-                    console.log(rightBasketCenter);
+                    // console.log(rightBasketCenter);
                     this.fruitSprite.position.set(rightBasketCenter.x, rightBasketCenter.y);
                     this.fruitSprite.scale.set(1.25,1.25);
                 } else {
@@ -133,7 +133,7 @@ function FruitBin() {
 
     //---Function to set sprite locations for each fruit
     this.addFruit = function (){
-        console.log("Adding fruit");
+        // console.log("Adding fruit");
 
         var i,
             posPool,
@@ -145,8 +145,8 @@ function FruitBin() {
 
         //fill pos and neg arrays with possible values
         this.setLocation();
-        console.log("Needed Fruit: "+posFruitBin.length);
-        console.log("Setting fruit location:");
+        // console.log("Needed Fruit: "+posFruitBin.length);
+        // console.log("Setting fruit location:");
 
         //randomly select a location for each fruit from posible location
         for (i = 0; i < posFruitBin.length; i++){
@@ -168,18 +168,18 @@ function FruitBin() {
             dynamicLayer.addChild(posFruitBin[i].fruitGraphic);
             dynamicLayer.addChild(negFruitBin[i].fruitGraphic);
         }
-        console.log("Ending fruit: "+counter);
+        // console.log("Ending fruit: "+counter);
     }
 
     //---Randomly select fruit values, create fruit with those values
     this.init = function (){
-        console.log("Creating a fruit bin");
+        // console.log("Creating a fruit bin");
         var posFruitValues = [],
             negFruitValues = [];
 
         switch (level) {
             case 0:
-                console.log("Switching on level creating bin - level: " + level);
+                // console.log("Switching on level creating bin - level: " + level);
                 fruitTarget = 42;
                 fruitMin = 15;
                 possibleValues = [1,1,1,2,2,2,2,2,3,3,3,3,3,3,4,4,4,5,5,5];

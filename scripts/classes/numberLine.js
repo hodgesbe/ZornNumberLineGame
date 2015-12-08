@@ -6,15 +6,23 @@ var NumberLine = function NumberLine() {
     this.points = [];
     this.start = 0; // The numeric start point of the number line, should be negative so that it is equally sized to the left and right of 0.
     this.length = 0;
+    this.dashes = [];
+    this.messages = [];
         
     this.init = function () {
         var i;
         // Set size based on level
         switch (level) {
-        case 0:
-                console.log("Numberline case 0");
-            this.start = -7;
-            break;
+            case 0:
+                this.start = -7;
+                break;
+            case 1:
+                this.start = -10;
+                break;
+            case 2:
+                this.start = -15;
+            default:
+                break;
         }
         
         // Length is always a function of start
@@ -30,9 +38,9 @@ var NumberLine = function NumberLine() {
     // Print out all of the points
     this.printPoints = function () {
         var i;
-        //console.log("Printing points. Length = " + this.length);
+        console.log("Printing points. Length = " + this.length);
         for (i = 0; i < this.length; i += 1) {
-             console.log("Point " + this.points[i].index + " has value " + this.points[i].value);
+            console.log("Point " + this.points[i].index + " has value " + this.points[i].value);
         }
     };
     
@@ -68,7 +76,7 @@ var Point = function Point(value, index, length) {
     this.y = numLineParams.Y;
 };
 
-function displayNumberLine() {
+function displayNumberLine(firstTime) {
     // console.log("Displaying the numberline.");
     var i,
         line,
@@ -77,6 +85,17 @@ function displayNumberLine() {
         label,
         message,
         numberLine = gameController.game.numberLine;
+    
+    // If the number line already exists, destroy it. New level!
+    if (firstTime === false) {
+        console.log("Not the first time, clean up the number line!");
+        for (i = 0; i < numberLine.dashes.length; i++) {
+            backgroundLayer.removeChild(numberLine.dashes[i]);
+            backgroundLayer.removeChild(numberLine.messages[i]);
+        }
+        numberLine.dashes = [];
+        numberLine.messages= [];
+    }
     
     
     // Create a dash and a number at each "point" on the number line.
@@ -89,6 +108,7 @@ function displayNumberLine() {
         dash.drawRect(numberLine.points[i].x, numberLine.points[i].y, dashWidth, itemAreas.sidewalk.height);
         dash.endFill();
         backgroundLayer.addChild(dash);
+        numberLine.dashes.push(dash);
         
         // Create a number
         // It should be placed beneath the bottom of the dash that has just been drawn
@@ -97,5 +117,6 @@ function displayNumberLine() {
         message.position.set(numberLine.points[i].x, numberLine.points[i].y + itemAreas.sidewalk.height);
         message.anchor.set(0.5, 0);
         backgroundLayer.addChild(message);
+        numberLine.messages.push(message);
     }
 }

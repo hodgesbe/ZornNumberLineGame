@@ -42,6 +42,35 @@ function Bonus() {
         //adds sun_bonus_sprites to array
         this.sun_sprite_Arr = [sun_bonus_sprite1, sun_bonus_sprite2, sun_bonus_sprite3];
 
+        //Creates a sun bonus button
+        var useSunBonusFrame = [
+            resources["use_sun_up"].texture,
+            resources['use_sun_over'].texture,
+            resources["use_sun_down"].texture
+        ]
+        useSunButton = tink.button(useSunBonusFrame, 462, 0);
+
+        //function that arms a bonus on button press
+        useSunButton.press  = () => {
+            gameController.sunBonusArmed = true;
+            this.removeSunBonus();
+        }
+
+        //Creates a butter bonus button
+        var useButterFrame = [
+            resources["use_butter_up"].texture,
+            resources['use_butter_over'].texture,
+            resources["use_butter_down"].texture
+        ]
+        useButterButton = tink.button(useButterFrame, 712, 0);
+
+        //updates game controller boolean if pushed
+        useButterButton.press = () => {
+            gameController.butterBonusArmed = true;
+            this.removeButterBonus();
+        }
+
+
     };
 
     //adds butter bonus value. Takes an int for added bonus
@@ -50,6 +79,11 @@ function Bonus() {
         if (this.butter_bonus_count<3){
             this.butter_bonus_count++;
             gameStage.addChild(this.butter_sprites_Arr[this.butter_bonus_count-1]);
+        }
+
+        //adds a use bonus botton if bonus is available
+        if (this.butter_bonus_count>=1){
+            gameStage.addChild(useButterButton);
         }
 
     };
@@ -61,6 +95,10 @@ function Bonus() {
             gameStage.removeChild(this.butter_sprites_Arr[this.butter_bonus_count-1]);
             this.butter_bonus_count--;
         }
+        //removes use bonus button if no bonuses are available
+        if (this.butter_bonus_count < 1){
+            gameStage.removeChild(useButterButton);
+        }
     };
 
     //adds sun bonus value. Takes an int for added bonus
@@ -70,6 +108,10 @@ function Bonus() {
             this.sun_bonus_count++;
             gameStage.addChild(this.sun_sprite_Arr[this.sun_bonus_count-1]);
         }
+        //adds a use bonus botton if bonus is available
+        if(this.sun_bonus_count>=1){
+            gameStage.addChild(useSunButton);
+        }
     };
 
     this.removeSunBonus = function(){
@@ -77,6 +119,10 @@ function Bonus() {
         if(this.sun_bonus_count>0){
             gameStage.removeChild(this.sun_sprite_Arr[this.sun_bonus_count-1]);
             this.sun_bonus_count--;
+        }
+        //removes use bonus button if no bonuses are available
+        if(this.sun_bonus_count < 1){
+            gameStage.removeChild(useSunButton);
         }
     }
 
